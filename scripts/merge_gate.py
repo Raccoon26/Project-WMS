@@ -58,8 +58,8 @@ def evaluate(repo, pr, protection, paths, runs):
         errors.append('PR not open against main')
     if pr.get('mergeable') is not True or pr.get('mergeable_state') != 'clean':
         errors.append('Mergeability not clean/known')
-    if any(manual(p) for p in paths):
-        errors.append('High-risk/unknown path: manual merge required even with owner approval')
+    if pr.get('draft'):
+        errors.append('Draft is not ready for merge')
     errors += validate(pr['head']['ref'], pr['title'], paths, set(),
                        pr['head']['repo']['full_name'], repo['full_name'], pr['draft'])
     errors += check_errors(runs, pr['head']['sha'])

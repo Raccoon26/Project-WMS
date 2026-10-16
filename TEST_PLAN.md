@@ -72,3 +72,11 @@ Pi 성능은 실장비 확보 후 DEV12/14. 목표 미달 시 인덱스/쿼리/�
 `bash -n scripts/*.sh`는 파일별 실행; `actionlint .github/workflows/*.yml`;
 `python3 scripts/validate_docs.py`; `python3 scripts/check_public_files.py`.
 실제 명령/개수/실패 및 원격 SHA CI 증거는 [DEV00 보고](docs/dev-reports/DEV-00.md).
+
+## AUTO-01 자동화 검증
+Python 정책/unit/controller integration/negative 테스트는 `PYTHONPATH=scripts python3 scripts/run_policy_tests.py`.
+실패/skip/0개는 비정상 종료하고 실제 개수를 policy.json에 기록한다.
+main-owned verification-baseline.json은 DEV01 테스트·runner·config를 데이터로 보관해 앱이 없는 전환 단계에도
+후속 PR4를 독립 검증할 수 있게 한다. 이는 앱이나 업무 테스트 실행 완료를 뜻하지 않는다.
+기존 assertion 삭제/runner 우회/권한 상승/Secret/HEAD·base 경합/403/충돌/fork를 음성 검증한다.
+workflow_run 3단계 CI→읽기전용 독립검증→trusted merge. 실제 live 증거는 AUTO-01 보고에 별도 기록한다.

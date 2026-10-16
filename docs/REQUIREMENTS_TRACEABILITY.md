@@ -71,3 +71,5 @@
 재고 상태 합산 오류·부분95/93·메일unknown·복원replay·위험경로/rename/현재SHA검사 누락을 설계/도구에서 수정.
 외부 계정/양식/가격/장비 미확인은 각 담당 단계 prerequisite로 명시; 운영 성공으로 처리 안함.
 PR1 수동검토/보호설정/실제병합은 현재 미완료이고 DEV00 완료 판정 차단.
+
+AUTO-01 최신 지시 §0–16: 수동 승인 제거/일반 PR/Ready·metadata 분리/영역별 실제 suite/main-owned 독립 검증/최초 전환/PR4 보존/이벤트 호환성/운영 배포 분리를 [실행 대장](dev-reports/GITHUB-AUTOMATION-01.md)으로 추적한다.

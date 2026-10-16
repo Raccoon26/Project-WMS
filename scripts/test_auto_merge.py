@@ -1,6 +1,7 @@
 import copy
 import unittest
-from auto_merge import eligible
+from auto_merge import eligible, REQUIRED_STEPS
+from governance import PROFILES
 
 REPO_NAME = 'Raccoon26/Project-WMS'
 SHA = 'a'*40
@@ -11,25 +12,27 @@ P = {'number':2, 'state':'open','draft':False, 'title':'[DEV-03] Catalog',
      'mergeable_state':'clean','changed_files':2,'labels':[],
      'requested_reviewers':[], 'requested_teams':[]}
 W = {'id':56}
-R = {'id':123,'workflow_id':56,'event':'pull_request','status':'completed',
-     'conclusion':'success','name':'WMS PR CI','path':'.github/workflows/pr-ci.yml',
-     'head_sha':SHA,'pull_requests':[{'number':2,'head':{'sha':SHA,'repo':{'id':100}},'base':{'ref':'main','sha':BASE}}]}
+R = {'id':123,'workflow_id':56,'event':'workflow_run','status':'completed',
+     'conclusion':'success','name':'WMS Independent Verification','path':'.github/workflows/independent-verification.yml',
+     'head_sha':BASE,'head_repository':{'id':100},'pull_requests':[{'number':2,'head':{'sha':SHA,'repo':{'id':100}},'base':{'ref':'main','sha':BASE}}]}
 REPO = {'id':100,'default_branch':'main'}
-JOBS = [{'name':'WMS Quality Gate','status':'completed','conclusion':'success'}]
+JOBS = [{'name':'WMS Independent Gate','status':'completed','conclusion':'success',
+         'steps':[{'name':s,'status':'completed','conclusion':'success'} for s in REQUIRED_STEPS]}]
+EVIDENCE = {'version':1,'application':True,'independentRunId':123,'independentRunAttempt':1,'head':SHA,'base':BASE,'pr':2,
+            'suites':{s:{'passed':1,'failed':0,'skipped':0} for s in ('unit','integration','fault','e2e')},
+            'passedCases':list(PROFILES['migration'])}
 FILES = ['apps/web/src/components/Badge.tsx', 'docs/dev-reports/DEV-03.md']
 
 def check(pr=P, run=R, paths=FILES, latest=R, jobs=JOBS, main=BASE, repo=REPO):
-    return eligible(REPO_NAME,pr,run,repo,paths,W,main,latest,jobs)
+    return eligible(REPO_NAME,pr,run,repo,paths,W,main,latest,jobs,EVIDENCE)
 
 class AutoMergeTests(unittest.TestCase):
     def test_safe_dev_can_merge(self):
         self.assertEqual(check(), [])
-    def test_control_paths_never_merge(self):
-        for path in ('.github/workflows/pr-ci.yml','scripts/pr_policy.py','DATA_MODEL.md',
-                     'apps/api/src/inventory/engine.ts','apps/web/src/components/authPanel.tsx',
-                     'packages/db/migrations/0001.sql'):
-            with self.subTest(path=path):
-                self.assertTrue(check(paths=FILES+[path]))
+    def test_control_paths_eligible_after_independent_ci(self):
+        for path in ('.github/workflows/pr-ci.yml', 'scripts/pr_policy.py', 'AGENTS.md'):
+            self.assertEqual(check(paths=FILES+[path]), [])
+
     def test_draft_and_stale(self):
         self.assertTrue(check(pr=dict(P,draft=True)))
         self.assertTrue(check(run=dict(R,head_sha='c'*40)))
@@ -46,14 +49,14 @@ class AutoMergeTests(unittest.TestCase):
         self.assertTrue(check(jobs=JOBS+[{'name':'Other','status':'completed','conclusion':'failure'}]))
     def test_head_and_base_identity(self):
         x=copy.deepcopy(R)
-        x['pull_requests'][0]['head']['repo']['id']=999
+        x['head_repository']['id']=999
         self.assertTrue(check(run=x))
         x=copy.deepcopy(P)
         x['head']['repo']['full_name']='evil/repo'
         self.assertTrue(check(pr=x))
     def test_hold_and_review(self):
         self.assertTrue(check(pr=dict(P,labels=[{'name':'hold'}])))
-        self.assertTrue(check(pr=dict(P,requested_reviewers=[{'login':'someone'}])))
+        self.assertEqual(check(pr=dict(P,requested_reviewers=[{'login':'someone'}])), [])
         self.assertTrue(check(pr=dict(P,user={'login':'stranger'})))
     def test_title_and_policy(self):
         self.assertTrue(check(pr=dict(P,title='[DEV-04] Wrong')))

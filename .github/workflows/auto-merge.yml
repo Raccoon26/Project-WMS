@@ -1,13 +1,10 @@
 # Privileged stage checks only GitHub metadata + trusted main code.
-# NEVER checkout, import, execute or download PR-head code or artifacts here.
+# NEVER checkout, import, execute PR-head code here. Bounded JSON evidence is data, never executable.
 name: WMS Guarded Auto Merge
 on:
   workflow_run:
-    workflows: ["WMS PR CI"]
+    workflows: ["WMS Independent Verification"]
     types: [completed]
-  pull_request_target:
-    types: [ready_for_review, reopened]
-    branches: [main]
 permissions:
   actions: read
   contents: write
@@ -20,8 +17,7 @@ jobs:
   merge:
     name: Guarded Auto Merge
     if: >-
-      ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request')
-       || (github.event_name == 'pull_request_target') }}
+      ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'workflow_run') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -34,7 +30,7 @@ jobs:
         with:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
-      - name: Merge only a current, verified, low-risk PR
+      - name: Merge only a current, verified DEV PR
         shell: bash
         run: |
           set -euo pipefail
