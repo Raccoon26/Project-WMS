@@ -104,6 +104,16 @@ class GovernanceTests(unittest.TestCase):
             self.assertFalse(auto_merge.snapshot_current(P, current, BASE, BASE))
         self.assertFalse(auto_merge.snapshot_current(P, P, BASE, SHA))
 
+    def test_final_snapshot_rejects_title_base_branch_author_and_source_edits(self):
+        candidates = [dict(P, title='[DEV-04] Edited'), dict(P, base={'ref':'another-branch'}),
+                      dict(P, user={'login':'another-user'})]
+        for key, value in (('ref','dev/dev-03-renamed'), ('repo',{'full_name':'fork/WMS'})):
+            current = copy.deepcopy(P)
+            current['head'][key] = value
+            candidates.append(current)
+        for current in candidates:
+            self.assertFalse(auto_merge.snapshot_current(P, current, BASE, BASE))
+
     def test_real_report_collector_rejects_failure(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)

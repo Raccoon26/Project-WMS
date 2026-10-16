@@ -105,3 +105,8 @@ DEV01 사전검토에서 disabled integration scaffold의 tsconfig를 실제 ada
 소스 파일 집합·정확한 hash·실제 no-effects case를 함께 확인하도록 수정하고 tsconfig 동반 회귀를 추가했다.
 독립 문서 validator는 baseline 자체 대신 candidate root를 검사하게 수정했다.
 새 제어 코드도 이전 main verifier와 모든 실제 정책 검사를 통과한 경우에만 자동병합한다.
+
+## AUTO-01 최종 상태 기록
+정책 전환 PR5 적용 후 PR6/7의 제어 코드 자동병합, PR4의 실제 앱/PG/browser 검증 및 bot Ready·병합을 확인했다.
+PR4 merge=`168a43ef2cc94bcd058bb0f366d07494817b924c`; 상세 run과 실패·차단 이력은 AUTO-01 보고 참조.
+최종 metadata 경합 회귀를 추가하고 PR 직전 title/base/source/author 변경도 차단한다. 상태 문서를 실제 main 결과로 정정한다.

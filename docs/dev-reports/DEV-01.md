@@ -3,7 +3,7 @@
 
 # DEV-01 — 실행 가능한 개발 기반
 
-상태: **IMPLEMENTED / VERIFIED / MANUAL_MERGE_PENDING**, GitHub 반영·최종CI·수동병합은 별도 기록.
+현재 상태: **MERGED / VERIFIED** — PR4=`168a43ef2cc94bcd058bb0f366d07494817b924c`. 아래 초기 수동병합 대기 기록은 이력이다.
 기존 `dev/dev-01-foundation`을 그대로 사용, 원격 시작 main=02611d1. PR1–3 Merged 재확인, DEV01 기존PR 없음 확인.
 현재 operational WMS는 아니다. 기본 웹·API·DB·Worker만 구현, 실제 외부 부작용0.
 
@@ -222,3 +222,16 @@ main verifier 보정 PR7은 [Quality38854161305](https://github.com/Raccoon26/Pr
 legacy --reviews/--comments 인자를 workflow에서 먼저 제거했기 때문이다. 이 실패는 무시하지 않았다.
 승인 데이터 조회 없이 빈 배열 compatibility 인자를 유지하고 새 CLI는 두 인자를 optional로 받아 순차 전환하게 수정했다.
 현재 main CLI와 새 CLI 양쪽을 실제 실행해 Draft 정상종료/mergeAllowed=false를 확인하고 회귀를 추가한다.
+
+## 최종 실제 GitHub 결과
+
+- 검증 HEAD: `cdd9fcd22575340b8579f7956053fd48bc220cd0`.
+- [Quality38854559218](https://github.com/Raccoon26/Project-WMS/actions/runs/38854559218) SUCCESS.
+  다운로드한 실제 artifact: Python65/unit34/PGintegration4/fault14/browser8, 총125 passed/0 failed/0 skipped.
+- [Policy38854720372](https://github.com/Raccoon26/Project-WMS/actions/runs/38854720372) SUCCESS. Draft는 main verifier WAITING/새 CLI NOT_READY, mergeAllowed=false를 실제 양쪽 CLI로 확인.
+- [Independent38854703602](https://github.com/Raccoon26/Project-WMS/actions/runs/38854703602) SUCCESS, candidate65+기준선63과 실제PG/browser 전체 실행.
+  artifact의 sourceRunId38854559218/head cdd9fcd/base17d6cda/PR4를 직접 확인했다.
+- [Guarded38854877732](https://github.com/Raccoon26/Project-WMS/actions/runs/38854877732) SUCCESS.
+  실제 log READY/MERGED, event actor github-actions[bot]: 05:16:11 UTC Ready, 05:16:14 UTC merged.
+- **실제 main 병합: `168a43ef2cc94bcd058bb0f366d07494817b924c`**. 승인 라벨/댓글/소유자 review 없음, 운영배포 없음.
+- DEV02 선행 기반 준비 완료. 실제 인증·업무 원장·출고·연동·Pi/백업은 미구현이며 담당 DEV 검사를 요구한다.

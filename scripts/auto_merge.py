@@ -150,6 +150,11 @@ def quality_errors(repo, pr, base, evidence):
 
 def snapshot_current(pr, current, base, current_base):
     return (current['head']['sha'] == pr['head']['sha'] and base == current_base
+            and current.get('title') == pr.get('title')
+            and current.get('base', {}).get('ref') == pr.get('base', {}).get('ref') == 'main'
+            and current['head'].get('ref') == pr['head'].get('ref')
+            and (current['head'].get('repo') or {}).get('full_name') == (pr['head'].get('repo') or {}).get('full_name')
+            and (current.get('user') or {}).get('login') == (pr.get('user') or {}).get('login')
             and current.get('state') == 'open'
             and not current.get('draft') and current.get('mergeable') is True
             and current.get('mergeable_state') == 'clean'

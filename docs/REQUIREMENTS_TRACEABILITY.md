@@ -24,7 +24,7 @@
 | R16 | 외부감시 | [DEPLOYMENT.md](../DEPLOYMENT.md) | DEV-13 | F27 업무별 health | 설계 완료 / 기능 NOT RUN |
 | R17 | 자체창고 | [docs/contracts/MODULES.md](../docs/contracts/MODULES.md) | DEV-15–17 | 공존/바코드/피킹/택배 | 설계 완료 / 기능 NOT RUN |
 | R18 | AI 선택 | [docs/PROJECT_SCOPE.md](../docs/PROJECT_SCOPE.md) | DEV-18,AI-01 | disabled AI E2E | 설계 완료 / 기능 NOT RUN |
-| R19 | GitHub | [docs/GITHUB_WORKFLOW.md](../docs/GITHUB_WORKFLOW.md) | DEV-00–18 | 정책/helper unit+integration, current SHA CI/보호 | AUTO-01 PR5/6 적용·실증; DEV01 최신 main 재검증 |
+| R19 | GitHub | [docs/GITHUB_WORKFLOW.md](../docs/GITHUB_WORKFLOW.md) | DEV-00–18 | 정책/helper unit+integration, current SHA CI/보호 | AUTO-01 PR5/6/7 및 DEV01 PR4 자동 Ready·병합 실증 완료 |
 | R20 | 개별DEV검증 | [TEST_PLAN.md](../TEST_PLAN.md) | DEV-00–18 | 30장애/회귀/보안/이전요구감사 | DEV01 실행증거 report 참조; 물류테스트 NOT RUN |
 | R21 | public 보호 | [SECURITY.md](../SECURITY.md) | DEV-전단계 | path/pattern scanner+수동PII검토 | 기반 경계/로그/secret 검사; 운영보안 후속 |
 | R22 | 단순·저비용 | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-전단계 | 비용 분류/단일DB/no paidAI | 설계 완료 / 기능 NOT RUN |
