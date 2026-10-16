@@ -20,3 +20,8 @@ Transition from an email-only third-party warehouse to a self-operated warehouse
 Dot is NOT currently available on the user's subscription. DEV-00–17 and first production release must work fully without Dot, Dot credentials, paid AI API, or any subscription upgrade. Treat Dot integration as a future OPTIONAL capability. DEV-18 may implement an interface/adapter boundary, gated by explicit feature flag and gracefully disabled by default; if Dot is still unavailable, do not block DEV-18, final audit or release. Defer actual Dot connection to a future optional AI-01 task after account access and integration support are confirmed. Never claim Dot has been connected without a real test.
 
 For each DEV validate requested behavior, regression, integration, negative paths, security, docs, and status. FINAL-AUDIT-01: Astra full requirements/code review, remediate all release-blocking failures, re-test, report proof. 
+
+
+## Guarded GitHub Actions merge (without branch protection)
+
+Routine DEV PRs with safe-path-only diffs can become ready and be merged automatically by the trusted `workflow_run` workflow after exact-current-head successful WMS CI. Do NOT use the legacy branch-protection helper in no-protection mode. Manual-risk PRs, unknown code, security/inventory/email/payment/deployment/configuration changes stay draft until owner reviews and explicitly merges. Never merge PRs from forks or stale CI. Never allow the privileged workflow to checkout PR head or use production secrets. GitHub merge is separate from Raspberry Pi deployment. Lack of branch protection increases risk of direct-main bypass: document clearly, never claim equivalence to protected main.
