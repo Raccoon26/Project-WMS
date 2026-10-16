@@ -1,6 +1,6 @@
 # Project-WMS 상태
 
-2026-10-16. **DEV00 설계·GitHub 기반 main 반영 완료. DEV01 구현·로컬검증 완료 / 원격CI·고위험 PR 수동검토 대기.**
+2026-10-16. **DEV00 설계·GitHub 기반 main 반영 완료. DEV01 구현·검증 완료 / 고위험 PR 수동검토·병합 대기.**
 DEV01 브랜치 `dev/dev-01-foundation`을 재사용, 시작 main=`02611d1b85a76c8c3d806bd66f8c4c0ec684c130`.
 PR1/2/3 Merged를 원격 재확인. 현재 GitHub `allow_auto_merge=true`, Actions guarded mode 설치·문서변경 병합 실증.
 보호규칙 미사용 모드는 직접main bypass를 막지 못하며 보호 사용은 권장. 이번 CI/패키지/DB/infra 변경은 자동병합 금지.
@@ -20,3 +20,9 @@ Pi5 실물 없음: ARM64 manifest/native optional package만 사전검증, 실�
 
 [개발·설치](README.md) · [상세 계약](docs/DEVELOPMENT.md) · [로드맵](DEV_PROGRESS.md) ·
 [요구추적](docs/REQUIREMENTS_TRACEABILITY.md) · [DEV00 이력](docs/dev-reports/DEV-00.md).
+
+## DEV01 GitHub 반영
+[PR4](https://github.com/Raccoon26/Project-WMS/pull/4) Open/Draft.
+수정529e33e의 [Quality CI 성공](https://github.com/Raccoon26/Project-WMS/actions/runs/38850645498),
+Policy는 Draft/고위험 owner검토가 없어 예상 차단. 현재최종HEAD CI는 PR/GitHub에서 재확인한다.
+구현 branch에 commit/push 완료, **main 반영/병합은 미완료**. 운영 배포 없음.

@@ -12,7 +12,8 @@ Windows에서는 Linux 컨테이너 모드를 사용합니다. 이 작업의 실
 ```bash
 git clone https://github.com/Raccoon26/Project-WMS.git
 cd Project-WMS
-# DEV-01 PR 미병합 동안은 기존 origin/dev/dev-01-foundation 브랜치를 체크아웃합니다.
+# DEV-01 PR 미병합 동안만 아래 브랜치로 이동합니다. 병합 후에는 이 줄을 생략합니다.
+git switch dev/dev-01-foundation
 corepack enable
 pnpm --version
 pnpm install --frozen-lockfile

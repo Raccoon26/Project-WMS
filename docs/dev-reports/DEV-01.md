@@ -1,6 +1,6 @@
 # DEV-01 — 실행 가능한 개발 기반
 
-상태: **IMPLEMENTED / LOCAL_VERIFIED / REMOTE_PENDING**, GitHub 반영·최종CI·수동병합은 별도 기록.
+상태: **IMPLEMENTED / VERIFIED / MANUAL_MERGE_PENDING**, GitHub 반영·최종CI·수동병합은 별도 기록.
 기존 `dev/dev-01-foundation`을 그대로 사용, 원격 시작 main=02611d1. PR1–3 Merged 재확인, DEV01 기존PR 없음 확인.
 현재 operational WMS는 아니다. 기본 웹·API·DB·Worker만 구현, 실제 외부 부작용0.
 
@@ -185,3 +185,12 @@ README의 pnpm dev:api/dev:worker/dev:web 실제 기동·HTTP준비를 별도로
 초기 watch 명령에서 Node flags가 subcommand 앞에 있어 tsx가 watch를 파일로 오인함을 발견,
 `tsx watch --conditions=source --env-file-if-exists=.env ...`로 수정 후3개 명령 모두 통과.
 이 검증은 compiled start/E2E와 별도로 실시; 문서상 명령을 추정으로 정상 처리하지 않음.
+
+## 원격 CI 및 PR 확인
+- [PR4](https://github.com/Raccoon26/Project-WMS/pull/4): Open/Draft, 고위험 CI/패키지/DB/API/Worker/infra 수동검토.
+- 수정 head `529e33eb8c6850f4be4b6b20aeb7b336b678d577`의 [Quality38850645498](https://github.com/Raccoon26/Project-WMS/actions/runs/38850645498) **SUCCESS**.
+  fresh checkout에서 frozen install/audit/boundary/lint/typecheck/migration/unit/integration/fault/build/browser/artifact 전부 성공.
+- [Policy38850643526](https://github.com/Raccoon26/Project-WMS/actions/runs/38850643526)는 Draft/owner검토 미충족으로 **예상 BLOCK**.
+- 이후 watch 명령만 수정해 head e040b15로 push, 해당 [Quality38850798512](https://github.com/Raccoon26/Project-WMS/actions/runs/38850798512) 결과는 현재SHA로 별도 확인.
+- 기록용 마지막 커밋의 SHA는 자기참조로 다시 바뀌므로 PR본문/최종보고/GitHub check에서 정확한 최종HEAD를 확인한다.
+- 실제 main 병합/운영배포 없음. owner의 label/승인comment 대행0. 구현·검증 완료와 수동병합은 분리.

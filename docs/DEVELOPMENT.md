@@ -82,3 +82,22 @@ ARM64 manifest/native optional package 존재는 사전검증일 뿐 Pi 실측/a
 라이선스 metadata inventory: MIT/Apache-2.0/ISC/BSD-2/BSD-3/BlueOak-1.0.0, caniuse-lite CC-BY-4.0, LightningCSS MPL-2.0. 배포 시 LICENSE/NOTICE 및 관련 소스 의무를 유지하며 자동 법률준수 보증으로 보지 않는다.
 
 Vitest SSR은 explicit workspace source alias로 fresh checkout에서도 build 없이 unit/integration을 실행한다. 로컬 dist를 지운 상태로 CI 순서 검증 완료.
+
+## Codex cloud의 읽기전용 홈에서 실행
+일반 개발자 홈은 이 설정이 필요 없습니다. 이번 cloud 인스턴스는 홈 쓰기가 제한되어 아래 cache/tool 경로를 사용했습니다.
+
+```bash
+export COREPACK_HOME=/workspace/.cache/corepack
+export XDG_CACHE_HOME=/workspace/.cache
+export XDG_DATA_HOME=/workspace/.local/share
+export PNPM_HOME=/workspace/.local/pnpm
+export PLAYWRIGHT_BROWSERS_PATH=/workspace/.cache/ms-playwright
+export DOCKER_CONFIG=/workspace/.docker
+mkdir -p /workspace/.wms-tools/bin
+corepack enable --install-directory /workspace/.wms-tools/bin pnpm
+export PATH="/workspace/.wms-tools/bin:$PATH"
+pnpm install --frozen-lockfile --store-dir /workspace/.cache/pnpm-store
+```
+
+기존 사용자 자격증명을 복사/출력하지 않습니다. cloud별 cache 경로를 repository 설정에 하드코딩하지 않습니다.
+일반 CI는 Actions가 준비한 Node/pnpm과 정상 홈을 사용합니다.
