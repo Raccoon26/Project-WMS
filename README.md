@@ -105,4 +105,4 @@ $env:WMS_TEST_CONTAINER = (docker compose -f infra/compose/compose.test.yaml ps 
 [연동/비용](INTEGRATIONS.md) · [GitHub](docs/GITHUB_WORKFLOW.md) · [출시](RELEASE_CHECKLIST.md) · [AGENTS](AGENTS.md).
 
 Public 저장소입니다. 실제 고객/공급처/원가/거래/운영키/설정/백업을 올리지 마세요.
-CI 변경·DB·API·Worker·패키지·인프라는 수동 검토 대상입니다. main 병합은 운영 배포가 아닙니다.
+CI·DB·API·Worker·패키지·인프라를 포함한 모든 변경은 main 소유 독립 검증과 필수 테스트 성공 시 승인 없이 병합합니다. main 병합은 운영 배포가 아닙니다.

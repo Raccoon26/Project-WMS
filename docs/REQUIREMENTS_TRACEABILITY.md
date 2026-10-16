@@ -24,7 +24,7 @@
 | R16 | 외부감시 | [DEPLOYMENT.md](../DEPLOYMENT.md) | DEV-13 | F27 업무별 health | 설계 완료 / 기능 NOT RUN |
 | R17 | 자체창고 | [docs/contracts/MODULES.md](../docs/contracts/MODULES.md) | DEV-15–17 | 공존/바코드/피킹/택배 | 설계 완료 / 기능 NOT RUN |
 | R18 | AI 선택 | [docs/PROJECT_SCOPE.md](../docs/PROJECT_SCOPE.md) | DEV-18,AI-01 | disabled AI E2E | 설계 완료 / 기능 NOT RUN |
-| R19 | GitHub | [docs/GITHUB_WORKFLOW.md](../docs/GITHUB_WORKFLOW.md) | DEV-00–18 | 정책/helper unit+integration, current SHA CI/보호 | Actions 기존실증; DEV01 고위험 수동검토 |
+| R19 | GitHub | [docs/GITHUB_WORKFLOW.md](../docs/GITHUB_WORKFLOW.md) | DEV-00–18 | 정책/helper unit+integration, current SHA CI/보호 | AUTO-01 PR5/6 적용·실증; DEV01 최신 main 재검증 |
 | R20 | 개별DEV검증 | [TEST_PLAN.md](../TEST_PLAN.md) | DEV-00–18 | 30장애/회귀/보안/이전요구감사 | DEV01 실행증거 report 참조; 물류테스트 NOT RUN |
 | R21 | public 보호 | [SECURITY.md](../SECURITY.md) | DEV-전단계 | path/pattern scanner+수동PII검토 | 기반 경계/로그/secret 검사; 운영보안 후속 |
 | R22 | 단순·저비용 | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-전단계 | 비용 분류/단일DB/no paidAI | 설계 완료 / 기능 NOT RUN |
@@ -97,7 +97,7 @@
 | D01-18 | 장애 | PG delay/stop-recover/rollback/auth fail/signals/stop error | test:failures |
 | D01-19 | 웹통합 | actual browser desktop+mobile / API실패 mock명시 | test:e2e 8 cases |
 | D01-20 | CI | 기존workflow유지+실제PG/frozen/lint/TS/tests/build/browser/artifact | Quality CI current SHA 확인 |
-| D01-21 | 병합정책 | CI/pkgs/DB/infra manual risk, Draft, 소유자승인대행0 | PR/Policy BLOCK expected |
+| D01-21 | 병합정책 | 모든 영역 독립 검증, 일반 PR, 기존 Draft Ready, 실제 suite 누락/실패 차단 | AUTO-01 live Actions/report |
 | D01-22 | Pi | 실물없음; Node/Pg ARM64manifest/nativeoptional 사전확인 | docs/ARM64; 실기기 NOT RUN |
 | D01-23 | 50SKU | 60 fixture 보존; page/ID/bigint; 실제CRUD엔진 후속 | 기존fixture tests+contract |
 | D01-24 | Dot/비용 | AI/유료backend/managedDB 의존0 | dependencies/source review |

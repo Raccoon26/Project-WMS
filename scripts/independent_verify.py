@@ -100,7 +100,7 @@ def execute(root, baseline):
         shutil.copyfile(source, root/'scripts'/source.name)
     run('python3', str(baseline/'scripts/run_policy_tests.py'))
     run('python3', str(baseline/'scripts/check_public_files.py'))
-    run('python3', str(baseline/'scripts/validate_docs.py'))
+    run('python3', '-c', "import sys; from pathlib import Path; sys.path.insert(0, sys.argv[1]); from validate_docs import validate; errors=validate(Path.cwd()); print('\\n'.join(errors) or 'PASS: trusted validator checked candidate docs'); raise SystemExit(bool(errors))", str(baseline/'scripts'))
     if (root/'package.json').exists():
         data = json.loads((baseline/'scripts/verification-baseline.json').read_text())
         for name, text in data.items():

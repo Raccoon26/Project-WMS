@@ -1,3 +1,6 @@
+> 최신 정책: AUTO-01 PR5/6이 아래의 초기 Draft/수동승인 규칙을 대체했다. 아래 초기 원격 결과는 이력으로 보존한다.
+> 현재 동작과 재검증 증거는 이 문서 마지막 AUTO-01 절을 따른다. 승인 label/comment 대행은 하지 않았다.
+
 # DEV-01 — 실행 가능한 개발 기반
 
 상태: **IMPLEMENTED / VERIFIED / MANUAL_MERGE_PENDING**, GitHub 반영·최종CI·수동병합은 별도 기록.
@@ -194,3 +197,15 @@ README의 pnpm dev:api/dev:worker/dev:web 실제 기동·HTTP준비를 별도로
 - 이후 watch 명령만 수정해 head e040b15로 push, 해당 [Quality38850798512](https://github.com/Raccoon26/Project-WMS/actions/runs/38850798512) 결과는 현재SHA로 별도 확인.
 - 기록용 마지막 커밋의 SHA는 자기참조로 다시 바뀌므로 PR본문/최종보고/GitHub check에서 정확한 최종HEAD를 확인한다.
 - 실제 main 병합/운영배포 없음. owner의 label/승인comment 대행0. 구현·검증 완료와 수동병합은 분리.
+
+## AUTO-01 동기화와 DEV01 재검증
+
+- 최초 정책 적용 PR5=`9bc5abc`, 실제 제어 코드 자동병합 PR6=`435e69d`. 기존 PR4 구현을 보존하고 두 main 변경을 정상 merge.
+- 2026-10-16 로컬 재실행: lint/typecheck/실제PG migration/unit34/integration4/fault14/build/browser8 전부 통과, fail0/skip0.
+  초기 DB 미기동 ECONNREFUSED integration4 실패를 발견해 DB 정상기동 후 전부 재검증했으며 실패를 숨기지 않았다.
+- 브라우저 15라우트/일본어/locale/모바일/오프라인/상태 오류, API/Worker 실제 프로세스 SIGTERM/SIGINT/재시작,
+  PG stop/start/데이터 보존/timeout/rollback/checksum 검사를 실제 수행했다. 물류 기능의 안전성 검증으로 표시하지 않는다.
+- 정책 문서·위험 대장·README·요구 추적의 오래된 수동 승인 규칙을 최신 정책으로 정리했다.
+- 독립 validator 문서 검사 대상이 baseline 자체가 되던 코드를 candidate root로 수정. 이전 main의 기존 회귀와 별도 정적 검증을 유지한다.
+- GitHub 2026-09-17 공식 공지에서 11월2일 공개repo 기본 pull_request_target 제한 시행을 확인. 해당 이벤트 의존 제거, unsafe checkout opt-out0.
+- 현재 원격 HEAD의 Quality→독립검증→자동 Ready→squash 결과는 실제 실행 후 GitHub 증거로 기록한다. 아직 미래 병합을 완료로 적지 않는다.
