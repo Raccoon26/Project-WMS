@@ -1,11 +1,12 @@
 name: WMS PR Policy
 on:
   pull_request_target:
-    types: [opened,reopened,synchronize,ready_for_review,converted_to_draft,labeled,unlabeled]
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft, labeled, unlabeled, edited]
     branches: [main]
 permissions:
   contents: read
   pull-requests: read
+  issues: read
 concurrency:
   group: wms-policy-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -17,23 +18,34 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
-      HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
-      HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
       BASE_REPO: ${{ github.repository }}
-      PR_TITLE: ${{ github.event.pull_request.title }}
-      IS_DRAFT: ${{ github.event.pull_request.draft }}
     steps:
-      - uses: actions/checkout@v4
+      # Only the trusted base commit. Never checkout/import/evaluate PR code here.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: main
+          ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
-      - run: |
-          set -euo pipefail
-          gh api "repos/$BASE_REPO/pulls/$PR_NUMBER/files?per_page=100" --paginate --jq '.[].filename' > "$RUNNER_TEMP/files.txt"
-          gh api "repos/$BASE_REPO/issues/$PR_NUMBER/labels" --jq '.[].name' > "$RUNNER_TEMP/labels.txt"
-      - shell: bash
+      - name: Fetch complete API metadata
+        shell: bash
         run: |
           set -euo pipefail
-          args=(--head "$HEAD_BRANCH" --title "$PR_TITLE" --changed-files "$RUNNER_TEMP/files.txt" --labels "$RUNNER_TEMP/labels.txt" --head-repo "$HEAD_REPO" --base-repo "$BASE_REPO")
-          if [[ "$IS_DRAFT" == true ]]; then args+=(--draft); fi
-          python3 scripts/pr_policy.py "${args[@]}"
+          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]
+          gh api "repos/$BASE_REPO/pulls/$PR_NUMBER" > "$RUNNER_TEMP/meta.json"
+          gh api "repos/$BASE_REPO/pulls/$PR_NUMBER/files?per_page=100" --paginate | python3 scripts/slurp_json.py > "$RUNNER_TEMP/files.json"
+          gh api "repos/$BASE_REPO/pulls/$PR_NUMBER/reviews?per_page=100" --paginate | python3 scripts/slurp_json.py > "$RUNNER_TEMP/reviews.json"
+          gh api "repos/$BASE_REPO/issues/$PR_NUMBER/comments?per_page=100" --paginate | python3 scripts/slurp_json.py > "$RUNNER_TEMP/comments.json"
+      - name: Verify policy snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          m=json.loads((Path(os.environ['RUNNER_TEMP'])/'meta.json').read_text())
+          if m['head']['sha'] != os.environ['EXPECTED_HEAD']:
+              raise SystemExit('Head changed; wait for the current event')
+          PY
+          python3 scripts/pr_policy.py --metadata "$RUNNER_TEMP/meta.json" --files "$RUNNER_TEMP/files.json" --reviews "$RUNNER_TEMP/reviews.json" --comments "$RUNNER_TEMP/comments.json" --repo "$BASE_REPO"
+          gh api "repos/$BASE_REPO/pulls/$PR_NUMBER" --jq .head.sha > "$RUNNER_TEMP/head-after"
+          [[ "$(cat "$RUNNER_TEMP/head-after")" == "$EXPECTED_HEAD" ]]

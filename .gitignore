@@ -12,3 +12,11 @@ coverage/
 __pycache__/
 *.py[cod]
 .DS_Store
+backups/
+*.dump
+*.backup
+*.sqlite
+*.db
+rclone.conf
+.secrets/
+.runtime/
