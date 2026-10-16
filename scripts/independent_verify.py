@@ -116,10 +116,35 @@ def auth_preflight(root, baseline):
     return errors
 
 
+def catalog_preflight(root, baseline):
+    """Additive test-only catalog registry; cannot overlay application code."""
+    errors = []
+    candidate = root/'scripts/verification-catalog.json'
+    trusted = baseline/'scripts/verification-catalog.json'
+    proposed = {}
+    if candidate.exists():
+        if candidate.stat().st_size > 2*1024*1024:
+            return ['Catalog test registry exceeds bounded size']
+        proposed = json.loads(candidate.read_text())
+        if not isinstance(proposed, dict):
+            return ['Catalog test registry must be an object']
+        for name, text in proposed.items():
+            if (not isinstance(text, str) or '..' in Path(name).parts
+                    or not (name.startswith('tests/') or name == 'scripts/catalog-fixture.ts')):
+                errors.append('Catalog baseline must contain test fixtures only: ' + name)
+    if trusted.exists():
+        for name, text in json.loads(trusted.read_text()).items():
+            if not (root/name).is_file():
+                errors.append('Established catalog test file removed: ' + name)
+            if text not in proposed.get(name, ''):
+                errors.append('Established catalog baseline removed/weakened: ' + name)
+    return errors
+
+
 def execute(root, baseline):
     def run(*args):
         subprocess.run(args, cwd=root, check=True)
-    errors = preflight(root, baseline) + auth_preflight(root, baseline)
+    errors = preflight(root, baseline) + auth_preflight(root, baseline) + catalog_preflight(root, baseline)
     if errors:
         raise ValueError('; '.join(errors))
     run('python3', str(baseline/'scripts/run_policy_tests.py'))
@@ -151,6 +176,12 @@ def execute(root, baseline):
                 target = root/name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text(text)
+        catalog_registry = baseline/'scripts/verification-catalog.json'
+        if catalog_registry.exists():
+            for name, text in json.loads(catalog_registry.read_text()).items():
+                target = root/name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(text)
         run('pnpm', 'install', '--frozen-lockfile')
         for name, scripts in data['package-scripts'].items():
             target = root/name
@@ -171,7 +202,7 @@ if __name__ == '__main__':
     parser.add_argument('--preflight-only', action='store_true')
     args = parser.parse_args()
     if args.preflight_only:
-        errors = preflight(args.root.resolve(), args.base.resolve()) + auth_preflight(args.root.resolve(), args.base.resolve())
+        errors = preflight(args.root.resolve(), args.base.resolve()) + auth_preflight(args.root.resolve(), args.base.resolve()) + catalog_preflight(args.root.resolve(), args.base.resolve())
         if errors: raise SystemExit('\n'.join(errors))
     else:
         execute(args.root.resolve(), args.base.resolve())

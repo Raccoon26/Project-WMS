@@ -181,9 +181,10 @@ export class AuthService {
     code: string,
   ) {
     const normalized = normalizeLogin(login);
-    const hash = await passwordHash(password);
+    // Validate the local enrollment factor at receipt, before the bounded Argon2 work.
     const step = totpStep(secret, code);
     if (step === null) throw new AuthError("UNAUTHORIZED", 401);
+    const hash = await passwordHash(password);
     const codes = recoveryCodes();
     const id = randomUUID();
     await this.tx(async (c) => {
@@ -314,7 +315,7 @@ export class AuthService {
   async grants(c: PoolClient, user: string): Promise<Grant[]> {
     return (
       await c.query(
-        `SELECT p.code AS permission,ur.scope,ur.policy_version AS "policyVersion" FROM user_roles ur JOIN roles r ON r.id=ur.role_id JOIN role_permissions rp ON rp.role_id=r.id JOIN permissions p ON p.code=rp.permission_code WHERE ur.user_id=$1 AND ur.revoked_at IS NULL AND r.active AND p.active AND ur.policy_version=r.policy_version`,
+        `SELECT p.code AS permission,CASE WHEN ur.scope='global' THEN 'global' ELSE ur.warehouse_id::text END AS scope,ur.policy_version AS "policyVersion" FROM user_roles ur JOIN roles r ON r.id=ur.role_id JOIN role_permissions rp ON rp.role_id=r.id JOIN permissions p ON p.code=rp.permission_code WHERE ur.user_id=$1 AND ur.revoked_at IS NULL AND r.active AND p.active AND ur.policy_version=r.policy_version`,
         [user],
       )
     ).rows;
@@ -549,7 +550,12 @@ export class AuthService {
           ),
         ).toISOString(),
         roles,
-        permissions: grants.map((g) => g.permission),
+        permissions: [
+          ...new Set(
+            grants.filter((g) => g.scope === "global").map((g) => g.permission),
+          ),
+        ],
+        grants,
       };
     });
   }
@@ -676,14 +682,14 @@ export class AuthService {
   async lastAdmin(c: PoolClient, user: string) {
     const isAdmin = (
       await c.query(
-        "SELECT 1 FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=$1 AND ur.revoked_at IS NULL AND r.code='Administrator'",
+        "SELECT 1 FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=$1 AND ur.revoked_at IS NULL AND ur.scope='global' AND r.code='Administrator'",
         [user],
       )
     ).rowCount;
     if (!isAdmin) return;
     const count = (
       await c.query(
-        "SELECT count(DISTINCT u.id) AS n FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE u.status='active' AND u.mfa_enabled AND ur.revoked_at IS NULL AND r.active AND ur.policy_version=r.policy_version AND r.policy_version=1 AND r.code='Administrator'",
+        "SELECT count(DISTINCT u.id) AS n FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE u.status='active' AND u.mfa_enabled AND ur.revoked_at IS NULL AND r.active AND ur.policy_version=r.policy_version AND r.policy_version=1 AND ur.scope='global' AND r.code='Administrator'",
       )
     ).rows[0].n;
     if (Number(count) <= 1) throw new AuthError("CONFLICT", 409);
@@ -780,6 +786,7 @@ export class AuthService {
     kind: "users" | "roles" | "audit",
     limit: number,
     cursor: string | undefined,
+    search?: string,
   ) {
     return this.tx(async (c) => {
       const s = await this.readSession(c, ctx);
@@ -795,11 +802,19 @@ export class AuthService {
       );
       const sql =
         kind === "users"
-          ? "SELECT id,login,display_name,locale,status,mfa_enabled,ARRAY(SELECT r.code FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=users.id AND ur.revoked_at IS NULL AND r.active) AS roles FROM users WHERE ($2::uuid IS NULL OR id>$2) ORDER BY id LIMIT $1"
+          ? "SELECT id,login,display_name,locale,status,mfa_enabled,ARRAY(SELECT r.code FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=users.id AND ur.revoked_at IS NULL AND ur.scope='global' AND r.active) AS roles FROM users WHERE ($2::uuid IS NULL OR id>$2) AND ($3::text IS NULL OR login ILIKE $3 OR display_name ILIKE $3) ORDER BY id LIMIT $1"
           : kind === "roles"
             ? "SELECT id,code,active,policy_version,ARRAY(SELECT rp.permission_code FROM role_permissions rp WHERE rp.role_id=roles.id) AS permissions FROM roles WHERE ($2::uuid IS NULL OR id>$2) ORDER BY id LIMIT $1"
             : "SELECT id,actor_id,action,target_id,result_code,request_id,occurred_at,sequence,previous_digest,event_digest FROM audit_events WHERE ($2::bigint IS NULL OR sequence<$2) ORDER BY sequence DESC LIMIT $1";
-      const items = (await c.query(sql, [limit + 1, cursor ?? null])).rows;
+      const items = (
+        await c.query(sql, [
+          limit + 1,
+          cursor ?? null,
+          ...(kind === "users"
+            ? [search ? "%" + search.replace(/[\\%_]/g, "\\$&") + "%" : null]
+            : []),
+        ])
+      ).rows;
       const more = items.length > limit;
       items.splice(limit);
       return {
@@ -915,12 +930,12 @@ export class AuthService {
         if (!codes.includes("Administrator")) await this.lastAdmin(c, id);
         const before = (
           await c.query(
-            "SELECT ur.role_id,r.code FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=$1 AND ur.revoked_at IS NULL",
+            "SELECT ur.role_id,r.code FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=$1 AND ur.revoked_at IS NULL AND ur.scope='global'",
             [id],
           )
         ).rows;
         await c.query(
-          "UPDATE user_roles SET revoked_at=now() WHERE user_id=$1 AND revoked_at IS NULL",
+          "UPDATE user_roles SET revoked_at=now() WHERE user_id=$1 AND revoked_at IS NULL AND scope='global'",
           [id],
         );
         for (const role of selected)

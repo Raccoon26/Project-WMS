@@ -80,6 +80,9 @@ importers:
       '@wms/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@wms/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@wms/runtime':
         specifier: workspace:*
         version: link:../../packages/runtime

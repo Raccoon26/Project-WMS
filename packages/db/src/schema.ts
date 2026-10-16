@@ -7,3 +7,5 @@ export const foundationMetadata = pgTable("foundation_metadata", {
     .defaultNow(),
 });
 export * from "./auth-schema.js";
+
+export * from "./catalog-schema.js";

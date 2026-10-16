@@ -1,9 +1,11 @@
+import { catalogRouteKeys } from "../catalog/route-contract.js";
 import { ConfigError } from "@wms/runtime";
 import type { Permission } from "./policy.js";
 declare module "fastify" {
   interface FastifyContextConfig {
     wmsPermission?: Permission;
     wmsRecentReauth?: boolean;
+    wmsCatalog?: boolean;
   }
 }
 import type { FastifyInstance, FastifyRequest } from "fastify";
@@ -42,6 +44,23 @@ export function authOptions(
     );
   return { pool, key: env.AUTH_ENCRYPTION_KEY!, origin: u.origin };
 }
+export function authContext(req: FastifyRequest): Context {
+  const raw = req.headers.cookie
+    ?.split(";")
+    .map((s) => s.trim())
+    .find((s) => s.startsWith("wms_session="))
+    ?.slice("wms_session=".length);
+  return {
+    ...(raw ? { token: raw } : {}),
+    ...(typeof req.headers["x-csrf-token"] === "string"
+      ? { csrf: req.headers["x-csrf-token"] }
+      : {}),
+    ...(req.headers.origin ? { origin: req.headers.origin } : {}),
+    ip: req.ip,
+    requestId: req.id,
+  };
+}
+
 export function registerAuth(
   app: FastifyInstance,
   options: AuthOptions | undefined,
@@ -50,22 +69,7 @@ export function registerAuth(
     ? new AuthService(options.pool, encryptionKey(options.key), options.origin)
     : undefined;
   const cookie = "wms_session";
-  function ctx(req: FastifyRequest): Context {
-    const raw = req.headers.cookie
-      ?.split(";")
-      .map((s) => s.trim())
-      .find((s) => s.startsWith(cookie + "="))
-      ?.slice(cookie.length + 1);
-    return {
-      ...(raw ? { token: raw } : {}),
-      ...(typeof req.headers["x-csrf-token"] === "string"
-        ? { csrf: req.headers["x-csrf-token"] }
-        : {}),
-      ...(req.headers.origin ? { origin: req.headers.origin } : {}),
-      ip: req.ip,
-      requestId: req.id,
-    };
-  }
+  const ctx = authContext;
   const registered = new Set([
     "GET /api/v1/auth/csrf",
     "GET /api/v1/auth/me",
@@ -104,6 +108,14 @@ export function registerAuth(
     if (registered.has(method + " " + matched)) {
       if (!service) throw new AuthError("SERVICE_UNAVAILABLE", 503);
       return; // Every existing auth handler performs its own transactional policy.
+    }
+    if (
+      req.routeOptions.config.wmsCatalog &&
+      catalogRouteKeys.has(method + " " + matched)
+    ) {
+      if (!service) throw new AuthError("SERVICE_UNAVAILABLE", 503);
+      await service.tx((c) => service.readSession(c, ctx(req)));
+      return; // Catalog re-evaluates permission and resolved scope inside its query/mutation transaction.
     }
     if (req.routeOptions.config.wmsPermission) {
       if (!service) throw new AuthError("SERVICE_UNAVAILABLE", 503);
@@ -243,12 +255,13 @@ export function registerAuth(
     ["roles", "roles"],
     ["audit-events", "audit"],
   ] as const)
-    app.get<{ Querystring: { limit?: string; cursor?: string } }>(
+    app.get<{ Querystring: { limit?: string; cursor?: string; q?: string } }>(
       `/api/v1/${path}`,
       {
         schema: {
           querystring: object(
             {
+              ...(kind === "users" ? { q: string(100) } : {}),
               limit: { type: "string", pattern: "^([1-9]|[1-9][0-9]|100)$" },
               cursor:
                 kind === "audit"
@@ -265,6 +278,7 @@ export function registerAuth(
           kind,
           Number(req.query.limit ?? 25),
           req.query.cursor,
+          req.query.q,
         ),
     );
   app.post<{

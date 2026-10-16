@@ -111,3 +111,53 @@ pnpm install --frozen-lockfile --store-dir /workspace/.cache/pnpm-store
 `auth-test-seed.ts --test` 같은 운영 명령은 없으며 seed는 NODE_ENV=test+strict test URL+test schema만 허용한다.
 실제 CLI 검사는 Python3 POSIX PTY로 입력·출력 비밀 노출까지 확인한다. 전체 suite는 Linux/WSL2 권장.
 테스트 Secret은 .runtime에서만 유지, CI는 JSON aggregate 결과만 artifact로 보존한다.
+
+## DEV03 Windows PowerShell 개발 순서
+
+Windows 실기기 실행은 **NOT RUN**이다. 검증한 것은 Linux x64 Docker/실제PG17/Chromium desktop·mobile emulation이다.
+Docker Desktop을 Linux containers/WSL2 backend로 시작하고 저장소 root에서 수행한다.
+
+```powershell
+node --version # v24.19.0
+pnpm --version # 10.34.7
+corepack enable
+# Corepack이 없다면 공식 Node/Corepack 설치 절차로 준비한다. 버전 오류를 ignore하지 않는다.
+pnpm install --frozen-lockfile
+# 신규 설치만: .env가 이미 있으면 복사하거나 dev:setup으로 덮어쓰지 않는다.
+if (!(Test-Path .env)) { Copy-Item .env.example .env; pnpm dev:setup }
+docker version
+pnpm db:up
+pnpm db:migrate
+# 인증 키/Origin이 모두 없는 신규 설정만. 기존 키는 보존한다.
+pnpm auth:setup
+pnpm auth:bootstrap
+```
+
+이미 DEV02를 사용 중이면 기존 .env/암호화 키/관리자를 보존하고 `pnpm install --frozen-lockfile`,
+`pnpm db:up`, `pnpm db:migrate`만 적용한다. Bootstrap/auth:setup을 반복할 필요가 없다.
+이번0002–0004 migration은 기존 계정/세션/권한·foundation 행을 보존하고 새 Catalog 권한을 추가한다.
+pg_trgm은 표준 PostgreSQL 이미지에 포함된 extension이며 migration 계정이 설치 권한을 가져야 한다.
+운영 app role에 extension 권한을 주는 정책은 아니며 운영 역할분리는 DEV12에서 검증한다.
+
+각각 별도 terminal에서 `pnpm dev:api`, `pnpm dev:worker`, `pnpm dev:web` 실행 후
+브라우저127.0.0.1:5173에서 ID/비밀번호/TOTP로 로그인한다. 사용자 자신의 Bootstrap 비밀번호/복구 코드는 Git에 올리지 않는다.
+상품→신규 등록→일본어 이름 입력→저장→상품 행의 SKU→신규 등록→고유 코드/선택 barcode→저장.
+창고→신규 등록→code/name/type 입력→저장→해당 창고의 위치에서 Zone/Shelf metadata를 추가한다.
+외부 연동은 비밀 없는 계정 참조만 등록하고 SKU 행의 외부코드에서 로컬 mapping을 관리한다.
+이 화면은 Provider 연결 성공/실물 재고 수량/출고 처리를 뜻하지 않는다.
+창고별 권한은 설정→현재 사용자와 다른 대상 사용자/실제 창고/역할 선택→최근 재인증 후 저장한다.
+Global 역할과 Warehouse 역할은 서로 다른 grant이며 scope만으로 사용자·상품 전역 수정 권한이 생기지 않는다.
+
+오류 해결:
+
+- Node/pnpm Version Mismatch: 공식 관리 도구에서 정확한24.19.0/10.34.7을 선택하고 새 terminal에서 재확인한다. engine 검사를 끄지 않는다.
+- Docker Engine 연결 실패: Docker Desktop/WSL2/Linux containers 상태와 `docker version`, `docker compose version`을 확인한다.
+- DB Connection Refused: `pnpm db:up`, `docker compose --env-file .env -f infra/compose/compose.yaml ps`, 해당 container logs 확인. 개발5432/테스트5433을 혼동하지 않는다.
+- Migration/hash/order 실패: 적용 릴리스·journal·파일 hash·DB history를 읽기 전용으로 대조한다. history 수정이나 volume 삭제로 강제 통과하지 않는다.
+- .env 오류: 기존 secret/DB 비밀번호/Origin을 안전한 원본에서 복구한다. 출력/issue 첨부 금지. 기존 volume 암호와 .env가 일치해야 한다.
+- 최초 관리자 없음: 로컬 interactive `pnpm auth:bootstrap`; 공개 기본 계정 없음. 기존 관리자 존재 시 중복 Bootstrap은 거부된다.
+- Session/CSRF403: 동일 host/port Origin, 로그인/만료, 새 CSRF, 권한/최근 재인증을 확인한다. 실패한 변경을 자동 반복하지 않는다.
+- 저장409: duplicate code/barcode/mapping 또는 version/key payload 충돌. 입력은 유지되므로 새 서버 상태와 비교해 명시적으로 다시 편집한다.
+
+일반적인 해결책으로 `down -v`, DB reset/drop, migration history 강제 수정은 사용하지 않는다.
+앱 Ctrl+C 정상 종료 후 `pnpm db:down`은 volume을 보존한다. POSIX PTY 통합 테스트는 WSL2/Linux에서 실행한다.

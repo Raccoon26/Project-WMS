@@ -13,6 +13,7 @@
     "@wms/runtime": "workspace:*",
     "fastify": "5.12.7",
     "otpauth": "9.5.2",
-    "pg": "8.23.1"
+    "pg": "8.23.1",
+    "@wms/domain": "workspace:*"
   }
 }

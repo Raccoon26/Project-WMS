@@ -723,7 +723,11 @@ export function UsersPanel({ locale }: { locale: Locale }) {
       </form>
       {items.map((u) => (
         <article key={u.id + u.roles.join()}>
-          <h3>{u.display_name}</h3>
+          <h3 title={u.display_name} aria-label={u.display_name}>
+            {Array.from(u.display_name).length > 24
+              ? Array.from(u.display_name).slice(0, 24).join("") + "…"
+              : u.display_name}
+          </h3>
           <p>
             {u.login} · {u.status} · {u.roles.join(", ")}
           </p>

@@ -103,3 +103,18 @@ DB를 필요로 하는 DEV02 단위 목록의 계정·epoch·감사 항목은 Mo
 DEV02 최종 보강은 기존 main-owned suite를 변경하지 않는 별도 파일(auth-feedback/auth-ip/auth-lifecycle)로 확장했다.
 공유 E2E IP에는 실제 throttling이 적용된다. 후속 DEV에서 더 많은 독립 로그인 사례를 추가할 때는 합성 schema/
 테스트 간 rate 상태를 명시적으로 격리한다. 제한 검증 시나리오 도중 bucket 초기화나 운영 임계값 완화로 통과시키지 않는다.
+
+## DEV03 Catalog 실제 검증 계약
+
+`catalog: unique sku` / `catalog: warehouse scope` / `catalog: mapping integrity` /
+`catalog: optimistic concurrency` / `catalog: transaction rollback` / `catalog: cursor pagination`은 실제 runner case다.
+재고 profile을 만족했다고 가장하지 않으며 원장/금전/메일 suite는 후속 DEV가 구현한다.
+기존 DEV01/02 assertion/snapshot은 보존한다. 새 unit/catalog, integration/catalog/catalog-upgrade,
+fault/catalog/catalog-process, e2e/catalog와 helper를 추가한다.
+실제PG upgrade/세션·역할 보존/동시코드·위치·key/CAS/FK/감사rollback/60·120·1000명시적 test-only seed,
+Desktop/Mobile 실제 API/PG login+CRUD+scope+권한회수+networkloss+offline을 실행한다.
+단위 명세의 DB 무결성 항목은 Mock 대신 실제 PG에서 검증한다. S13은 이제 실제창고 API로 확장, F17은 로컬mapping만 실증한다.
+E2E의 별도 Catalog 시나리오 시작 때 공유 synthetic rate bucket만 격리한다. 실제 rate-limit 테스트 도중 초기화/threshold 완화는 없다.
+합성 SKU 규모별 query plan/평균·p95/샘플·동시성/RSS는 test-results/catalog-*.json으로 남긴다.
+API inject 측정의 RSS는 Vitest와 API가 공유한 프로세스이며 독립 서버/Pi 실측과 구분한다.
+실제 결과·C01–C35·보안 Self Review·미실행은 [DEV03 보고](docs/dev-reports/DEV-03.md).

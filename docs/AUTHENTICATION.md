@@ -147,3 +147,8 @@ React escaping을 유지하고 raw HTML/사용자 URL scheme 삽입을 사용하
 
 최종 보강: 로그인429는 세 언어로 재시도 안내, 제한 MFA5분 UI 만료 표시/인증 단계별 입력값 초기화를 제공한다.
 기존 테스트 snapshot을 보존하고 추가 fixture만 더했다. MFA 교체/복구코드 회전/disable/전체 세션 회수의 정상 경로도 realPG 검증했다.
+
+## DEV03 현재 구현
+
+DEV02 당시 Global-only 제한은 DEV03 forward migration으로 확장했다. 기존 Global grant/세션/MFA는 보존하며 scope=warehouse는 실제 warehouse_id FK가 필요하다. auth/me permissions는 Global만, grants는 scope별 현재 Permission이다. 기존 Global 역할 교체 API는 warehouse grant를 지우거나 Global로 승격하지 않는다. 추가6 Permission·Global/공유 read/창고별 정책은 CATALOG가 기준이다.
+[Catalog 상세 계약](CATALOG.md). 실제 결과는 [DEV03 보고](dev-reports/DEV-03.md)에서 확인한다.

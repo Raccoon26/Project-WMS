@@ -42,3 +42,9 @@ DEV02 실제 기반 병합: [PR10](https://github.com/Raccoon26/Project-WMS/pull
 `ef3566c9da0e284d9e95f786c36e922212c70720`, Quality/Independent/Guarded 성공, 원격211 passed/0 fail/0 skip.
 최종 보강은 이전 main의 인증 snapshot을 보존한 추가 테스트와 제한·만료 안내이며 로컬219개 통과.
 정확한 최신 원격 결과는 [DEV02 보고](docs/dev-reports/DEV-02.md)와 연결된 마무리 PR에서 확인한다.
+
+## DEV03 현재 작업
+
+시작 기준선 ad3aa1bb08aa3a8391179ba66c2207d84280c3a4, DEV02 PR11 병합을 원격 확인했다.
+상품/SKU/매핑/창고/위치/실제 Warehouse Scope 구현·로컬 검증 완료(314 passed/0 failed/0 skipped). [계약](docs/CATALOG.md)과 [보고](docs/dev-reports/DEV-03.md)를 따른다.
+원격 CI·병합은 보고에 연결된 DEV03 PR의 현재 HEAD/실제 merged 결과로 별도 판정한다. 원장/외부 실행/운영 배포 없음.
