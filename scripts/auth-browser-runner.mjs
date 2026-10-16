@@ -36,7 +36,7 @@ try {
     env.DB_SCHEMA = state.schema;
     writeFileSync(
       ".runtime/auth-playwright.config.ts",
-      `import original from '../playwright.config';\nexport default {...original,testDir:'../tests/e2e',webServer: original.webServer.map((server,index)=> index === 0 ? {...server,env:{...server.env,AUTH_ENCRYPTION_KEY:process.env.AUTH_ENCRYPTION_KEY!,AUTH_ORIGIN:process.env.AUTH_ORIGIN!,DB_SCHEMA:process.env.DB_SCHEMA!}}:server)};\n`,
+      `import original from '../playwright.config';\nimport {resolve} from 'node:path';\nexport default {...original,testDir:resolve('tests/e2e'),outputDir:resolve('test-results/browser'),reporter:[['list'],['json',{outputFile:resolve('test-results/e2e.json')}]],webServer: original.webServer.map((server,index)=> index === 0 ? {...server,env:{...server.env,AUTH_ENCRYPTION_KEY:process.env.AUTH_ENCRYPTION_KEY!,AUTH_ORIGIN:process.env.AUTH_ORIGIN!,DB_SCHEMA:process.env.DB_SCHEMA!}}:server)};\n`,
     );
   }
   run([
