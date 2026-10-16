@@ -1,9 +1,12 @@
+import { registerAuth } from "./auth/routes.js";
+import type { AuthOptions } from "./auth/routes.js";
+import { AuthError } from "./auth/service.js";
 import Fastify from "fastify";
 import { apiError, utcNow } from "@wms/contracts";
 import type { DatabaseProbe } from "@wms/contracts";
 import { requestId } from "@wms/runtime";
 import type { Logger } from "@wms/runtime";
-export function buildApi(db: DatabaseProbe, log: Logger) {
+export function buildApi(db: DatabaseProbe, log: Logger, auth?: AuthOptions) {
   const app = Fastify({
     ajv: { customOptions: { removeAdditional: false, coerceTypes: false } },
     logger: false,
@@ -32,6 +35,39 @@ export function buildApi(db: DatabaseProbe, log: Logger) {
     });
   });
   app.setErrorHandler((err, req, reply) => {
+    if (
+      err instanceof Error &&
+      ["INVALID_INPUT", "RATE_LIMITED"].includes(err.message)
+    )
+      return void reply
+        .code(err.message === "INVALID_INPUT" ? 400 : 429)
+        .send(
+          apiError(err.message as "INVALID_INPUT" | "RATE_LIMITED", req.id),
+        );
+    if (err instanceof AuthError) {
+      log.error("authentication_rejected", {
+        requestId: req.id,
+        code: err.code,
+      });
+      return void reply.code(err.status).send(apiError(err.code, req.id));
+    }
+    if (
+      auth &&
+      typeof err === "object" &&
+      err !== null &&
+      "code" in err &&
+      /^(08|22|23|25|40|53|57|58|ECONN|ETIMEDOUT)/.test(String(err.code))
+    )
+      return void reply.code(503).send(apiError("SERVICE_UNAVAILABLE", req.id));
+    if (
+      auth &&
+      req.url.startsWith("/api/v1/auth/") &&
+      !(err as { validation?: unknown }).validation &&
+      ![400, 413, 415].includes(
+        (err as { statusCode?: number }).statusCode ?? 0,
+      )
+    )
+      return void reply.code(503).send(apiError("SERVICE_UNAVAILABLE", req.id));
     const failure = err as { validation?: unknown; statusCode?: number };
     const invalid =
       !!failure.validation ||
@@ -80,5 +116,6 @@ export function buildApi(db: DatabaseProbe, log: Logger) {
     version: "0.1.0",
     apiVersion: "v1",
   }));
+  registerAuth(app, auth);
   return app;
 }

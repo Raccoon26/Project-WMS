@@ -19,3 +19,7 @@
 
 [모델](../DATA_MODEL.md), [장애30개](../TEST_PLAN.md), [출시](../RELEASE_CHECKLIST.md),
 [GitHub](GITHUB_WORKFLOW.md)와 연결. 구현전 명세를 실제 불변식 테스트 통과로 표시하지 않는다.
+
+DEV02는 공통 Permission/최근 MFA 재인증/권한 회수/감사 rollback을 구현한다.
+이것은 DEV07 업무 승인 nonce/hash/Telegram 또는 DEV04 출고 불변식의 구현 완료를 의미하지 않는다.
+현재 실제 auth safety profile은 세션/권한 상승/CSRF 실제 사례를 요구하며 운영배포 승인 정책은 유지한다.

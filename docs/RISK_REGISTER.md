@@ -11,7 +11,7 @@
 | K07 | 백업손상/키분실/Drive 인증만료 | Critical | DEV13 키 분리2매체·old backup·월복원; 실제 자격증명 아직 불필요 |
 | K08 | heartbeat 정상인데 업무 실패 | High | DEV13 due-job/실패율/백업 age 감시+독립 외부검증 |
 | K09 | API/계약 미권한 및 예상밖 요금 | High | DEV08/09 공식 계정확인/CSV 대안/비용승인; 공개문서 접근 일부403 |
-| K10 | 자동병합 우회·spoofed green/renamed 위험파일 | Critical | DEV00 trusted base SHA·rename 양쪽·count·현재SHA checks·manual default |
+| K10 | 자동병합 우회·spoofed green/renamed 위험파일 | Critical | DEV00 trusted base SHA·rename 양쪽·count·현재SHA checks·독립 검증 필수 |
 | K11 | 보호 미사용 직접main bypass 위험(native auto_merge 현재true) | High | AUTO-01의 이전 main 독립 verifier+강화검사 자동병합 실증. 보호 없는 직접main bypass 잔존/보호권장 |
 | K12 | 50SKU만 테스트하고 이력 확장 실패 | Medium | DEV04/11/14 100만이력/cursor/EXPLAIN/RSS, SKU120 generator |
 | K13 | 금액 float/FX/세금/현금 부족 | Critical | DEV10 exact Decimal/통화별 최소단위/승인·예산 |
@@ -26,3 +26,7 @@
 | K19 | 자기 수정 CI가 검사를 약화 | Critical | 이전 main verifier/기존 baseline assertions 재실행, 권한·명령·Secret 검증, read-only 실행/privileged merge 분리. 완전 보안 보장 아님 |
 | K20 | 최종 base 조회 직후 외부 writer 경쟁 | High | controller 직렬화·최종 head/base 재조회·HEAD precondition. REST는 base CAS 없음; 직접 main push/동시 수동 병합 금지 |
 | K21 | 미구현 업무 검사를 성공으로 오인 | High | main-owned case catalog와 실제 no-skip 실행 증거; 미구현은 필수 검사 누락으로 차단 |
+
+| K22 | MFA/복구코드 동시사용·로그아웃 지연 응답 | Critical | DEV02 PG row lock/일회소비/session rotation/epoch/브라우저 generation 회귀; 실제 테스트는 DEV02 report |
+| K23 | 암호화 키 분실/운영 DB 슈퍼유저 감사변조 | High | 개발 auth:setup 별도 설정, 운영키 escrow/최소권한은 DEV12; off-device anchor/7년 보존/실제복원은 DEV13, 현재 운영준비 아님 |
+| K24 | 구버전 익명 기준선이 인증 보호와 충돌 | High | main-owned successor PR9, 원래 assertion 유지+실제로그인, 새 auth baseline은 tests/합성seed만 허용 |

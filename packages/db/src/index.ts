@@ -126,3 +126,4 @@ export function createDatabase(
   } satisfies DatabaseProbe & Record<string, unknown>;
 }
 export type Database = ReturnType<typeof createDatabase>;
+export * from "./auth-schema.js";

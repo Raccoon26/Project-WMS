@@ -47,7 +47,7 @@ received<=shipped(초과는 격리), 출고처+transit+목적지=기초+외부�
 | F21 | 예약 재고 부족 | 한 경쟁자만 할당 또는 합≤good; 음수가용0 | 동일 SKU 다connection lock 경쟁 | DEV-04 | NOT RUN |
 | F22 | 자동작업 도중 업데이트 | claim중지/drain; 불명 격리; 기존 lease 새실행 금지 | worker SIGTERM/lease expiry/fencing | DEV-12 | NOT RUN |
 | F23 | 복원 후 오래된 작업 재실행 | epoch 변경/queue quarantine·외부대조 전 발송0 | 이전backup restore+이미 sent remote fake | DEV-13 | NOT RUN |
-| F24 | 무권한 출고 승인 | 403/audit, 승인·원장·전송0 | operator/viewer/회수된admin/잘못된chat | DEV-02,07 | NOT RUN |
+| F24 | 무권한 출고 승인 | 403/audit, 승인·원장·전송0 | operator/viewer/회수된admin/잘못된chat | DEV-02,07 | 공통 권한401/403·감사 검증; 실제 출고 승인 NOT RUN(DEV07) |
 | F25 | 백업 손상 | 검증/복원 실패, 이전정상 보존, 서비스 재개금지 | cipher bit flip·누락파일/hash 변조 | DEV-13 | NOT RUN |
 | F26 | Drive 인증 만료 | upload 실패/긴급 알림·last_success 유지 | mock401/quota, 이전backup 존재 검사 | DEV-13 | NOT RUN |
 | F27 | 정상 heartbeat 성공·업무 실패 | 업무지연/실패율 별도 alert; 전체green 금지 | liveness200+stuck due job/backup age 초과 | DEV-13 | NOT RUN |
@@ -88,3 +88,14 @@ main-owned verification-baseline.json은 DEV01 테스트·runner·config를 데�
 후속 PR4를 독립 검증할 수 있게 한다. 이는 앱이나 업무 테스트 실행 완료를 뜻하지 않는다.
 기존 assertion 삭제/runner 우회/권한 상승/Secret/HEAD·base 경합/403/충돌/fork를 음성 검증한다.
 workflow_run 3단계 CI→읽기전용 독립검증→trusted merge. 실제 live 증거는 AUTO-01 보고에 별도 기록한다.
+
+## DEV02 실제 보안 검증
+
+Unit: 해시/ID 정규화/토큰/암호화/TOTP 시간창/Permission/scope/reauth 경계/언어·오류 계약.
+Integration: 실제PG 제약·세션·MFA/복구코드 경쟁·bootstrap 경쟁·동시rate·권한회수 경쟁·감사 rollback/chain·DEV01 forward upgrade·CLI PTY.
+Failure: S01–S30 중 API/정책/세션/권한/CSRF/rate/감사 실패 + 실제API 프로세스 재시작/SIGTERM/SIGINT.
+Browser: 실제PG/실제password/MFA, Desktop/Mobile 기존15route+login/enrollment/recovery/reauth/user role/言語/오프라인/다중탭/지연응답.
+외부 UI 응답을 가짜 인증 성공으로 바꾸지 않는다. 지연 me 응답 테스트만 실제 실제 fetch Response 전달을 지연시켜 로그아웃 경합을 검증한다.
+DB를 필요로 하는 DEV02 단위 목록의 계정·epoch·감사 항목은 Mock 대신 실제PG integration에서 추가 검증한다.
+전체 S01–S30 mapping, 실제 runner 개수/실패 수정/원격 실행은 [DEV02 보고](docs/dev-reports/DEV-02.md).
+기존 물류 F24의 공통 기반 검증을 실제 출고 승인 엔진/Telegram 업무 검증으로 표시하지 않는다.

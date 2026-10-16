@@ -1,6 +1,14 @@
 import type { UtcTimestamp } from "@wms/domain";
 export type ErrorCode =
-  "NOT_FOUND" | "INVALID_INPUT" | "INTERNAL_ERROR" | "SERVICE_UNAVAILABLE";
+  | "NOT_FOUND"
+  | "INVALID_INPUT"
+  | "INTERNAL_ERROR"
+  | "SERVICE_UNAVAILABLE"
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "CONFLICT"
+  | "RATE_LIMITED"
+  | "REAUTH_REQUIRED";
 export interface ApiError {
   code: ErrorCode;
   messageKey: string;
@@ -9,6 +17,11 @@ export interface ApiError {
   details: null;
 }
 const messageKeys: Record<ErrorCode, string> = {
+  UNAUTHORIZED: "auth.unauthorized",
+  FORBIDDEN: "auth.forbidden",
+  CONFLICT: "auth.conflict",
+  RATE_LIMITED: "auth.rateLimited",
+  REAUTH_REQUIRED: "auth.reauthRequired",
   NOT_FOUND: "errors.notFound",
   INVALID_INPUT: "errors.invalidInput",
   INTERNAL_ERROR: "errors.internal",
@@ -51,4 +64,27 @@ export function utcNow(): UtcTimestamp {
 export interface DatabaseProbe {
   check(): Promise<boolean>;
   close(): Promise<void>;
+}
+
+// Browser DTO contains identity and current grants, never an opaque token or credential.
+export interface AuthenticatedIdentity {
+  id: string;
+  login: string;
+  displayName: string;
+  locale: string;
+  mfaEnabled: boolean;
+  expiresAt: string;
+  roles: string[];
+  permissions: string[];
+}
+// Future OIDC adapters may prove a subject, but cannot assign permissions or sessions.
+export interface VerifiedIdentity {
+  issuer: string;
+  subject: string;
+  verifiedAt: string;
+  methods: readonly string[];
+}
+export interface IdentityProvider {
+  readonly kind: "local" | "oidc";
+  verify(assertion: unknown): Promise<VerifiedIdentity | null>;
 }

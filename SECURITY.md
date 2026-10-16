@@ -1,6 +1,6 @@
 # 보안 기준 / 공개 저장소
 
-현재 인증 구현 없음(DEV02). 운영 데이터/secret/PII/실제 구매·출고·공급처 계약/DB dump/개인키는 커밋 금지.
+DEV02 인증 구현 계약은 [AUTHENTICATION](docs/AUTHENTICATION.md). 운영 준비 완료와 구분한다. 운영 데이터/secret/PII/실제 구매·출고·공급처 계약/DB dump/개인키는 커밋 금지.
 `.env.example`은 이름/비밀 아닌 기본값만. secret은 운영 권한 제한 파일/vault에 별도 주입, 로그 마스킹,
 CI는 sandbox/mock만 사용. 공개 Git 이력에 노출되면 즉시 폐기·회전 후 이력 대응; 삭제 커밋만으로 회복 아님.
 
@@ -32,9 +32,16 @@ DB 복제만으로 변조 불가 증거가 되지 않으므로 감사 digest+암
 보안 보고는 GitHub private vulnerability reporting 사용 가능 여부 확인 후 이용; 공개 issue에 secret/PII 첨부 금지.
 
 ## DEV01 실행 기반의 실제 경계
-production NODE_ENV 및 non-loopback bind를 차단, health/version GET만 제공; 실제 무인증 업무쓰기 없음.
+DEV01 시점: production NODE_ENV 및 non-loopback bind를 차단, health/version GET만 제공; 실제 무인증 업무쓰기 없음.
 DB credentials는 root.env(ignored), 웹 VITE 변수로 전달하지 않음. 테스트 URL/사용자/DB/schema/container guard.
 API/worker 로그는 필드 allowlist로 raw URL/header/cookie/body/error/DB URL을 직렬화하지 않는다.
-SW는 build-static allowlist만, API/no-store 및 write queue 없음. DEV02 auth/MFA/RBAC/CSRF와 운영 ingress는 아직 미구현.
+SW는 build-static allowlist만, API/no-store 및 write queue 없음. 인증/MFA/RBAC/CSRF는 DEV02에 구현; 운영 ingress는 DEV12 예정.
 개발 app DB role은 Compose 개발 전용 superuser이므로 운영 최소권한 구성으로 오인하지 않는다. DEV12 역할분리 필요.
 Drizzle-kit transitive esbuild moderate는0.25.12 override 후 audit/CLI 재검증. 자세한 경계는 [개발 계약](docs/DEVELOPMENT.md).
+
+## DEV02 현재 검증 범위
+
+Argon2id/TOTP 암호화·replay/복구코드 일회 사용/세션·epoch/CSRF/권한 회수/감사 rollback을 실제PG에서 검증한다.
+로그아웃·offline·오래된 me 응답은 UI identity를 지우며 PWA는 민감 API를 캐시하지 않는다.
+정확한 파라미터·제한·공개 경로·DB 역할 한계·실제 결과는 [인증 계약](docs/AUTHENTICATION.md)과 [보고](docs/dev-reports/DEV-02.md).
+실제 HTTPS/DB role 분리/키 escrow/백업 복원/7년 보존/Pi 검증은 아직 NOT RUN, DEV12/13에서 완료한다.

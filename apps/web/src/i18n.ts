@@ -42,10 +42,10 @@ const ja = {
   refresh: "再確認",
   foundation: "開発基盤",
   foundationNote:
-    "Web・API・DB・Worker の接続基盤。認証と業務機能は今後の開発対象です。",
+    "Web・API・DB・Worker と認証の基盤。物流業務機能は今後の開発対象です。",
   next: "次の開発",
-  nextTitle: "DEV-02 · 認証と権限",
-  nextNote: "業務 API を追加する前に、安全な認証・アクセス制御を構築します。",
+  nextTitle: "DEV-03 · 商品・SKU・倉庫",
+  nextNote: "共通の認証・権限基盤を使い、商品・SKU・倉庫管理を実装します。",
   planned: "未実装",
   plannedNote:
     "この画面の業務機能は今後の DEV で実装します。実際の在庫・販売・出庫データは表示していません。",

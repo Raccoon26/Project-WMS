@@ -2,7 +2,7 @@
 
 그룹ID는 [요구](../REQUIREMENTS.md), 사용자 지시 §0–29는 U00–U29로 보존.
 각 DEV report는 R-ID+테스트ID+실제 실행SHA/결과 링크를 추가; 문서 반영과 기능 검증을 구분.
-현재 모든 실제 WMS 기능 NOT RUN. DEV00 도구 실행 증거는 [보고](dev-reports/DEV-00.md).
+DEV01 실행 기반 및 DEV02 인증 기반은 실제 구현·검증하며 물류 업무 기능은 여전히 NOT RUN. DEV00 도구 실행 증거는 [보고](dev-reports/DEV-00.md).
 
 | ID | 요구 그룹 | 구현 기준 문서 | 담당 | 검증 계약 | 상태 |
 |---|---|---|---|---|---|
@@ -18,7 +18,7 @@
 | R10 | Telegram | [SECURITY.md](../SECURITY.md) | DEV-07 | F05/06/24 | 설계 완료 / 기능 NOT RUN |
 | R11 | 자동화/worker | [ARCHITECTURE.md](../ARCHITECTURE.md) | DEV-01,04,06,13 | F02–08/22/23/27 | Worker 기반 구현; scheduler/outbox 후속 |
 | R12 | 웹/모바일/PWA/i18n | [ARCHITECTURE.md](../ARCHITECTURE.md) | DEV-01–14 | 15화면/오프라인/중복/접근성 | 웹/PWA/i18n 기반 구현; 실제업무 후속 |
-| R13 | 보안 | [SECURITY.md](../SECURITY.md) | DEV-02 | 인증/역할/CSRF/XSS/MFA/세션 | 설계 완료 / 기능 NOT RUN |
+| R13 | 보안 | [SECURITY.md](../SECURITY.md) | DEV-02 | 인증/역할/CSRF/XSS/MFA/세션 | DEV02 실제PG·Browser 검증; 운영 HTTPS 후속 |
 | R14 | Pi 운영 | [DEPLOYMENT.md](../DEPLOYMENT.md) | DEV-12 | F09–12/22 ARM64/실장비 | 설계 완료 / 기능 NOT RUN |
 | R15 | 백업 | [BACKUP_RECOVERY.md](../BACKUP_RECOVERY.md) | DEV-13 | F23/25/26 실제복원 | 설계 완료 / 기능 NOT RUN |
 | R16 | 외부감시 | [DEPLOYMENT.md](../DEPLOYMENT.md) | DEV-13 | F27 업무별 health | 설계 완료 / 기능 NOT RUN |
@@ -29,7 +29,7 @@
 | R21 | public 보호 | [SECURITY.md](../SECURITY.md) | DEV-전단계 | path/pattern scanner+수동PII검토 | 기반 경계/로그/secret 검사; 운영보안 후속 |
 | R22 | 단순·저비용 | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-전단계 | 비용 분류/단일DB/no paidAI | 설계 완료 / 기능 NOT RUN |
 | R23 | 출처/신뢰 | [OPERATIONS.md](../OPERATIONS.md) | DEV-04,08–10 | freshness/snapshot/CSV evidence | 설계 완료 / 기능 NOT RUN |
-| R24 | 승인정책 | [OPERATIONS.md](../OPERATIONS.md) | DEV-02,07,10 | 한도/위험/version/일회 | 설계 완료 / 기능 NOT RUN |
+| R24 | 승인정책 | [OPERATIONS.md](../OPERATIONS.md) | DEV-02,07,10 | 한도/위험/version/일회 | DEV02 최근 재인증·권한 기반; 실제 업무 승인 DEV07/10 |
 | R25 | 모델/단계 | [DEV_PROGRESS.md](../DEV_PROGRESS.md) | DEV-전단계 | Sol Medium/Astra FINAL/AI01 분리 | 설계 완료 / 기능 NOT RUN |
 
 ## 사용자 지시 전체 섹션 대조
@@ -113,3 +113,43 @@
 이 표는 구현 연결표이며 결과 자체는 [DEV01 보고](dev-reports/DEV-01.md)의 실제 실행과 현재SHA CI가 기준이다. 물류/원장/운영연동은 NOT RUN 유지.
 
 AUTO-01 최신 지시 §0–16: 수동 승인 제거/일반 PR/Ready·metadata 분리/영역별 실제 suite/main-owned 독립 검증/최초 전환/PR4 보존/이벤트 호환성/운영 배포 분리를 [실행 대장](dev-reports/GITHUB-AUTOMATION-01.md)으로 추적한다.
+
+## DEV02 지시서 §0–30 대조
+
+| ID | 범위 | 구현·증거 / 후속 경계 |
+|---|---|---|
+| D02-00 | 최신상태/문서 | main86d8ea5 확인, DEV02 새 branch, 선행 baseline PR9 자동병합; 문서·실구조 감사 |
+| D02-01 | 통합 목표 | AuthService/Policy/UI/PG 통합; 운영 물류 없음 |
+| D02-02 | 선택/스택 | Argon2id/TOTP/local sessions, ADR-DEV02-01, npm metadata/audit, 선택OIDC port |
+| D02-03 | 스키마 | forward0001/Drizzle snapshot,11테이블+기존 foundation, realPG lock/hash/rollback |
+| D02-04 | Bootstrap | local TTY 숨김입력/실제TOTP/경쟁1명/중복차단, 개발 credential 복구 |
+| D02-05 | 비밀번호 | 14자/Argon2id19MiB t3 p1/bounded2/dummy hash, 실제 검증 |
+| D02-06 | session | 서버hash/cookie/30분·12시간/epoch/rotation/실제프로세스재시작 |
+| D02-07 | MFA | 등록·교체·일회복구/replay경쟁, 미완료세션5분/관리차단 |
+| D02-08 | RBAC | 5역할/17permission/현재 grant 평가/self상승거부/lastadmin; 창고 scope는 DEV03 FK 전까지 거부 |
+| D02-09 | API | AUTHENTICATION API표, schema/401·403·429·503/no-store/기본deny |
+| D02-10 | CSRF/CORS/XSS | Origin+session CSRF/기본same-origin/React escape/CSP/실제Browser |
+| D02-11 | rate | PostgreSQL account/IP/session UPSERT, 경쟁·재시작/forwarded header 불신 |
+| D02-12 | 감사 | append trigger/hash chain/시각·policy digest/critical tx rollback;7년 운영 보존DEV13 |
+| D02-13 | 웹 | 기존15route, ja/ko/en, 로그인/MFA/설정/관리/감사/권한 메뉴 |
+| D02-14 | PWA | static-only/민감 no-cache/no queue/offline clear/다중탭 logout/지연 응답 차단 |
+| D02-15 | 기존API·Worker | health/version/오류/로그/종료 유지, Worker readonly/no browser session |
+| D02-16 | 개발설정 | auth:setup 기존env 보존, Windows CLI 안내, production 차단 유지 |
+| D02-17 | Unit | 실제 runner 개수 보고, DB 의존 항목은 realPG suite로 추가 검증 |
+| D02-18 | Integration | actualPG17 제약/경쟁/회수/rollbacks/CLI/migration/데이터보존 |
+| D02-19 | Security/Failure | 보고서 S01–S30 개별 mapping; 실제 출고승인은 DEV07 미실행 |
+| D02-20 | Browser | 실제 API/PG Desktop+Mobile, 인증 Mock 성공 사용0 |
+| D02-21 | AUTO01 | PR9 successor+인증 baseline 확장, main 검증기/세 workflow 유지 |
+| D02-22 | 회귀 | 기존Unit34/PG4/Failure14/Browser8의 assertion 보존; 익명 UI→실제 로그인 fixture |
+| D02-23 | 자원 | shared Linux x64 실측, Argon concurrency2, bounded 목록/pool; Pi NOT RUN |
+| D02-24 | Self Review | 경합·토큰/Secret·MFA·CSRF·audit·PWA·native dependency 검토와 회귀 |
+| D02-25 | 이전감사 | R01–25/U00–29 유지, 실제 업무·운영 미완료 구분 |
+| D02-26 | GitHub | 실제 PR/현재head CI/Independent/Guarded/merge 증거는 DEV02 report 최신 구간 |
+| D02-27 | 문서 | README/보안/구조/모델/계약/위험/상태/테스트/report 업데이트 |
+| D02-28 | 완료조건 | 로컬 구현·검증과 원격 병합을 분리; 결과를 추정하지 않음 |
+| D02-29 | 보고 | runner count/source SHA/run URL/실제 merge commit만 기록 |
+| D02-30 | 운영원칙 | 운영배포/외부창고/결제/출고 부작용0, Dot/paid AI0 |
+
+R01–R10/R14–R17/R23 물류·운영/시장/백업 기능은 담당 DEV에 이관, 구현 완료로 바꾸지 않았다.
+R11/R12/R13/R19/R20/R21/R22/R24/R25 중 DEV02 관련 부분만 구현·검증했다.
+U00–U29의 범위/순서/최소50 SKU/60개 fixture/AI01·FINAL 감사·운영승인 분리는 그대로 유지한다.

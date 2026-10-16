@@ -71,4 +71,13 @@ AI adapter 기본 disabled, 읽기 전용 분석 제안만; domain/worker 운영
 ## DEV01 구현 현황
 예정 구조를 실제 workspace로 구현. 추가 `packages/runtime`은 config/log/shutdown 공유이며 domain과 분리.
 구체 API/Worker/PWA·migration·소스/빌드 exports는 [개발 계약](docs/DEVELOPMENT.md).
-현재 읽기전용 health/version만 실행, 업무 command/인증/원장/Outbox는 미구현.
+DEV01 시점에는 읽기전용 health/version만 실행했다. DEV02는 인증 command를 추가하며 물류 command/원장/Outbox는 후속 범위다.
+
+## DEV02 인증 모듈
+
+`apps/api/src/auth`는 인증 application service/HTTP adapter, `packages/db/src/auth-schema.ts`는 저장 모델,
+`packages/contracts`는 비밀 없는 AuthenticatedIdentity/IdentityProvider 계약을 소유한다.
+행 잠금·인증·현재 Permission 검사·변경·audit를 하나의 UnitOfWork로 묶는다. 공유 풀은 기존 db package가 제공한다.
+복잡한 replay/locking 쿼리는 parameterized PostgreSQL, ORM schema/snapshot/migration은 Drizzle을 사용한다.
+웹 AuthGate는 보호 UI/만료/오프라인/다중 탭을 담당하며 API의 권한 검사를 대체하지 않는다.
+실제 [인증 흐름·API·확장 경계](docs/AUTHENTICATION.md). Worker는 사람 세션과 독립된 읽기 전용 기반을 유지한다.

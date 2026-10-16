@@ -1,3 +1,10 @@
+import {
+  useAuth,
+  SecurityPanel,
+  UsersPanel,
+  AuditPanel,
+  authText,
+} from "./auth";
 import { Component, useCallback, useEffect, useState, useRef } from "react";
 import type { ReactNode } from "react";
 import { routes, routeFor } from "./routes";
@@ -25,6 +32,7 @@ export class AppBoundary extends Component<
   }
 }
 export function App() {
+  const { user, logout } = useAuth();
   const [locale, setLocale] = useState<Locale>(() =>
     localeOf(new URLSearchParams(location.search).get("lang")),
   );
@@ -139,6 +147,15 @@ export function App() {
     setMenu(false);
     document.getElementById("main")?.focus();
   };
+  const routePermissions: Record<string, string> = {
+    "/automation": "settings.manage",
+    "/approvals": "outbound.approve",
+    "/activity-logs": "audit.read",
+    "/integrations": "settings.manage",
+  };
+  const requiredPermission = routePermissions[path];
+  const denied =
+    !!requiredPermission && !user?.permissions.includes(requiredPermission);
   const route = routeFor(path);
   const dashboard = path === "/" || path === "/system-health";
   return (
@@ -195,31 +212,39 @@ export function App() {
           </a>
           <p className="nav-heading">{t("workspace")}</p>
           <nav aria-label={t("workspace")}>
-            {routes.map(([p, key], i) => (
-              <a
-                key={p}
-                href={p}
-                className={path === p ? "active" : ""}
-                aria-current={path === p ? "page" : undefined}
-                onClick={(e) => navigate(e, p)}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="4" y="4" width="6" height="6" rx="1" />
-                  <rect x="14" y="4" width="6" height="6" rx="1" />
-                  <path
-                    d={
-                      i % 2 ? "M4 15h16M4 20h10" : "M4 14h6v6H4zM14 14h6v6h-6z"
-                    }
-                  />
-                </svg>
-                {t(key)}
-              </a>
-            ))}
+            {routes
+              .filter(
+                ([p]) =>
+                  !routePermissions[p] ||
+                  user?.permissions.includes(routePermissions[p]!),
+              )
+              .map(([p, key], i) => (
+                <a
+                  key={p}
+                  href={p}
+                  className={path === p ? "active" : ""}
+                  aria-current={path === p ? "page" : undefined}
+                  onClick={(e) => navigate(e, p)}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="4" y="4" width="6" height="6" rx="1" />
+                    <rect x="14" y="4" width="6" height="6" rx="1" />
+                    <path
+                      d={
+                        i % 2
+                          ? "M4 15h16M4 20h10"
+                          : "M4 14h6v6H4zM14 14h6v6h-6z"
+                      }
+                    />
+                  </svg>
+                  {t(key)}
+                </a>
+              ))}
           </nav>
           <div className="sidebar-foot">
             <span className="status-dot" />
             {t("dev")}
-            <small>DEV-01</small>
+            <small>DEV-02</small>
           </div>
         </aside>
         {menu && (
@@ -249,13 +274,22 @@ export function App() {
               <span className="sr-only">{t("language")}</span>
               <select
                 value={locale}
-                onChange={(e) => setLocale(localeOf(e.target.value))}
+                onChange={(e) => {
+                  const next = localeOf(e.target.value);
+                  const url = new URL(location.href);
+                  url.searchParams.set("lang", next);
+                  history.replaceState({}, "", url);
+                  setLocale(next);
+                }}
               >
                 <option value="ja">日本語</option>
                 <option value="ko">한국어</option>
                 <option value="en">English</option>
               </select>
             </label>
+            <button onClick={() => void logout()}>
+              {authText(locale, "logout")}
+            </button>
             <span className="avatar" aria-hidden="true">
               W
             </span>
@@ -273,7 +307,23 @@ export function App() {
                 )}
               </p>
             )}
-            {!route ? (
+            {path === "/settings" && (
+              <>
+                <SecurityPanel locale={locale} />
+                {user?.permissions.includes("users.manage") && (
+                  <UsersPanel locale={locale} />
+                )}
+              </>
+            )}
+            {path === "/activity-logs" &&
+              user?.permissions.includes("audit.read") && (
+                <AuditPanel locale={locale} />
+              )}
+            {denied ? (
+              <section className="panel empty">
+                <h1>{authText(locale, "forbidden")}</h1>
+              </section>
+            ) : !route ? (
               <section className="panel empty">
                 <span className="empty-symbol" aria-hidden="true">
                   ?

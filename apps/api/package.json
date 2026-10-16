@@ -7,9 +7,12 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@wms/db": "workspace:*",
+    "@node-rs/argon2": "2.2.2",
     "@wms/contracts": "workspace:*",
+    "@wms/db": "workspace:*",
     "@wms/runtime": "workspace:*",
-    "fastify": "5.12.7"
+    "fastify": "5.12.7",
+    "otpauth": "9.5.2",
+    "pg": "8.23.1"
   }
 }

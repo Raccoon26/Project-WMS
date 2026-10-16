@@ -27,8 +27,8 @@
 | 메일/외부 연동/승인/금전/복구 | timeout/unknown/중복/서명/정확 계산/복원 등 담당 DEV suite |
 | CI/병합/설정/infra | Python 정책 회귀·권한/필수명령/독립 baseline 호환성·actionlint·shell·secret |
 
-분류는 수동 승인 여부가 아니라 강화검사 선택에만 사용한다. 현재 실제 구현된 업무 profile은 migration이다.
-재고/auth/email/approval/money/recovery/integration 등은 아직 해당 업무 suite가 없어 **필수 테스트 누락으로 차단**한다.
+분류는 수동 승인 여부가 아니라 강화검사 선택에만 사용한다. DEV02에서 migration과 auth의 실제 suite를 구현했다.
+재고/email/approval/money/recovery/integration 등은 아직 해당 업무 suite가 없어 **필수 테스트 누락으로 차단**한다.
 담당 DEV에서 실제 case와 main-owned 계약을 함께 설치하고 이전 검증기로 호환성을 통과해야 한다.
 예상 case 이름/모사 성공은 실제 업무 검증을 대신하지 않는다. 60 synthetic SKU fixture 유지, 물류 F01–30은 미실행.
 
@@ -81,3 +81,11 @@ workflow_run은 기본 브랜치 workflow 정의와 권한 상승 가능성에 �
 Policy는 읽기 전용 pull_request+base checkout이며 병합 허가의 단독 근거가 아니다.
 
 main merge ≠ Raspberry Pi 배포. 재고/출고/결제 업무의 승인·불변식·백업·별도 운영배포 통제는 그대로다.
+
+## 인증 기준선 전환
+
+PR9는 기존 verification-baseline.json을 보존하고 verification-auth-transition.json을 main에 설치했다.
+인증 후보에서는 기존 화면 assertion을 실제 CSRF/비밀번호/TOTP 로그인 후 실행하고 migration 수는 manifest로 검증한다.
+DEV02의 verification-auth.json은 새 인증 suite/합성 fixture만 보관한다. 구현 코드 overlay·경로 탈출은 차단한다.
+현재 auth profile은 실제 실행된 `auth: privilege escalation` / `auth: session` / `auth: CSRF`를 요구한다.
+실제 물류/승인 안전 테스트가 설치된 것으로 간주하지 않으며 AUTO-01 세 workflow/권한/자동병합 정책은 유지한다.

@@ -35,3 +35,17 @@ ADR019: transitive esbuild0.18 moderate는 해당 경로만0.25.12 override, Dri
 이전 branch-protection 필수/PR1미병합 표현은 현재 owner-confirmed Actions guarded 모드·PR1–3 병합 사실로 정정.
 
 AUTO-01: 신규 일반 PR/승인 label·comment·review 제거. 이전 main 검증기·안전성 baseline·영역별 실제 suite를 요구한다. 정책 전환 PR5, 실제 제어 코드 자동병합 PR6/7.
+
+## ADR-DEV02-01 — 로컬 인증 / 2026-10-16
+
+선택: Argon2id(@node-rs/argon2 2.2.2) + TOTP(OTPAuth9.5.2) + PostgreSQL opaque server sessions.
+대안 OIDC는 가입/외부 계정/네트워크 및 운영 의존을 추가하므로 현재 선택하지 않았다.
+VerifiedIdentity/IdentityProvider 계약은 향후 OIDC의 subject 검증만 수용하고 권한 부여와 분리한다.
+단일PG/무료/Node24/native ARM64 사전지원, 비밀번호 해싱 bounded 동시성2·19MiB/time3로 시작하며
+Pi 실측은 DEV12에서 결정한다. 시크릿 암호화는 Node AES-GCM으로 위임하고 TOTP/해시 알고리즘을 자체 작성하지 않았다.
+보안 파라미터·API·유한 세션·scope 전환·운영 제한은 [구현 계약](AUTHENTICATION.md).
+
+독립 검증의 익명 웹/count1 가정은 PR9의 명시적 main-owned successor로 교체한다.
+원래 기준선과 모든 화면 assertion을 보존하며 실제 로그인 fixture/manifest 수 검증으로 의미를 확장한다.
+새 인증 테스트·seed는 별도 인증 registry로 보존하고 구현 코드를 overlay할 수 없게 경로를 제한한다.
+이 전환은 AUTO-01 workflow/merge 권한 및 실패·skip 차단을 완화하지 않는다.

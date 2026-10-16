@@ -123,3 +123,16 @@ sending/sent/unknown이면 수정 실행 불가, cancellation/reconciliation 절
 aggregate version/approval hash/state를 CAS로 확인하여 옛 문서가 전송되지 않도록 한다.
 예약 만료는 전송 전 draft/reserved에서만 해제 가능; sent/ack/picking/unknown 예약은 TTL만으로 해제 금지.
 외부 취소 확인 또는 실제 출고 소비로만 해소하며 장기 미해소 예약은 경고·관리자 대조한다.
+
+## DEV02 구현된 인증 스키마
+
+이 문서 위의 업무 테이블은 설계이며 아직 미구현이다. 실제 forward migration `0001_auth.sql`은
+users/roles/permissions/role_permissions/user_roles/sessions/mfa_credentials/mfa_codes/auth_attempts/auth_bootstrap/audit_events를 추가했다.
+`0000_foundation.sql`과 snapshot은 수정하지 않았고 기존 foundation_metadata를 보존한다.
+실제 컬럼 타입/PK/FK/unique/CHECK/index는 `packages/db/src/auth-schema.ts` 및 생성된0001 snapshot/SQL이 기준이다.
+커스텀 append-only trigger만 생성 SQL에 추가하며 테스트 schema의 안전한 search_path를 위해 FK는 비정규화된 public 대신 현재 schema를 참조한다.
+users.login/identity_subject, sessions.token_hash, mfa_codes.code_hash는 unique; user_roles 활성(user,role,scope) unique.
+창고 미구현 동안 scope=global CHECK, 실제 warehouse FK 전환은 DEV03. sessions는 익명 CSRF를 위해 user nullable,
+MFA verified이면 user NOT NULL CHECK. 토큰 원문 미저장, MFA Secret은 AAD 암호화, 복구 코드는 hash만 저장.
+감사는 sequence 인덱스와 predecessor digest, UPDATE/DELETE 거부 trigger; 중요한 변경과 같은 transaction.
+[세션 시간·락 순서·권한·암호화·API 계약](docs/AUTHENTICATION.md). Drizzle generate의 BigInt default 직렬화 문제는 SQL literal default(-1)로 해결했다.
