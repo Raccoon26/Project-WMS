@@ -30,7 +30,10 @@
     "test:failures": "node scripts/run-tests.mjs fault",
     "test:e2e": "node scripts/run-browser-tests.mjs",
     "test:policy": "python3 -m unittest discover -s scripts -p 'test_*.py'",
-    "check:boundaries": "tsx --conditions=source scripts/check-boundaries.ts"
+    "check:boundaries": "tsx --conditions=source scripts/check-boundaries.ts",
+    "auth:bootstrap": "tsx --conditions=source --env-file-if-exists=.env scripts/auth-bootstrap.ts",
+    "auth:setup": "tsx scripts/auth-key.ts",
+    "test:security": "node scripts/run-tests.mjs fault"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -6,3 +6,4 @@ export const foundationMetadata = pgTable("foundation_metadata", {
     .notNull()
     .defaultNow(),
 });
+export * from "./auth-schema.js";

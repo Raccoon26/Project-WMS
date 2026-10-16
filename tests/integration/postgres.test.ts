@@ -1,3 +1,5 @@
+import { readMigrationFiles } from "drizzle-orm/migrator";
+import { migrationFolder } from "@wms/db";
 import { it, expect } from "vitest";
 import { scopedDatabase } from "../helpers";
 import { foundationMetadata } from "@wms/db";
@@ -13,7 +15,9 @@ it("real PostgreSQL migrations are atomic, repeatable and schema checked", async
     expect(await db.migrationStatus()).toBe(true);
     expect(await db.check()).toBe(true);
     const history = await db.pool.query("SELECT * FROM wms_migrations");
-    expect(history.rowCount).toBe(1);
+    expect(history.rowCount).toBe(
+      readMigrationFiles({ migrationsFolder: migrationFolder }).length,
+    );
     const tables = await db.pool.query(
       "SELECT table_name FROM information_schema.tables WHERE table_schema=$1",
       [scope.schema],

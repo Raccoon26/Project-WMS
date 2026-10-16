@@ -1,3 +1,4 @@
+import { AuthGate } from "./auth";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App, AppBoundary } from "./App";
@@ -5,7 +6,9 @@ import "./styles.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AppBoundary>
-      <App />
+      <AuthGate>
+        <App />
+      </AuthGate>
     </AppBoundary>
   </StrictMode>,
 );

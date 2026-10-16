@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./auth-fixture";
 import { routes } from "../../apps/web/src/routes";
 test("Japanese dashboard, desktop/mobile navigation and all 15 routes", async ({
   page,

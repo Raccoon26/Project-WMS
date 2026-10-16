@@ -1,3 +1,4 @@
+import { authOptions } from "./auth/routes.js";
 import { createDatabase } from "@wms/db";
 import { config, logger, installShutdown, ConfigError } from "@wms/runtime";
 import { buildApi } from "./app.js";
@@ -7,8 +8,11 @@ async function main() {
   const db = createDatabase(c.databaseUrl, {
     timeoutMs: c.dbTimeoutMs,
     max: c.poolMax,
+    ...(process.env.NODE_ENV === "test" && process.env.DB_SCHEMA
+      ? { schema: process.env.DB_SCHEMA }
+      : {}),
   });
-  const app = buildApi(db, log);
+  const app = buildApi(db, log, authOptions(db.pool, process.env));
   installShutdown(async () => {
     try {
       await app.close();
