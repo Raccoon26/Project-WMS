@@ -1,0 +1,1626 @@
+{
+  "synthetic": true,
+  "schema_version": 1,
+  "skus": [
+    {
+      "id": "95a0916e-6145-5337-8099-1e3308d6c88d",
+      "sku": "TEST-SKU-0001",
+      "category": "normal",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0001",
+        "rakuten": "TEST-RKT-0001"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "d69d1b46-5da5-56d6-93b3-cd3ac29d451f",
+      "sku": "TEST-SKU-0002",
+      "category": "out_of_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0002",
+        "rakuten": "TEST-RKT-0002"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "0e5ec090-f261-5fde-8953-52ece9198f5c",
+      "sku": "TEST-SKU-0003",
+      "category": "high_sales",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0003",
+        "rakuten": "TEST-RKT-0003"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "15.00"
+    },
+    {
+      "id": "9362732b-d7bc-5b9c-b9d5-76fbda19bdaf",
+      "sku": "TEST-SKU-0004",
+      "category": "low_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0004",
+        "rakuten": "TEST-RKT-0004"
+      },
+      "good": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "84399be2-e588-50d3-abcf-5aa21167b96c",
+      "sku": "TEST-SKU-0005",
+      "category": "external_only",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0005",
+        "rakuten": "TEST-RKT-0005"
+      },
+      "good": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "21d788e1-988c-55ec-bc8c-b0b6f283e452",
+      "sku": "TEST-SKU-0006",
+      "category": "fba",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0006",
+        "rakuten": "TEST-RKT-0006"
+      },
+      "good": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "7277527d-b4ac-532a-9635-87e587a9cafc",
+      "sku": "TEST-SKU-0007",
+      "category": "rsl",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0007",
+        "rakuten": "TEST-RKT-0007"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "37e491b5-45f4-5255-b2f9-91a43fefc9c5",
+      "sku": "TEST-SKU-0008",
+      "category": "distributed",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0008",
+        "rakuten": "TEST-RKT-0008"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "56bf8942-d21f-58bd-97e8-088b213c985c",
+      "sku": "TEST-SKU-0009",
+      "category": "reserved",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0009",
+        "rakuten": "TEST-RKT-0009"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 30,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 70,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "c2fd4133-a573-5b1d-8d18-1f700cf7b337",
+      "sku": "TEST-SKU-0010",
+      "category": "in_transit",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0010",
+        "rakuten": "TEST-RKT-0010"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 15,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "52962dde-a9bd-5b09-a8c3-975323f48339",
+      "sku": "TEST-SKU-0011",
+      "category": "inactive",
+      "status": "inactive",
+      "mappings": {
+        "amazon": "TEST-AMZ-0011",
+        "rakuten": "TEST-RKT-0011"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "c389a519-261d-566f-88da-0374b8f16606",
+      "sku": "TEST-SKU-0012",
+      "category": "different_mapping",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0012",
+        "rakuten": "TEST-RKT-0012"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "d9fb94e6-047a-5f0d-acc9-4f48e13e7dae",
+      "sku": "TEST-SKU-0013",
+      "category": "normal",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0013",
+        "rakuten": "TEST-RKT-0013"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "bda563b8-e35d-5489-a24b-cf894294a04b",
+      "sku": "TEST-SKU-0014",
+      "category": "out_of_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0014",
+        "rakuten": "TEST-RKT-0014"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "bd41b19c-2e0f-50e2-8965-5bdac98e6cae",
+      "sku": "TEST-SKU-0015",
+      "category": "high_sales",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0015",
+        "rakuten": "TEST-RKT-0015"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "15.00"
+    },
+    {
+      "id": "1a08823a-9b99-526e-9d0f-27881369a982",
+      "sku": "TEST-SKU-0016",
+      "category": "low_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0016",
+        "rakuten": "TEST-RKT-0016"
+      },
+      "good": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "1bb34f4c-c99e-5a4a-9a08-29fb23484f77",
+      "sku": "TEST-SKU-0017",
+      "category": "external_only",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0017",
+        "rakuten": "TEST-RKT-0017"
+      },
+      "good": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "2694fd27-6de1-5b01-b913-ef24b692d069",
+      "sku": "TEST-SKU-0018",
+      "category": "fba",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0018",
+        "rakuten": "TEST-RKT-0018"
+      },
+      "good": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "7ec6eb91-bb4c-5332-850f-a7117d359eea",
+      "sku": "TEST-SKU-0019",
+      "category": "rsl",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0019",
+        "rakuten": "TEST-RKT-0019"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "ed15ae77-c184-5622-8c5a-0f0eddbff920",
+      "sku": "TEST-SKU-0020",
+      "category": "distributed",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0020",
+        "rakuten": "TEST-RKT-0020"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "8adc05bc-683b-532c-9ccc-3854336d90a9",
+      "sku": "TEST-SKU-0021",
+      "category": "reserved",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0021",
+        "rakuten": "TEST-RKT-0021"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 30,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 70,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "f0f98a93-0fd8-5855-8373-028ba2b884f0",
+      "sku": "TEST-SKU-0022",
+      "category": "in_transit",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0022",
+        "rakuten": "TEST-RKT-0022"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 15,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "1b016126-868b-529a-87af-0a701c90ca1c",
+      "sku": "TEST-SKU-0023",
+      "category": "inactive",
+      "status": "discontinued",
+      "mappings": {
+        "amazon": "TEST-AMZ-0023",
+        "rakuten": "TEST-RKT-0023"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "97c51f6b-54d7-53d3-96b0-934fc06d3882",
+      "sku": "TEST-SKU-0024",
+      "category": "different_mapping",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0024",
+        "rakuten": "TEST-RKT-0024"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "7ae270c9-7460-572b-94a2-ae2bd40c6c9f",
+      "sku": "TEST-SKU-0025",
+      "category": "normal",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0025",
+        "rakuten": "TEST-RKT-0025"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "8d84f92e-6dd4-56f6-b2fa-fa9c817923e5",
+      "sku": "TEST-SKU-0026",
+      "category": "out_of_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0026",
+        "rakuten": "TEST-RKT-0026"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "de210edb-61a3-52e7-bd0e-77b6dc194599",
+      "sku": "TEST-SKU-0027",
+      "category": "high_sales",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0027",
+        "rakuten": "TEST-RKT-0027"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "15.00"
+    },
+    {
+      "id": "36e8734d-286f-5998-b400-8b56f884c131",
+      "sku": "TEST-SKU-0028",
+      "category": "low_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0028",
+        "rakuten": "TEST-RKT-0028"
+      },
+      "good": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "843c9934-d9e6-5635-8ca3-bf5f01353a4a",
+      "sku": "TEST-SKU-0029",
+      "category": "external_only",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0029",
+        "rakuten": "TEST-RKT-0029"
+      },
+      "good": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "990cfbc3-eb6b-5049-915f-3dc52e9d2970",
+      "sku": "TEST-SKU-0030",
+      "category": "fba",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0030",
+        "rakuten": "TEST-RKT-0030"
+      },
+      "good": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "528e20c3-17f4-5c2f-8788-ecdbafa536bc",
+      "sku": "TEST-SKU-0031",
+      "category": "rsl",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0031",
+        "rakuten": "TEST-RKT-0031"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "370c3217-e909-5f21-ae11-419a3889bdb7",
+      "sku": "TEST-SKU-0032",
+      "category": "distributed",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0032",
+        "rakuten": "TEST-RKT-0032"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "01f6dbbe-f572-5f02-a8ac-164dbe7c29f0",
+      "sku": "TEST-SKU-0033",
+      "category": "reserved",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0033",
+        "rakuten": "TEST-RKT-0033"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 30,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 70,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "c1fe6e1f-1d35-5729-b358-4b9ce424325c",
+      "sku": "TEST-SKU-0034",
+      "category": "in_transit",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0034",
+        "rakuten": "TEST-RKT-0034"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 15,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "8717ab56-f070-5332-9a56-00c72c4fc88d",
+      "sku": "TEST-SKU-0035",
+      "category": "inactive",
+      "status": "inactive",
+      "mappings": {
+        "amazon": "TEST-AMZ-0035",
+        "rakuten": "TEST-RKT-0035"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "5cbaeb6a-7f69-585c-8e72-625f095de604",
+      "sku": "TEST-SKU-0036",
+      "category": "different_mapping",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0036",
+        "rakuten": "TEST-RKT-0036"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "d29e08ca-5bcd-5fff-acb8-0c988bf07e75",
+      "sku": "TEST-SKU-0037",
+      "category": "normal",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0037",
+        "rakuten": "TEST-RKT-0037"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "5ed77e7f-d467-5c4f-9276-b8ce6689f29a",
+      "sku": "TEST-SKU-0038",
+      "category": "out_of_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0038",
+        "rakuten": "TEST-RKT-0038"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "9d490e3e-53d9-5460-96f4-d14d1a377c75",
+      "sku": "TEST-SKU-0039",
+      "category": "high_sales",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0039",
+        "rakuten": "TEST-RKT-0039"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "15.00"
+    },
+    {
+      "id": "184ea899-57f6-5f83-ab42-adfd6d60d4f4",
+      "sku": "TEST-SKU-0040",
+      "category": "low_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0040",
+        "rakuten": "TEST-RKT-0040"
+      },
+      "good": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "1bc62079-f2fe-5055-92a3-6977d2db799b",
+      "sku": "TEST-SKU-0041",
+      "category": "external_only",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0041",
+        "rakuten": "TEST-RKT-0041"
+      },
+      "good": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "9e1b0a94-c96d-53fe-92bb-63c31ab1d59a",
+      "sku": "TEST-SKU-0042",
+      "category": "fba",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0042",
+        "rakuten": "TEST-RKT-0042"
+      },
+      "good": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "edc66c06-1e66-5981-add5-8a06517349a5",
+      "sku": "TEST-SKU-0043",
+      "category": "rsl",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0043",
+        "rakuten": "TEST-RKT-0043"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "92911bc7-0dc5-5e78-83f6-3851750af44b",
+      "sku": "TEST-SKU-0044",
+      "category": "distributed",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0044",
+        "rakuten": "TEST-RKT-0044"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "6d9de8bc-6f5f-53d3-8018-3ed84f3e5d89",
+      "sku": "TEST-SKU-0045",
+      "category": "reserved",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0045",
+        "rakuten": "TEST-RKT-0045"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 30,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 70,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "1d00d2de-2fd5-500f-91fe-6f84d182ce64",
+      "sku": "TEST-SKU-0046",
+      "category": "in_transit",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0046",
+        "rakuten": "TEST-RKT-0046"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 15,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "77ba5d5d-0c1c-55ba-9b40-0a789fa1122a",
+      "sku": "TEST-SKU-0047",
+      "category": "inactive",
+      "status": "discontinued",
+      "mappings": {
+        "amazon": "TEST-AMZ-0047",
+        "rakuten": "TEST-RKT-0047"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "f3a22f65-1550-523f-ba84-4b8a976c0b87",
+      "sku": "TEST-SKU-0048",
+      "category": "different_mapping",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0048",
+        "rakuten": "TEST-RKT-0048"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "71a32912-9224-5f6f-ad1b-27f69da0cc37",
+      "sku": "TEST-SKU-0049",
+      "category": "normal",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0049",
+        "rakuten": "TEST-RKT-0049"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "17d63b66-3ecd-5a34-b3ba-4ab4780c4444",
+      "sku": "TEST-SKU-0050",
+      "category": "out_of_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0050",
+        "rakuten": "TEST-RKT-0050"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "d78b3b64-01d4-5909-8186-d8f706bd1da8",
+      "sku": "TEST-SKU-0051",
+      "category": "high_sales",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0051",
+        "rakuten": "TEST-RKT-0051"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "15.00"
+    },
+    {
+      "id": "bd7dbc62-af1c-5840-8051-c830eb73ed67",
+      "sku": "TEST-SKU-0052",
+      "category": "low_stock",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0052",
+        "rakuten": "TEST-RKT-0052"
+      },
+      "good": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 1,
+        "fba": 1,
+        "rsl": 1
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "8b17e494-859b-5a06-98c8-5772f9bd0268",
+      "sku": "TEST-SKU-0053",
+      "category": "external_only",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0053",
+        "rakuten": "TEST-RKT-0053"
+      },
+      "good": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 0,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "54bb30a9-f505-5e78-920f-ff13308a16e7",
+      "sku": "TEST-SKU-0054",
+      "category": "fba",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0054",
+        "rakuten": "TEST-RKT-0054"
+      },
+      "good": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 80,
+        "rsl": 0
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "774d74e6-4b60-540f-a270-50d7ced9b67a",
+      "sku": "TEST-SKU-0055",
+      "category": "rsl",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0055",
+        "rakuten": "TEST-RKT-0055"
+      },
+      "good": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 80
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "0b20e95f-fd50-5e87-80c4-da123808b728",
+      "sku": "TEST-SKU-0056",
+      "category": "distributed",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0056",
+        "rakuten": "TEST-RKT-0056"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "3add47f2-63c9-5e2c-9648-979ba3b08635",
+      "sku": "TEST-SKU-0057",
+      "category": "reserved",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0057",
+        "rakuten": "TEST-RKT-0057"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 30,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 70,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "20974505-cf87-5204-926b-ef9a86505ca8",
+      "sku": "TEST-SKU-0058",
+      "category": "in_transit",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0058",
+        "rakuten": "TEST-RKT-0058"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 15,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "92e76cb2-9da3-5250-8a77-f45b5ee6e204",
+      "sku": "TEST-SKU-0059",
+      "category": "inactive",
+      "status": "inactive",
+      "mappings": {
+        "amazon": "TEST-AMZ-0059",
+        "rakuten": "TEST-RKT-0059"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    },
+    {
+      "id": "02990b6d-87eb-5a1f-a6b1-948650037ab2",
+      "sku": "TEST-SKU-0060",
+      "category": "different_mapping",
+      "status": "active",
+      "mappings": {
+        "amazon": "TEST-AMZ-0060",
+        "rakuten": "TEST-RKT-0060"
+      },
+      "good": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "reserved": {
+        "external": 0,
+        "fba": 0,
+        "rsl": 0
+      },
+      "expected_available": {
+        "external": 100,
+        "fba": 20,
+        "rsl": 10
+      },
+      "in_transit": 0,
+      "daily_sales": "1.00"
+    }
+  ]
+}
