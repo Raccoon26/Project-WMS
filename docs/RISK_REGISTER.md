@@ -12,7 +12,7 @@
 | K08 | heartbeat 정상인데 업무 실패 | High | DEV13 due-job/실패율/백업 age 감시+독립 외부검증 |
 | K09 | API/계약 미권한 및 예상밖 요금 | High | DEV08/09 공식 계정확인/CSV 대안/비용승인; 공개문서 접근 일부403 |
 | K10 | 자동병합 우회·spoofed green/renamed 위험파일 | Critical | DEV00 trusted base SHA·rename 양쪽·count·현재SHA checks·manual default |
-| K11 | 보호 미사용 직접main bypass 위험(native auto_merge 현재true) | High | 현재 Actions guarded safe-path 자동병합 실증됨. 보호 없는 직접main bypass 잔존, 고위험 수동/보호권장 |
+| K11 | 보호 미사용 직접main bypass 위험(native auto_merge 현재true) | High | AUTO-01의 이전 main 독립 verifier+강화검사 자동병합 실증. 보호 없는 직접main bypass 잔존/보호권장 |
 | K12 | 50SKU만 테스트하고 이력 확장 실패 | Medium | DEV04/11/14 100만이력/cursor/EXPLAIN/RSS, SKU120 generator |
 | K13 | 금액 float/FX/세금/현금 부족 | Critical | DEV10 exact Decimal/통화별 최소단위/승인·예산 |
 | K14 | 자동배포가 진행 작업 중단 | High | DEV12 별도승인/drain/backup/rollback·unknown fence |
@@ -21,7 +21,7 @@
 | K17 | 단독관리자와2인승인 충돌 | High | DEV07 운영정책 결정/재인증·한도·대기 예외 명시, 가짜승인 금지 |
 | K18 | 모델 설정을 코드가 보장 못함 | Low | 플랫폼 Sol Medium 확인은 운영자 설정; Astra 최종감사 전용, 확인불가 명시 |
 
-외부 권한/장비/계약은 해당 DEV 활성 전 prerequisite. DEV00 병합 blocker 해소. DEV01 고위험 PR은 수동검토.
+외부 권한/장비/계약은 해당 DEV 활성 전 prerequisite. DEV00 병합 blocker 해소. DEV01은 현재 main 독립 verifier와 실제 필수 검사를 통과해야 병합.
 
 | K19 | 자기 수정 CI가 검사를 약화 | Critical | 이전 main verifier/기존 baseline assertions 재실행, 권한·명령·Secret 검증, read-only 실행/privileged merge 분리. 완전 보안 보장 아님 |
 | K20 | 최종 base 조회 직후 외부 writer 경쟁 | High | controller 직렬화·최종 head/base 재조회·HEAD precondition. REST는 base CAS 없음; 직접 main push/동시 수동 병합 금지 |

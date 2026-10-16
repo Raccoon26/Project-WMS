@@ -6,7 +6,6 @@ on:
 permissions:
   contents: read
   pull-requests: read
-  issues: read
 concurrency:
   group: wms-policy-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -33,8 +32,6 @@ jobs:
           [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]
           gh api "repos/$BASE_REPO/pulls/$PR_NUMBER" > "$RUNNER_TEMP/meta.json"
           gh api "repos/$BASE_REPO/pulls/$PR_NUMBER/files?per_page=100" --paginate | python3 scripts/slurp_json.py > "$RUNNER_TEMP/files.json"
-          gh api "repos/$BASE_REPO/pulls/$PR_NUMBER/reviews?per_page=100" --paginate | python3 scripts/slurp_json.py > "$RUNNER_TEMP/reviews.json"
-          gh api "repos/$BASE_REPO/issues/$PR_NUMBER/comments?per_page=100" --paginate | python3 scripts/slurp_json.py > "$RUNNER_TEMP/comments.json"
       - name: Verify policy snapshot
         shell: bash
         run: |
@@ -46,6 +43,6 @@ jobs:
           if m['head']['sha'] != os.environ['EXPECTED_HEAD']:
               raise SystemExit('Head changed; wait for the current event')
           PY
-          python3 scripts/pr_policy.py --metadata "$RUNNER_TEMP/meta.json" --files "$RUNNER_TEMP/files.json" --reviews "$RUNNER_TEMP/reviews.json" --comments "$RUNNER_TEMP/comments.json" --repo "$BASE_REPO"
+          python3 scripts/pr_policy.py --metadata "$RUNNER_TEMP/meta.json" --files "$RUNNER_TEMP/files.json" --repo "$BASE_REPO"
           gh api "repos/$BASE_REPO/pulls/$PR_NUMBER" --jq .head.sha > "$RUNNER_TEMP/head-after"
           [[ "$(cat "$RUNNER_TEMP/head-after")" == "$EXPECTED_HEAD" ]]

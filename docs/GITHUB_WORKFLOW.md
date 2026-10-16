@@ -61,7 +61,7 @@ Draft/미완료는 NOT_READY(정상 종료)이며 metadata의 mergeAllowed는 �
 
 HEAD 또는 main 변경 시 증거를 재사용하지 않는다. 자동 controller를 하나의 main concurrency group으로 직렬화하고
 Ready/merge 직전 head/main을 재조회한다. stale base는 최신 main을 DEV branch에 정상 merge해 새 CI를 유발한다.
-controller는 이벤트당 한 번만 평가하며 무한 재시도/자동 재실행을 하지 않는다. 실패 이유를 해결한 새 commit이 재검증 trigger다.
+Codex는 stale base를 발견하면 정상 merge/재검증을 최대2회 시도하고 지속 경합은 원인을 보고한다. controller는 이벤트당 한 번만 평가하며 무한 재시도/자동 재실행을 하지 않는다. 실패 이유를 해결한 새 commit이 재검증 trigger다.
 GitHub REST `sha`는 HEAD에만 원자적이며 base CAS가 없다. 마지막 조회 직후 외부 writer가 main을 바꾸는 경쟁까지
 원자적으로 차단한다고 보장하지 않는다. 직접 main push 금지/수동 병합과 동시 실행 금지. 서버 강제는 선택 merge queue/보호로 검토한다.
 권한 오류는 실패이며 보호 조회403은 현 Actions 모드의 필수 전제가 아니다.

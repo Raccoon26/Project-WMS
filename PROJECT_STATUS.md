@@ -8,6 +8,7 @@
 - [PR5](https://github.com/Raccoon26/Project-WMS/pull/5): AUTO-01 최초 전환 병합, `9bc5abc3a92227cf27b6a929747e70a30f4423da`.
 - [PR6](https://github.com/Raccoon26/Project-WMS/pull/6): 독립 baseline 차단 실증 후 복원, Actions 자동 squash merge 완료.
   병합 `435e69daa2582f75e970b3c8bbd718bf3b63abf8`, [controller 성공](https://github.com/Raccoon26/Project-WMS/actions/runs/38853918542).
+- [PR7](https://github.com/Raccoon26/Project-WMS/pull/7): verifier 보정 자동병합 `17d6cdadce3b7b47da116c0a2f9f5dfaf552718f`.
 - [PR4](https://github.com/Raccoon26/Project-WMS/pull/4): 기존 dev/dev-01-foundation을 재사용. 최신 main으로 정상 merge했고 force push/main 직접 push 없음.
   구현·로컬 재검증 완료, 최신 HEAD의 원격 Quality/독립검증/자동 Ready·병합 결과는 후속 기록한다.
 

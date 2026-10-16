@@ -11,7 +11,7 @@
 - [ ] 6시간 암호화 Drive 백업/키 별도보관/손상 검출/깨끗한DB 실제 복원·외부대조
 - [ ] 현재 SHA typecheck/lint/build/unit/integration/invariants/failures/E2E 필수 통과; skip=통과 아님
 - [ ] 모든 trace 요구·과거 DEV 누락 감사, 미해결 blocker0; 위험 예외 소유자·기한 승인
-- [ ] GitHub PR/필수 CI/유효 병합정책/수동 고위험 검토/실제 병합 확인
+- [ ] GitHub PR/필수 CI/main-owned 독립 검증/실제 병합 확인
 - [ ] 운영배포 별도 승인·사전백업·복구계획·진행중 외부작업 대조
 - [ ] Dot/AI 비연결·기능 flag OFF 상태 전체 운영 가능; paid AI 의존0
 - [ ] 실제 비용·권한·사용량 최신 확인; 개인정보/계약/운영자료 Public repo 미포함
@@ -22,4 +22,4 @@
 ## DEV01 기반과 운영 출시의 구분
 웹/API/DB/Worker 및 합성 환경의 테스트 통과는 운영 출시 체크를 완료하지 않는다.
 실제 업무/인증/원장/50 SKU E2E/운영 연동/Pi/복원/최종Astra 감사는 각 후속 DEV에 남는다.
-DEV01 패키지/CI/DB/인프라 변경 PR은 Draft·수동 검토. 기존 낮은위험 Actions 자동병합은 유지한다.
+DEV01을 포함해 패키지/CI/DB/인프라도 독립 검증 성공 시 자동병합한다. 신규 PR은 일반 PR이며, 기존 Draft는 실제 검증 완료 후 Ready로 전환한다.

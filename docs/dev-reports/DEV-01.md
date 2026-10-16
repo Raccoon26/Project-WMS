@@ -209,3 +209,11 @@ README의 pnpm dev:api/dev:worker/dev:web 실제 기동·HTTP준비를 별도로
 - 독립 validator 문서 검사 대상이 baseline 자체가 되던 코드를 candidate root로 수정. 이전 main의 기존 회귀와 별도 정적 검증을 유지한다.
 - GitHub 2026-09-17 공식 공지에서 11월2일 공개repo 기본 pull_request_target 제한 시행을 확인. 해당 이벤트 의존 제거, unsafe checkout opt-out0.
 - 현재 원격 HEAD의 Quality→독립검증→자동 Ready→squash 결과는 실제 실행 후 GitHub 증거로 기록한다. 아직 미래 병합을 완료로 적지 않는다.
+
+추가 독립 로컬 검증: 별도 합성 checkout에서 실제 main verifier/기준선으로 후보 Python63+기준선63,
+unit34/PG4/fault14/browser8 및 lint/typecheck/audit/build가 통과했다. 이벤트 ID0은 로컬 합성 값이므로 원격 증거로 사용하지 않는다.
+첫 독립 로컬 시도는 container ID 환경변수 누락으로 fault1 fail/13 pass였고 환경을 올바르게 설정해 전체 재통과했다.
+main verifier 보정 PR7은 [Quality38854161305](https://github.com/Raccoon26/Project-WMS/actions/runs/38854161305),
+[Independent38854199451](https://github.com/Raccoon26/Project-WMS/actions/runs/38854199451),
+[Guarded38854247811](https://github.com/Raccoon26/Project-WMS/actions/runs/38854247811) 성공 후 `17d6cda`로 자동병합됨.
+이전 수동 승인 요구를 구현에 남기지 않도록 release/decision/risk/trace 문서도 감사·정정했다.

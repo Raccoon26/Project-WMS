@@ -9,7 +9,6 @@ permissions:
   actions: read
   contents: write
   pull-requests: write
-  issues: read
 concurrency:
   group: wms-guarded-merge-main
   cancel-in-progress: false
