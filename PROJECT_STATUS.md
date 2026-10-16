@@ -1,6 +1,6 @@
 # Project-WMS 상태
 
-2026-10-16. DEV00 설계 및 AUTO-01 정책은 main 적용 완료. DEV01 실행 기반도 PR4로 main 반영 완료. DEV02는 dev/dev-02-auth-security에서 인증·권한 구현·로컬 및 독립 검증 완료이며 원격 CI·병합 확인 전 전체 완료 선언하지 않는다.
+2026-10-16. DEV00 설계 및 AUTO-01 정책은 main 적용 완료. DEV01 실행 기반도 PR4로 main 반영 완료. DEV02 인증 기반은 PR10으로 자동 병합·검증 완료했다. 마지막 UI·추가 보안 회귀의 증거는 DEV02 보고 최신 구간을 따른다.
 
 ## 확인된 GitHub 이력
 
@@ -37,3 +37,8 @@ Pi5 실물 없음: ARM64 manifest 사전검증만, 실장비 검증은 DEV12 이
 Argon2id/TOTP/서버세션/RBAC/CSRF/사용자·역할/감사/UI를 개발 환경에 구현했다.
 [구현 계약](docs/AUTHENTICATION.md) · [실제 테스트·최종 GitHub 상태](docs/dev-reports/DEV-02.md).
 실제 운영 HTTPS/키 escrow/Pi/7년보존·복원은 후속 DEV12/13, 운영배포 없음.
+
+DEV02 실제 기반 병합: [PR10](https://github.com/Raccoon26/Project-WMS/pull/10),
+`ef3566c9da0e284d9e95f786c36e922212c70720`, Quality/Independent/Guarded 성공, 원격211 passed/0 fail/0 skip.
+최종 보강은 이전 main의 인증 snapshot을 보존한 추가 테스트와 제한·만료 안내이며 로컬219개 통과.
+정확한 최신 원격 결과는 [DEV02 보고](docs/dev-reports/DEV-02.md)와 연결된 마무리 PR에서 확인한다.

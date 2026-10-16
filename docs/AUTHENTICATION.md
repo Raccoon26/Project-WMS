@@ -144,3 +144,6 @@ MFA 제한 세션/등록은 모바일 Authenticator 앱 전환 중 유지하며 
 PWA는 정적 shell만 캐시하며 인증/MFA/사용자/API 데이터·Cookie·변경 요청을 저장/queue하지 않는다.
 CSP는 script-src self, object/base/frame 차단; 개발 Vite 스타일 호환상 style unsafe-inline만 허용한다.
 React escaping을 유지하고 raw HTML/사용자 URL scheme 삽입을 사용하지 않는다.
+
+최종 보강: 로그인429는 세 언어로 재시도 안내, 제한 MFA5분 UI 만료 표시/인증 단계별 입력값 초기화를 제공한다.
+기존 테스트 snapshot을 보존하고 추가 fixture만 더했다. MFA 교체/복구코드 회전/disable/전체 세션 회수의 정상 경로도 realPG 검증했다.

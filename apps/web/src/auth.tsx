@@ -13,6 +13,8 @@ import type { Locale } from "./i18n";
 export type Identity = AuthenticatedIdentity;
 const messages = {
   ja: {
+    limited: "試行回数の上限に達しました。時間をおいて再試行してください。",
+    expired: "認証の有効期限が切れました。もう一度ログインしてください。",
     login: "ログイン",
     id: "ログインID",
     password: "パスワード",
@@ -46,6 +48,8 @@ const messages = {
     forbidden: "この画面の閲覧権限がありません。",
   },
   ko: {
+    limited: "시도 횟수가 제한되었습니다. 잠시 후 다시 시도하세요.",
+    expired: "인증 시간이 만료되었습니다. 다시 로그인하세요.",
     login: "로그인",
     id: "로그인 ID",
     password: "비밀번호",
@@ -78,6 +82,8 @@ const messages = {
     forbidden: "이 화면의 조회 권한이 없습니다.",
   },
   en: {
+    limited: "Too many attempts. Wait before trying again.",
+    expired: "Authentication expired. Sign in again.",
     login: "Sign in",
     id: "Login ID",
     password: "Password",
@@ -114,6 +120,11 @@ const messages = {
 };
 export const authText = (locale: Locale, key: keyof typeof messages.ja) =>
   messages[locale][key] ?? messages.ja[key];
+export class AuthRequestError extends Error {
+  constructor(public status: number) {
+    super("REQUEST_FAILED");
+  }
+}
 let csrf = "";
 export async function authRequest(
   path: string,
@@ -143,7 +154,7 @@ export async function authRequest(
       )
     )
       window.dispatchEvent(new Event("wms-unauthorized"));
-    throw new Error("REQUEST_FAILED");
+    throw new AuthRequestError(response.status);
   }
   return response.json();
 }
@@ -166,6 +177,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
     [locale, setLocale] = useState<Locale>(() =>
       localeOf(new URLSearchParams(location.search).get("lang")),
     );
+  const [limited, setLimited] = useState(false),
+    [expired, setExpired] = useState(false);
   const [error, setError] = useState(false),
     [busy, setBusy] = useState(false),
     [secret, setSecret] = useState(""),
@@ -250,6 +263,19 @@ export function AuthGate({ children }: { children: ReactNode }) {
     );
     return () => clearTimeout(timer);
   }, [user]);
+  useEffect(() => {
+    if (stage !== "mfa" && stage !== "enroll") return;
+    const timer = setTimeout(() => {
+      generation.current++;
+      setUser(null);
+      setSecret("");
+      setCodes([]);
+      setStage("login");
+      setExpired(true);
+      setError(false);
+    }, 300000);
+    return () => clearTimeout(timer);
+  }, [stage]);
   const logout = async () => {
     generation.current++;
     try {
@@ -271,6 +297,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
     if (busy) return;
     setBusy(true);
     setError(false);
+    setLimited(false);
+    setExpired(false);
     const data = new FormData(event.currentTarget);
     try {
       if (stage === "login") {
@@ -298,7 +326,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
         setSecret("");
         setStage("codes");
       }
-    } catch {
+    } catch (failure) {
+      setLimited(failure instanceof AuthRequestError && failure.status === 429);
       setError(true);
     } finally {
       setBusy(false);
@@ -343,7 +372,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
                   : "login",
           )}
         </h1>
-        {error && <p role="alert">{t("failure")}</p>}
+        {expired && <p role="alert">{t("expired")}</p>}
+        {error && <p role="alert">{t(limited ? "limited" : "failure")}</p>}
         {stage === "offline" ? (
           <p role="status">{t("offline")}</p>
         ) : stage === "codes" ? (
@@ -360,7 +390,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
             </button>
           </>
         ) : stage === "loading" ? null : (
-          <form onSubmit={(e) => void submit(e)}>
+          <form key={stage} onSubmit={(e) => void submit(e)}>
             {stage === "login" ? (
               <>
                 <label>

@@ -99,3 +99,7 @@ Browser: 실제PG/실제password/MFA, Desktop/Mobile 기존15route+login/enrollm
 DB를 필요로 하는 DEV02 단위 목록의 계정·epoch·감사 항목은 Mock 대신 실제PG integration에서 추가 검증한다.
 전체 S01–S30 mapping, 실제 runner 개수/실패 수정/원격 실행은 [DEV02 보고](docs/dev-reports/DEV-02.md).
 기존 물류 F24의 공통 기반 검증을 실제 출고 승인 엔진/Telegram 업무 검증으로 표시하지 않는다.
+
+DEV02 최종 보강은 기존 main-owned suite를 변경하지 않는 별도 파일(auth-feedback/auth-ip/auth-lifecycle)로 확장했다.
+공유 E2E IP에는 실제 throttling이 적용된다. 후속 DEV에서 더 많은 독립 로그인 사례를 추가할 때는 합성 schema/
+테스트 간 rate 상태를 명시적으로 격리한다. 제한 검증 시나리오 도중 bucket 초기화나 운영 임계값 완화로 통과시키지 않는다.
