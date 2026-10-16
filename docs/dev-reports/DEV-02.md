@@ -152,3 +152,35 @@ candidate Python70 + main Python68, frozen install/audit/boundary/lint/typecheck
 Unit44/Integration23/Failure36/Browser38/build 및 실제 세 auth case를 재검증했다.
 local event PR번호0·합성 source SHA이므로 GitHub 원격 증거나 실제 PR 병합으로 사용하지 않는다.
 웹 번들에 실제 로컬 암호화 키/서버 DB·키 설정 문자열이 포함되지 않는 검사도 통과했다.
+
+## PR10 실제 원격 완료 / 마지막 보강
+
+- PR10 [구현 PR](https://github.com/Raccoon26/Project-WMS/pull/10), 검증 HEAD `f46c79dd499b26f42358bc964e4c6244d8198295`.
+- [Quality38876091062](https://github.com/Raccoon26/Project-WMS/actions/runs/38876091062),
+  [Independent38876433823](https://github.com/Raccoon26/Project-WMS/actions/runs/38876433823),
+  [Guarded38876785602](https://github.com/Raccoon26/Project-WMS/actions/runs/38876785602) 모두 SUCCESS.
+- 실제 artifact 다운로드: Python70/Unit44/PG23/Failure36/Browser38=211 passed/0 fail/0 skip.
+  독립 proof의 head f46c79d/base aebdb09/PR10/sourceRun38876091062와 실제 세 auth case를 확인했다.
+- 08:54:22 UTC, github-actions[bot]이 자동 squash merge. 실제 `ef3566c9da0e284d9e95f786c36e922212c70720`.
+  사용자 승인/label/comment/review0, 운영 배포0.
+
+원격 완료 후 마지막 UI 대조에서 제한·만료 안내를 명확히 하고 단계 전환 시 credential 입력을 새로 만들었다.
+동일 IP의 여러 계정 공격/X-Forwarded-For 위조 거부, MFA 기기교체·코드 재발급/disable 및 전체 세션 회수의
+정상 경로도 실제PG로 보강했다. 이전 main 인증 snapshot은 전부 byte-for-byte 보존했고 별도 새 테스트 파일만 더했다.
+이미 merged된 PR10을 복제하지 않고 dev/dev-02-security-finalization의 한정 보강으로 처리한다.
+
+최신 로컬 실제 runner: Python70 / Unit45 / PG Integration25 / Security·Failure37 / Browser42 = **219 passed**, 실패0/Skip0.
+기존 DEV01/DEV02 assertion 삭제0. UI deadline은 브라우저 clock으로만 가속하며 비밀번호/제한 세션은 실제API/PG,
+서버 deadline은 별도의 실제 DB 실패 테스트로 검증한다. 제한 안내는 ja/ko/en 세 언어를 실제 화면에서 확인했다.
+이 보강의 현재 원격 상태/정확한 HEAD·merge SHA는
+[마무리 PR 검색](https://github.com/Raccoon26/Project-WMS/pulls?q=is%3Apr+head%3Adev%2Fdev-02-security-finalization)의 실제 결과가 기준이다.
+코드가 공개된 사실을 운영 배포로 처리하지 않는다.
+
+최종 보강의 로컬 독립 실행도 현재 main(ef3566c)의 검증기로 성공했다:
+candidate Python70 + main Python70 / Unit45 / 실제PG25 / Failure37 / Desktop·Mobile Browser42,
+실패·Skip0. 기존 인증 snapshot 8개를 byte-for-byte 유지하고 추가4개 파일을 검증했다.
+이전과 마찬가지로 local PR0 proof는 원격 병합 증거로 사용하지 않는다.
+공통 SystemActor는 contracts에 두어 Worker가 API 앱을 상대 import하지 않도록 typecheck/boundary로 검증했다.
+문서의 실제 dev:api/dev:worker/dev:web를 새 프로세스로 기동해 API ready200/Worker ready200/Web200/
+미인증 users401/CSP를 확인한 뒤 자신의 프로세스만 정상 종료했다. 실제 암호화 키가 웹 번들에 없는 검사도 통과했다.
+클라우드 install_script/start_skill은 DEV02 설정 보존·서비스 기동·검증 안내로 저장했으며 설정 게시 자체는 별도 제품 동작이다.

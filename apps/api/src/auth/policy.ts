@@ -1,3 +1,4 @@
+import type { SystemActor as SharedSystemActor } from "@wms/contracts";
 export const permissionCodes = [
   "users.read",
   "users.manage",
@@ -78,8 +79,6 @@ export function recentReauth(at: Date | null, now = Date.now()): boolean {
   return at !== null && now - at.getTime() >= 0 && now - at.getTime() < 300000;
 }
 // Worker actors are explicit system identities, never inherited browser sessions.
-export interface SystemActor {
-  kind: "system";
-  id: string;
+export interface SystemActor extends SharedSystemActor {
   permissions: readonly Permission[];
 }
