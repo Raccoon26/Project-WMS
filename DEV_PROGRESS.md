@@ -3,12 +3,12 @@
 개발 모델 정책: GPT-6.1 Sol Medium(DEV00–18). 모델명/effort는 실행 플랫폼 설정이며 저장소가 자체 강제하지 못한다.
 실제 런타임 모델을 확인할 API가 없으면 확인했다고 주장하지 않는다. Astra는 FINAL-AUDIT-01 전용.
 현재 운영 기능은 없다. 각 단계 완료는 요구사항+unit/integration/장애/회귀/보안/이전 요구 누락감사+
-문서+commit/push/PR/현재 SHA CI+병합 확인을 포함한다. 고위험은 수동 검토.
+문서+commit/push/PR/현재 SHA CI+병합 확인을 포함한다. 모든 변경 유형은 main-owned 독립 검증과 실제 필수 테스트로 판단한다.
 
 | DEV | 산출물 영역 | 선행 | 상세 구현 범위 | 필수 검증·완료 기준 | 상태 |
 |---|---|---|---|---|---|
 | DEV-00 | 설계·GitHub 개발 기반 | 기존 PR1/문서 | 전체 요구사항/모델/계약/테스트 명세·정책 도구 | 정책 unit/통합/실패·문서·CI·Secret 검토; 최초 수동 병합 | MERGED (PR1–3) |
-| DEV-01 | 웹/API/DB 기반 | 00 기준선 | pnpm workspace, React/Vite/Tailwind/PWA i18n, Fastify, Drizzle migrations, Compose, worker shell | typecheck/lint/build, real PG migration/API smoke, worker 종료·再起動, ARM64 manifest | IMPLEMENTED / VERIFIED / MANUAL_MERGE_PENDING (PR4) |
+| DEV-01 | 웹/API/DB 기반 | 00 기준선 | pnpm workspace, React/Vite/Tailwind/PWA i18n, Fastify, Drizzle migrations, Compose, worker shell | typecheck/lint/build, real PG migration/API smoke, worker 종료·再起動, ARM64 manifest | IMPLEMENTED / REVALIDATING_AFTER_AUTO01 (PR4) |
 | DEV-02 | 인증·권한·보안 | 01 | 세션/RBAC/MFA/CSRF/입력·감사 기반 | 권한별 401/403, 세션 만료/탈취·CSRF/XSS·무권한 승인, 회귀 | PLANNED |
 | DEV-03 | 상품·SKU·창고 | 02 | 제품/매핑/상태/다중 창고 CRUD와 페이지네이션 | 60 synthetic SKU, 검색/정렬/필터/동일코드/타창고 FK/비활성 | PLANNED |
 | DEV-04 | 원장·예약·입출고·이동 | 03 | 불변 복식원장/잔액·예약·증거·부분 처리·대조 | real PG concurrency/crash/replay/rollback/불변식+100만 이력 계획 | PLANNED |
@@ -33,4 +33,4 @@
 분리한다. 최초 운영 직전에는 해당 출시 범위 전체를 FINAL-AUDIT-01(Astra)로 감사하고 blocker를 해결한다.
 DEV18 확장판 완성 직전에는 전체 확장 범위를 같은 감사대장의 새 revision으로 다시 검증한다.
 표의 나열 순서가 DEV14 무감사 출시를 허용하지 않는다. 개발 중에는 Astra를 사용하지 않는다. [출시 조건](RELEASE_CHECKLIST.md).
-DEV00 설계·GitHub 기반은 PR1–3으로 main 반영. DEV01은 구현/검증과 고위험 PR의 수동병합 상태를 별도로 기록한다.
+DEV00 설계·GitHub 기반은 PR1–3으로 main 반영. DEV01은 구현/검증과 PR의 자동 검증·병합 상태를 별도로 기록한다.

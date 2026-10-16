@@ -87,3 +87,7 @@ A documentation-only follow-up PR verifies GitHub Actions guarded automatic merg
 **DEV-00 설계 및 GitHub 기반 저장소 병합은 완료로 구분하되, 실제 WMS 앱 기능, 운영 연동, 50 SKU 실부하, Raspberry Pi 배포 및 백업/복원 테스트를 수행했다고 주장하지 않음.** 이는 향후 DEV 수용 조건으로 남습니다.
 
 [최신 상태 문서](../../PROJECT_STATUS.md)와 PR/Actions 실제 기록을 우선 참조하세요.
+
+## AUTO-01 후속 자동화 정책 전환
+기존 DEV00 설계 결과를 보존한다. 최신 사용자 지시로 경로별 수동 승인 정책을 폐기하고 독립 자동 검증으로 대체한다.
+별도 dev/dev-00-auto-01 전환 작업의 코드·테스트·미해결 제약은 [AUTO-01 보고](GITHUB-AUTOMATION-01.md) 참조.

@@ -1,9 +1,9 @@
 # Project-WMS 상태
 
-2026-10-16. **DEV00 설계·GitHub 기반 main 반영 완료. DEV01 구현·검증 완료 / 고위험 PR 수동검토·병합 대기.**
+2026-10-16. **DEV00 설계·GitHub 기반 main 반영 완료. DEV01 구현·검증 완료 / AUTO-01 적용 후 PR4 자동병합 재검증 중.**
 DEV01 브랜치 `dev/dev-01-foundation`을 재사용, 시작 main=`02611d1b85a76c8c3d806bd66f8c4c0ec684c130`.
 PR1/2/3 Merged를 원격 재확인. 현재 GitHub `allow_auto_merge=true`, Actions guarded mode 설치·문서변경 병합 실증.
-보호규칙 미사용 모드는 직접main bypass를 막지 못하며 보호 사용은 권장. 이번 CI/패키지/DB/infra 변경은 자동병합 금지.
+보호규칙 미사용 모드는 직접main bypass를 막지 못하며 보호 사용은 권장. AUTO-01 전환 PR5가 적용되어 경로별 수동 승인 조건은 제거됨. 실제 독립 검증을 통과해야 병합한다.
 
 ## 실행 기반
 pnpm TS workspace, 일본어 React/Vite/Tailwind15화면/PWA, Fastify 읽기전용 상태·버전,

@@ -1,0 +1,9 @@
+{
+  "dev": "DEV-01",
+  "implementation": true,
+  "selfReview": true,
+  "regression": true,
+  "security": true,
+  "requirementsAudit": true,
+  "documentation": true
+}

@@ -9,6 +9,7 @@ export default ts.config(
       "test-results/**",
       "playwright-report/**",
       ".runtime/**",
+      ".trusted-base/**",
     ],
   },
   js.configs.recommended,

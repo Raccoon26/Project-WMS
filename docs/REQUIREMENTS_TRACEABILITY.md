@@ -111,3 +111,5 @@
 | D01-32 | 최종보고 | 요청13항목 순서대로 실제증거·미실행 표기 | 최종보고 |
 
 이 표는 구현 연결표이며 결과 자체는 [DEV01 보고](dev-reports/DEV-01.md)의 실제 실행과 현재SHA CI가 기준이다. 물류/원장/운영연동은 NOT RUN 유지.
+
+AUTO-01 최신 지시 §0–16: 수동 승인 제거/일반 PR/Ready·metadata 분리/영역별 실제 suite/main-owned 독립 검증/최초 전환/PR4 보존/이벤트 호환성/운영 배포 분리를 [실행 대장](dev-reports/GITHUB-AUTOMATION-01.md)으로 추적한다.

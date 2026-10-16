@@ -11,8 +11,8 @@
 9. 실제 재고·출고·구매 없는 mock CI, public secret/PII/backup 금지.
 10. 암호화6h backup+월실제복원+epoch quarantine, 외부heartbeat+업무실패 독립감시.
 11. 같은SHA typecheck/lint/build/unit/integration/invariants/failures+요구감사; skip/미실행/불명은 green 아님.
-12. 고위험 CI/보호/인증/DB/재고/중복방지/금전/배포/복구는 owner review·수동병합.
-13. 최신 GitHub Actions guarded 모드는 trusted main·정확 current SHA/CI/base·안전경로만 병합. 고위험은 수동.
+12. 모든 변경 유형은 독립 자동 검증 성공 시 승인 없이 병합 가능. 필수 업무 테스트 미구현/실패/누락은 차단.
+13. 최신 GitHub Actions 모드는 trusted main·정확 current SHA/CI/base·실제 nonzero/no-skip 증거와 독립 baseline을 요구. 모든 유형은 실제 독립 검증을 요구한다.
    protection 없는 구성은 직접main push 차단을 보장하지 못하며 보호는 권장; legacy native helper는 보호확인 필수.
 14. main merge≠운영배포; 사전백업/drain/별도승인/rollback 후 운영 반영.
 15. 최소50SKU는 하한, AI는 default OFF/선택, 운영의존0.

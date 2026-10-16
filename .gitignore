@@ -22,3 +22,5 @@ rclone.conf
 .runtime/
 test-results/
 playwright-report/
+
+.trusted-base/

@@ -1,0 +1,67 @@
+name: WMS Independent Verification
+on:
+  workflow_run:
+    workflows: ["WMS PR CI"]
+    types: [completed]
+permissions:
+  contents: read
+concurrency:
+  group: wms-independent-${{ github.event.workflow_run.pull_requests[0].number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  quality:
+    name: WMS Independent Gate
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.pull_requests[0].head.repo.id == github.repository_id }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:17.11-bookworm@sha256:3645570cccdfa447589da9f57dd740faa29b30938e861289a5574b6ca6b03826
+        env:
+          POSTGRES_USER: wms_test
+          POSTGRES_DB: wms_test
+          POSTGRES_PASSWORD: wms_test_only
+        ports: ["127.0.0.1:5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U wms_test -d wms_test"
+          --health-interval 2s --health-timeout 3s --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgresql://wms_test:wms_test_only@127.0.0.1:5433/wms_test
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.workflow_run.pull_requests[0].base.sha }}
+          path: .trusted-base
+          persist-credentials: false
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: "10.34.7"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.19.0"
+      - name: Independent main-owned validation
+        env:
+          WMS_TEST_CONTAINER: ${{ job.services.postgres.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install PyYAML==6.0.3
+          WMS_TOOLS_DIR="$RUNNER_TEMP/wms-tools" bash .trusted-base/scripts/install-dev-tools.sh
+          "$RUNNER_TEMP/wms-tools/actionlint" .github/workflows/*.yml
+          for f in scripts/*.sh; do bash -n "$f"; done
+          if [[ -f package.json ]]; then
+            pnpm install --frozen-lockfile
+            pnpm exec playwright install --with-deps chromium
+          fi
+          python3 .trusted-base/scripts/independent_verify.py --root "$GITHUB_WORKSPACE" --base "$GITHUB_WORKSPACE/.trusted-base"
+      - name: Preserve merge evidence (data only)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: wms-merge-evidence
+          path: test-results/merge-evidence.json
+          if-no-files-found: error
+          retention-days: 7

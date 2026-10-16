@@ -22,3 +22,7 @@
 | K18 | 모델 설정을 코드가 보장 못함 | Low | 플랫폼 Sol Medium 확인은 운영자 설정; Astra 최종감사 전용, 확인불가 명시 |
 
 외부 권한/장비/계약은 해당 DEV 활성 전 prerequisite. DEV00 병합 blocker 해소. DEV01 고위험 PR은 수동검토.
+
+| K19 | 자기 수정 CI가 검사를 약화 | Critical | 이전 main verifier/기존 baseline assertions 재실행, 권한·명령·Secret 검증, read-only 실행/privileged merge 분리. 완전 보안 보장 아님 |
+| K20 | 최종 base 조회 직후 외부 writer 경쟁 | High | controller 직렬화·최종 head/base 재조회·HEAD precondition. REST는 base CAS 없음; 직접 main push/동시 수동 병합 금지 |
+| K21 | 미구현 업무 검사를 성공으로 오인 | High | main-owned case catalog와 실제 no-skip 실행 증거; 미구현은 필수 검사 누락으로 차단 |

@@ -16,7 +16,7 @@ def validate(root=ROOT):
         if not (root / name).is_file():
             errors.append('Missing ' + name)
     for p in root.rglob('*.md'):
-        if any(part in p.parts for part in ('.git', 'node_modules', 'dist', 'test-results', 'playwright-report', '.runtime')):
+        if any(part in p.parts for part in ('.git', 'node_modules', 'dist', 'test-results', 'playwright-report', '.runtime', '.trusted-base')):
             continue
         for link in re.findall(r'\[[^\]]*\]\(([^\s)]+)\)', p.read_text()):
             if '://' in link or link.startswith('#') or link.startswith('mailto:'):
