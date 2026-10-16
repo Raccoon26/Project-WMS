@@ -65,3 +65,6 @@ Python3.12.14/Node24.19.0 확인. actionlint1.7.12 Linux amd64 공식 릴리스�
 - 마지막 이 증거기록 커밋의 현재SHA CI는 GitHub/PR 본문/최종보고에서 별도 확인한다.
 - PR1 **Open / Draft / mergedAt=null** 관측; auto-merge 요청/실제병합/운영배포 없음.
 - 관리자 수동 검토·bootstrap 병합·유효보호설정·그 뒤 current-head Policy 실증 필요. DEV00 최종완료 gate는 미충족.
+
+## Safe auto-merge smoke exercise
+A documentation-only follow-up PR verifies GitHub Actions guarded automatic merging. The expected outcome is a successful `WMS PR CI` run followed by `WMS Guarded Auto Merge`. The actual result must be confirmed in the GitHub PR and workflow logs; no WMS functionality or production process is exercised.
