@@ -33,7 +33,8 @@
     "check:boundaries": "tsx --conditions=source scripts/check-boundaries.ts",
     "auth:bootstrap": "tsx --conditions=source --env-file-if-exists=.env scripts/auth-bootstrap.ts",
     "auth:setup": "tsx scripts/auth-key.ts",
-    "test:security": "node scripts/run-tests.mjs fault"
+    "test:security": "node scripts/run-tests.mjs fault",
+    "auth:recover": "tsx --conditions=source --env-file-if-exists=.env scripts/auth-bootstrap.ts --recover"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

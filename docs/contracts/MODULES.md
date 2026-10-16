@@ -26,7 +26,7 @@
 | Google Drive Backup | uploadEncrypted(manifest,object)/verify → backup ref | backups,restore_runs | pg_dump/rclone/crypt; quota/token/손상 실패 보존; BackupStorePort |
 | Carrier (future) | quote/createLabel/cancel/tracking(key) → refs | carrier refs/labels | DEV17 계약; 요금 승인·불명 보류; CarrierPort |
 | Optional AI (future) | analyze(redacted read model) → suggestions | 제안만, core 쓰기 없음 | DEV18 disabled adapter, AI01 별도; DisabledAI returns unavailable 정상 |
-| Authentication | login/session/MFA → actor/session | users,sessions,identity bindings | OIDC or secure password module; deny/reauth; IdentityPort |
+| Authentication | login/session/MFA → actor/session | users,sessions,identity bindings | DEV02 Argon2id/TOTP/local IdentityProvider; 미래 OIDC 선택; deny/reauth |
 | Authorization | authorize(actor,action,scope,amount,version) → decision | roles/permissions/assignments | policy versions; 기본 deny; PolicyEvaluator deterministic |
 | Audit Logging | append(actor,event,digest,tx) → audit id | audit_events | UoW; 필수 감사 쓰기 실패 시 위험 command rollback; AuditSink |
 | Scheduler | tick(clock,policy) → unique due jobs | scheduled_jobs | DB time/epoch; 중복 unique; Clock/SchedulerPort |
@@ -53,3 +53,12 @@ capability가 없는 외부 창고에 API 취소/조회가 있다고 가정하�
 correlationId, causationId, payloadHash`. 신뢰된 서명/계정·idempotency 검증 전 domain command 금지.
 DB 내부 원자성이 필요한 경우 동기 command; 외부 연동·알림은 commit 이후 이벤트.
 호출자는 source truth와 freshness를 함께 전달하고 실행자는 다시 검사한다.
+
+## DEV02 구현 port
+
+AuthService: bootstrap/login/verifyMfa/enroll/confirm/reauth/me/logout/changePassword/revokeSessions,
+createUser/updateUser/setRoles/list. HTTP adapter만 Cookie/Origin/header를 Context로 변환한다.
+`allowed(grants,permission,warehouse?,knownWarehouses)`는 프레임워크 없는 Permission 평가, 기본 deny.
+`mutate(ctx,callback,permission)`는 user/session lock·최근 MFA 재인증·현재 grants·CSRF·audit transaction 경계다.
+`authorize`의 사전 허가만으로 transaction 밖 업무쓰기를 허용하지 않는다. 후속 업무는 같은 UoW 안에서 재검증한다.
+SystemActor는 명시 권한만 가지며 사용자 session을 상속하지 않는다. [구현/API 계약](../AUTHENTICATION.md).

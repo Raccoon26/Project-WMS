@@ -6,7 +6,7 @@ import shutil
 import tempfile
 import unittest
 from unittest.mock import patch
-from independent_verify import preflight
+from independent_verify import preflight, auth_preflight
 from auto_merge import api, quality_errors
 from test_auto_merge import P, BASE, SHA, REPO_NAME
 
@@ -111,8 +111,34 @@ class AuthTransitionTests(unittest.TestCase):
             shutil.copy(ROOT/'scripts/verification-baseline.json', root/'scripts')
             self.assertTrue(preflight(root, ROOT))
             shutil.copy(ROOT/'scripts/verification-auth-transition.json', root/'scripts')
+            if (ROOT/'scripts/verification-auth.json').exists(): shutil.copy(ROOT/'scripts/verification-auth.json',root/'scripts')
             self.assertEqual(preflight(root, ROOT), [])
             data = json.loads((root/'scripts/verification-auth-transition.json').read_text())
             del data['files']['tests/e2e/web.spec.ts']
             (root/'scripts/verification-auth-transition.json').write_text(json.dumps(data))
             self.assertTrue(preflight(root, ROOT))
+
+class AuthSafetyRegistryTests(unittest.TestCase):
+    def test_auth_registry_cannot_overlay_implementation_or_escape_checkout(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            shutil.copytree(ROOT/'.github', root/'.github')
+            (root/'scripts').mkdir()
+            shutil.copy(ROOT/'scripts/verification-baseline.json',root/'scripts')
+            path=root/'scripts/verification-auth.json'
+            for name in ('apps/api/src/auth/service.ts','tests/../../apps/api/src/auth/service.ts','/tmp/escape'):
+                path.write_text(json.dumps({name:'synthetic'}))
+                self.assertTrue(auth_preflight(root,root))
+            path.write_text(json.dumps({'tests/unit/safety.test.ts':'test source'}))
+            (root/'tests/unit').mkdir(parents=True)
+            (root/'tests/unit/safety.test.ts').write_text('test source')
+            self.assertEqual(auth_preflight(root,root),[])
+
+    def test_established_auth_cases_cannot_be_removed_from_registry(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            shutil.copytree(ROOT/'.github',root/'.github')
+            (root/'scripts').mkdir()
+            shutil.copy(ROOT/'scripts/verification-baseline.json',root/'scripts')
+            errors=auth_preflight(root,ROOT)
+            self.assertTrue(any('Established authentication safety baseline' in e for e in errors))

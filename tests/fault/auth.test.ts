@@ -348,3 +348,20 @@ it("explicit permission route contract enforces server authorization and CSRF", 
   );
   expect((await f.request("settings/example", {})).statusCode).toBe(403);
 });
+it("pending MFA challenge expires after five minutes and can be explicitly logged out", async () => {
+  await f.request("auth/csrf");
+  await f.request("auth/login", {
+    login: "administrator",
+    password: f.password,
+  });
+  const r = (
+    await f.db.pool.query(
+      "SELECT extract(epoch FROM absolute_expires_at-issued_at) AS seconds FROM sessions WHERE revoked_at IS NULL AND user_id IS NOT NULL",
+    )
+  ).rows[0];
+  expect(Number(r.seconds)).toBe(300);
+  expect((await f.request("auth/logout", {})).statusCode).toBe(200);
+  expect(
+    (await f.request("auth/mfa/verify", { code: f.otp.generate() })).statusCode,
+  ).toBe(401);
+});

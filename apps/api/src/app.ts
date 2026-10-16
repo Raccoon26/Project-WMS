@@ -44,8 +44,13 @@ export function buildApi(db: DatabaseProbe, log: Logger, auth?: AuthOptions) {
         .send(
           apiError(err.message as "INVALID_INPUT" | "RATE_LIMITED", req.id),
         );
-    if (err instanceof AuthError)
+    if (err instanceof AuthError) {
+      log.error("authentication_rejected", {
+        requestId: req.id,
+        code: err.code,
+      });
       return void reply.code(err.status).send(apiError(err.code, req.id));
+    }
     if (
       auth &&
       typeof err === "object" &&

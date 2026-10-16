@@ -342,3 +342,216 @@ it("permission update and failed audit roll back as a unit", async () => {
   );
   expect(roles.rows.map((r) => r.code)).toEqual(["Viewer"]);
 });
+it("real interactive bootstrap hides passwords, rejects duplicates and supports local development credential recovery", async () => {
+  const { scopedDatabase } = await import("../helpers");
+  const { execFile } = await import("node:child_process");
+  const { promisify } = await import("node:util");
+  const scope = await scopedDatabase(3000);
+  await scope.db.migrate();
+  try {
+    const { stdout } = await promisify(execFile)(
+      "python3",
+      ["tests/fixtures/auth-cli-driver.py"],
+      {
+        env: {
+          ...process.env,
+          NODE_ENV: "test",
+          DB_SCHEMA: scope.schema,
+          AUTH_ENCRYPTION_KEY: f.key.toString("base64"),
+          WMS_NODE: process.execPath,
+        },
+        timeout: 25000,
+      },
+    );
+    const result = JSON.parse(stdout);
+    expect(result.bootstrap).toEqual({
+      exit: 0,
+      passwordEchoed: false,
+      codes: 10,
+    });
+    expect(result.duplicate.exit).toBe(1);
+    expect(result.recovery).toEqual({
+      exit: 0,
+      passwordEchoed: false,
+      codes: 10,
+    });
+    expect(
+      (await scope.db.pool.query("SELECT count(*) FROM users")).rows[0].count,
+    ).toBe("1");
+    expect(
+      (await scope.db.pool.query("SELECT session_epoch FROM users")).rows[0]
+        .session_epoch,
+    ).toBe(1);
+    expect(
+      (
+        await scope.db.pool.query(
+          "SELECT count(*) FROM audit_events WHERE action='local.administrator.recovered'",
+        )
+      ).rows[0].count,
+    ).toBe("1");
+  } finally {
+    await scope.cleanup();
+  }
+});
+it("audit chain binds timestamps policy and before-after digests to committed predecessors", async () => {
+  await f.login();
+  await f.request("auth/logout", {});
+  const rows = (
+    await f.db.pool.query("SELECT * FROM audit_events ORDER BY sequence")
+  ).rows;
+  let previous = "genesis";
+  for (const r of rows) {
+    expect(r.previous_digest).toBe(previous);
+    expect(r.event_digest).toBe(
+      digest(
+        JSON.stringify({
+          id: r.id,
+          actor: r.actor_id,
+          action: r.action,
+          target: r.target_id,
+          result: r.result_code,
+          requestId: r.request_id,
+          before: r.before_digest,
+          after: r.after_digest,
+          previous,
+          occurredAt: r.occurred_at.toISOString(),
+          policyVersion: r.policy_version,
+        }),
+      ),
+    );
+    previous = r.event_digest;
+  }
+});
+it("permission revocation racing an existing request serializes before the next policy decision", async () => {
+  await f.login();
+  const created = await f.request("users", {
+    login: "race-viewer",
+    password: f.password,
+    displayName: "Race Viewer",
+    locale: "ja",
+  });
+  const id = created.json().id;
+  await f.request("users/" + id + "/roles", { roles: ["Viewer"] }, "PUT");
+  const pending = await f.service.tx((c) => f.service.issue(c, id));
+  const ctx = {
+    token: pending.token,
+    csrf: pending.csrf,
+    origin: f.origin,
+    requestId: "race-enrollment",
+    ip: "synthetic",
+  };
+  const enroll = await f.service.enroll(ctx);
+  const activated = await f.service.confirm(ctx, totpCode(enroll.secret));
+  const target = {
+    ...ctx,
+    token: activated.issued.token,
+    csrf: activated.issued.csrf,
+  };
+  const blocker = await f.db.pool.connect();
+  const blockerPid = (await blocker.query("SELECT pg_backend_pid() AS id"))
+    .rows[0].id;
+  try {
+    await blocker.query("BEGIN");
+    await blocker.query("SELECT id FROM users WHERE id=$1 FOR UPDATE", [id]);
+    const revoking = f.request("users/" + id + "/roles", { roles: [] }, "PUT");
+    const { until } = await import("../helpers");
+    await until(
+      async () =>
+        Number(
+          (
+            await f.db.pool.query(
+              "SELECT count(*) FROM pg_stat_activity WHERE $1=ANY(pg_blocking_pids(pid))",
+              [blockerPid],
+            )
+          ).rows[0].count,
+        ) > 0,
+    );
+    const next = f.service.authorize(target, "system.read").then(
+      () => ({ allowed: true }),
+      (error) => ({ allowed: false, error }),
+    );
+    await blocker.query("ROLLBACK");
+    expect((await revoking).statusCode).toBe(200);
+    expect(await next).toMatchObject({
+      allowed: false,
+      error: { code: "FORBIDDEN" },
+    });
+  } finally {
+    await blocker.query("ROLLBACK");
+    blocker.release();
+  }
+});
+it("PostgreSQL rate buckets are atomic under concurrent requests and survive service restart", async () => {
+  const results = await Promise.allSettled(
+    Array.from({ length: 20 }, () =>
+      f.service.rate("concurrent", "synthetic-identity", 5),
+    ),
+  );
+  expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(5);
+  expect(results.filter((r) => r.status === "rejected")).toHaveLength(15);
+  const { AuthService } = await import("../../apps/api/src/auth/service");
+  await expect(
+    new AuthService(f.db.pool, f.key, f.origin).rate(
+      "concurrent",
+      "synthetic-identity",
+      5,
+    ),
+  ).rejects.toMatchObject({ code: "RATE_LIMITED" });
+  expect(
+    (
+      await f.db.pool.query(
+        "SELECT attempts FROM auth_attempts WHERE bucket=$1",
+        ["concurrent:" + digest("synthetic-identity")],
+      )
+    ).rows[0].attempts,
+  ).toBe(21);
+});
+it("actual DEV01 schema upgrades forward with existing data preserved and missing history fails safely", async () => {
+  const { scopedDatabase } = await import("../helpers");
+  const { mkdtemp, cp, readFile, writeFile, rm } =
+    await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  const { migrationFolder } = await import("@wms/db");
+  const scope = await scopedDatabase(3000),
+    folder = await mkdtemp(join(tmpdir(), "wms-dev01-upgrade-"));
+  try {
+    await cp(migrationFolder, folder, { recursive: true });
+    const journal = JSON.parse(
+      await readFile(join(folder, "meta/_journal.json"), "utf8"),
+    );
+    journal.entries = journal.entries.slice(0, 1);
+    await writeFile(
+      join(folder, "meta/_journal.json"),
+      JSON.stringify(journal),
+    );
+    await scope.db.migrate(folder);
+    await scope.db.pool.query(
+      "INSERT INTO foundation_metadata(key,value) VALUES('before-auth','preserved')",
+    );
+    await scope.db.migrate();
+    expect(
+      (
+        await scope.db.pool.query(
+          "SELECT value FROM foundation_metadata WHERE key='before-auth'",
+        )
+      ).rows[0].value,
+    ).toBe("preserved");
+    expect(await scope.db.migrationStatus()).toBe(true);
+    await scope.db.pool.query(
+      "DELETE FROM wms_migrations WHERE id=(SELECT max(id) FROM wms_migrations)",
+    );
+    expect(await scope.db.check()).toBe(false);
+    await expect(scope.db.migrate()).rejects.toThrow();
+    expect(
+      (
+        await scope.db.pool.query(
+          "SELECT value FROM foundation_metadata WHERE key='before-auth'",
+        )
+      ).rows[0].value,
+    ).toBe("preserved");
+  } finally {
+    await scope.cleanup();
+    await rm(folder, { recursive: true, force: true });
+  }
+});

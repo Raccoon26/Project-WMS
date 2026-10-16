@@ -65,3 +65,26 @@ export interface DatabaseProbe {
   check(): Promise<boolean>;
   close(): Promise<void>;
 }
+
+// Browser DTO contains identity and current grants, never an opaque token or credential.
+export interface AuthenticatedIdentity {
+  id: string;
+  login: string;
+  displayName: string;
+  locale: string;
+  mfaEnabled: boolean;
+  expiresAt: string;
+  roles: string[];
+  permissions: string[];
+}
+// Future OIDC adapters may prove a subject, but cannot assign permissions or sessions.
+export interface VerifiedIdentity {
+  issuer: string;
+  subject: string;
+  verifiedAt: string;
+  methods: readonly string[];
+}
+export interface IdentityProvider {
+  readonly kind: "local" | "oidc";
+  verify(assertion: unknown): Promise<VerifiedIdentity | null>;
+}

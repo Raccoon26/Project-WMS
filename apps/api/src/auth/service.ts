@@ -280,7 +280,7 @@ export class AuthService {
     const raw = token(),
       csrf = token();
     await c.query(
-      `INSERT INTO sessions(id,user_id,token_hash,csrf_hash,session_epoch,mfa_verified,reauthenticated_at) VALUES($1,$2,$3,$4,$5,$6,CASE WHEN $7 THEN now() ELSE NULL END)`,
+      `INSERT INTO sessions(id,user_id,token_hash,csrf_hash,session_epoch,mfa_verified,reauthenticated_at,idle_expires_at,absolute_expires_at) VALUES($1,$2,$3,$4,$5,$6,CASE WHEN $7 THEN now() ELSE NULL END,CASE WHEN $2::uuid IS NOT NULL AND NOT $6 THEN now()+interval '5 minutes' ELSE now()+interval '30 minutes' END,CASE WHEN $2::uuid IS NOT NULL AND NOT $6 THEN now()+interval '5 minutes' ELSE now()+interval '12 hours' END)`,
       [randomUUID(), user, digest(raw), digest(csrf), epoch, verified, reauth],
     );
     return {
@@ -451,6 +451,14 @@ export class AuthService {
       await this.audit(
         c,
         s.user_id,
+        "mfa.success",
+        s.user_id,
+        recovery ? "RECOVERY_USED" : "TOTP_VERIFIED",
+        ctx.requestId,
+      );
+      await this.audit(
+        c,
+        s.user_id,
         "login.success",
         s.user_id,
         recovery ? "RECOVERY_USED" : "MFA_VERIFIED",
@@ -561,7 +569,9 @@ export class AuthService {
     });
   }
   async logout(ctx: Context) {
-    return this.mutate(ctx, async (c, s) => {
+    return this.tx(async (c) => {
+      const s = await this.readSession(c, ctx, false);
+      this.csrf(ctx, s);
       await c.query("UPDATE sessions SET revoked_at=now() WHERE id=$1", [s.id]);
       await this.audit(
         c,
@@ -655,7 +665,7 @@ export class AuthService {
       await this.audit(
         c,
         s.user_id,
-        "mfa.enabled",
+        s.mfa_enabled ? "mfa.replaced" : "mfa.enabled",
         s.user_id,
         "SUCCESS",
         ctx.requestId,
@@ -785,9 +795,9 @@ export class AuthService {
       );
       const sql =
         kind === "users"
-          ? "SELECT id,login,display_name,locale,status,mfa_enabled FROM users WHERE ($2::uuid IS NULL OR id>$2) ORDER BY id LIMIT $1"
+          ? "SELECT id,login,display_name,locale,status,mfa_enabled,ARRAY(SELECT r.code FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=users.id AND ur.revoked_at IS NULL AND r.active) AS roles FROM users WHERE ($2::uuid IS NULL OR id>$2) ORDER BY id LIMIT $1"
           : kind === "roles"
-            ? "SELECT id,code,active,policy_version FROM roles WHERE ($2::uuid IS NULL OR id>$2) ORDER BY id LIMIT $1"
+            ? "SELECT id,code,active,policy_version,ARRAY(SELECT rp.permission_code FROM role_permissions rp WHERE rp.role_id=roles.id) AS permissions FROM roles WHERE ($2::uuid IS NULL OR id>$2) ORDER BY id LIMIT $1"
             : "SELECT id,actor_id,action,target_id,result_code,request_id,occurred_at,sequence,previous_digest,event_digest FROM audit_events WHERE ($2::bigint IS NULL OR sequence<$2) ORDER BY sequence DESC LIMIT $1";
       const items = (await c.query(sql, [limit + 1, cursor ?? null])).rows;
       const more = items.length > limit;
@@ -867,7 +877,9 @@ export class AuthService {
         await this.audit(
           c,
           s.user_id,
-          "user.updated",
+          input.status && input.status !== "active"
+            ? "user.deactivated"
+            : "user.updated",
           id,
           "SUCCESS",
           ctx.requestId,
@@ -903,7 +915,7 @@ export class AuthService {
         if (!codes.includes("Administrator")) await this.lastAdmin(c, id);
         const before = (
           await c.query(
-            "SELECT role_id FROM user_roles WHERE user_id=$1 AND revoked_at IS NULL",
+            "SELECT ur.role_id,r.code FROM user_roles ur JOIN roles r ON r.id=ur.role_id WHERE ur.user_id=$1 AND ur.revoked_at IS NULL",
             [id],
           )
         ).rows;
@@ -915,6 +927,44 @@ export class AuthService {
           await c.query(
             "INSERT INTO user_roles(id,user_id,role_id,granted_by) VALUES($1,$2,$3,$4)",
             [randomUUID(), id, role.id, s.user_id],
+          );
+        for (const role of before)
+          if (!codes.includes(role.code))
+            await this.audit(
+              c,
+              s.user_id,
+              "role.revoked",
+              id,
+              "SUCCESS",
+              ctx.requestId,
+              { role: role.code },
+              null,
+            );
+        for (const code of codes)
+          if (!before.some((r) => r.code === code))
+            await this.audit(
+              c,
+              s.user_id,
+              "role.granted",
+              id,
+              "SUCCESS",
+              ctx.requestId,
+              null,
+              { role: code },
+            );
+        if (
+          before.some((r) => r.code === "Administrator") !==
+          codes.includes("Administrator")
+        )
+          await this.audit(
+            c,
+            s.user_id,
+            "administrator.role.changed",
+            id,
+            "SUCCESS",
+            ctx.requestId,
+            before.map((r) => r.code),
+            codes,
           );
         await this.audit(
           c,

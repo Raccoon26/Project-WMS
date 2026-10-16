@@ -12,7 +12,20 @@ async function main() {
       ? { schema: process.env.DB_SCHEMA }
       : {}),
   });
-  const app = buildApi(db, log, authOptions(db.pool, process.env));
+  let auth;
+  try {
+    auth = authOptions(db.pool, process.env);
+  } catch (error) {
+    await db.close();
+    throw error;
+  }
+  if (!auth) {
+    log.error("authentication_unavailable", { code: "AUTH_CONFIG_MISSING" });
+    process.stderr.write(
+      "Authentication disabled: configure AUTH_ENCRYPTION_KEY and AUTH_ORIGIN with pnpm auth:setup. Values are never logged.\n",
+    );
+  }
+  const app = buildApi(db, log, auth);
   installShutdown(async () => {
     try {
       await app.close();

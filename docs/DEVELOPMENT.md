@@ -22,7 +22,7 @@ DATABASE_URL은 PostgreSQL URL만, 비밀을 오류에 출력하지 않습니다
 허용 테스트 대상: loopback 또는 db-test, DB명/사용자 wms_test, query 옵션 없음.
 production DB 실행/자동 reset/drop 명령은 제공하지 않습니다. 앱 시작은 migration을 실행하지 않습니다.
 
-최소 테이블은 `foundation_metadata(key PK text,value text NOT NULL,updated_at timestamptz)`뿐입니다.
+DEV01 최소 테이블은 `foundation_metadata(key PK text,value text NOT NULL,updated_at timestamptz)`였습니다. DEV02 인증 테이블은 아래 별도 계약을 따릅니다.
 상품/원장 테이블은 DEV03/04 예정입니다. typed Drizzle insert/select를 실제 PostgreSQL에서 검증합니다.
 runner는 readMigrationFiles의 SHA256/시간ID와 `wms_migrations` 기록을 대조하고 advisory transaction lock으로 중복 실행을 직렬화합니다.
 한 번의 transaction에서 pending SQL+기록을 commit, SQL 실패 시 신규 테이블/기록 모두 rollback.
@@ -101,3 +101,13 @@ pnpm install --frozen-lockfile --store-dir /workspace/.cache/pnpm-store
 
 기존 사용자 자격증명을 복사/출력하지 않습니다. cloud별 cache 경로를 repository 설정에 하드코딩하지 않습니다.
 일반 CI는 Actions가 준비한 Node/pnpm과 정상 홈을 사용합니다.
+
+## DEV02 인증 개발
+
+`pnpm auth:setup` → `pnpm auth:bootstrap`, 기존 .env/관리자를 덮어쓰지 않는다.
+자세한 Windows/TTY/Authenticator/복구 절차는 [README](../README.md), [인증 계약](AUTHENTICATION.md).
+개발 API는 root.env의 AUTH_ENCRYPTION_KEY/AUTH_ORIGIN을 사용하며 Worker는 이 키나 브라우저 세션에 의존하지 않는다.
+통합 테스트는 매번 독립 wms_test UUID schema, E2E도 전용 schema/임의 계정/임의 키를 생성·정리한다.
+`auth-test-seed.ts --test` 같은 운영 명령은 없으며 seed는 NODE_ENV=test+strict test URL+test schema만 허용한다.
+실제 CLI 검사는 Python3 POSIX PTY로 입력·출력 비밀 노출까지 확인한다. 전체 suite는 Linux/WSL2 권장.
+테스트 Secret은 .runtime에서만 유지, CI는 JSON aggregate 결과만 artifact로 보존한다.

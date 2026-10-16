@@ -72,6 +72,12 @@ test("MFA failure blocks dashboard until a valid factor is supplied", async ({
 }) => {
   const user = account();
   await login(page, user, false);
+  await page.evaluate(() =>
+    document.dispatchEvent(new Event("visibilitychange")),
+  );
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "多要素認証",
+  );
   await page.getByLabel("認証コード", { exact: true }).fill("invalid");
   await page.getByRole("button", { name: "確認", exact: true }).click();
   await expect(page.getByRole("alert")).toBeVisible();
@@ -94,6 +100,10 @@ test("real MFA enrollment displays recovery codes only once and enables session"
   );
   await page.getByRole("button", { name: "確認", exact: true }).click();
   const secret = await page.locator("main code").innerText();
+  await page.evaluate(() =>
+    document.dispatchEvent(new Event("visibilitychange")),
+  );
+  await expect(page.locator("main code")).toHaveText(secret);
   await page.getByLabel("認証コード", { exact: true }).fill(codeFor(secret));
   await page.getByRole("button", { name: "確認", exact: true }).click();
   await expect(
@@ -112,7 +122,12 @@ test("logout, back navigation and direct protected URLs cannot reveal account co
   const user = account();
   await login(page, user);
   await page.goto("/settings");
-  await expect(page.getByText(user.login, { exact: false })).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", {
+      name: "アカウントとセキュリティ",
+      exact: true,
+    }),
+  ).toBeVisible();
   await page
     .getByRole("button", { name: "ログアウト", exact: true })
     .first()
@@ -244,4 +259,169 @@ test("stored display-name HTML is escaped and static CSP blocks inline script", 
   await expect(page.getByText(payload, { exact: false })).toBeVisible();
   expect(await page.evaluate(() => "__xss" in window)).toBe(false);
   await expect(page.locator("main img")).toHaveCount(0);
+});
+test("recovery login, important reauthentication and real user-role management UI", async ({
+  page,
+}) => {
+  const { randomUUID, randomBytes, createHash } = await import("node:crypto");
+  const user = account();
+  const recovery = randomBytes(16).toString("hex");
+  const targetName = "UI Target " + randomUUID();
+  await fixtureQuery(
+    user,
+    "INSERT INTO mfa_codes(id,user_id,code_hash) VALUES($1,$2,$3)",
+    [
+      randomUUID(),
+      user.id,
+      createHash("sha256").update(recovery).digest("hex"),
+    ],
+  );
+  await login(page, user, false);
+  await page
+    .getByRole("button", { name: "復旧コードを使用", exact: true })
+    .click();
+  await page.getByLabel("復旧コードを使用", { exact: true }).fill(recovery);
+  await page.getByRole("button", { name: "確認", exact: true }).click();
+  await expect(page.locator("nav")).toBeVisible();
+  await page.goto("/settings");
+  const reauth = page.locator("form").filter({
+    has: page.getByRole("heading", { name: "重要操作の再認証", exact: true }),
+  });
+  await reauth.getByLabel("パスワード", { exact: true }).fill(user.password);
+  await reauth
+    .getByLabel("認証コード", { exact: true })
+    .fill(codeFor(user.secret));
+  await reauth.getByRole("button", { name: "確認", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("✓");
+  const create = page.locator("form").filter({
+    has: page.getByRole("button", { name: "ユーザー作成", exact: true }),
+  });
+  await create
+    .getByLabel("ログインID", { exact: true })
+    .fill("ui-" + randomUUID());
+  await create.getByLabel("表示名", { exact: true }).fill(targetName);
+  await create.getByLabel("パスワード", { exact: true }).fill(user.password);
+  const created = page.waitForResponse(
+    (r) => r.url().endsWith("/api/v1/users") && r.request().method() === "POST",
+  );
+  await create
+    .getByRole("button", { name: "ユーザー作成", exact: true })
+    .click();
+  expect((await created).status()).toBe(200);
+  await expect(
+    create.getByRole("button", { name: "ユーザー作成", exact: true }),
+  ).toBeEnabled();
+  const target = page.locator("article").filter({
+    has: page.getByRole("heading", {
+      name: targetName,
+      exact: true,
+    }),
+  });
+  await expect
+    .poll(
+      async () => {
+        if (await target.count()) return true;
+        const next = page.getByRole("button", {
+          name: "次のページ",
+          exact: true,
+        });
+        if (await next.count()) await next.click();
+        return false;
+      },
+      { timeout: 10000 },
+    )
+    .toBe(true);
+  await target.getByRole("checkbox", { name: "Viewer", exact: true }).check();
+  const saved = page.waitForResponse(
+    (r) => r.url().endsWith("/roles") && r.request().method() === "PUT",
+  );
+  await target.getByRole("button", { name: "保存", exact: true }).click();
+  expect((await saved).status()).toBe(200);
+  await expect(
+    target.getByRole("checkbox", { name: "Viewer", exact: true }),
+  ).toBeChecked();
+  const records = await fixtureQuery(
+    user,
+    "SELECT count(*) FROM audit_events WHERE action='role.granted'",
+  );
+  expect(Number(records.rows[0].count)).toBeGreaterThan(0);
+});
+test("successful MFA returns to the original protected route", async ({
+  page,
+}) => {
+  const user = account();
+  await page.goto("/inventory");
+  await page.getByLabel("ログインID", { exact: true }).fill(user.login);
+  await page.getByLabel("パスワード", { exact: true }).fill(user.password);
+  await page.getByRole("button", { name: "ログイン", exact: true }).click();
+  await page
+    .getByLabel("認証コード", { exact: true })
+    .fill(codeFor(user.secret));
+  await page.getByRole("button", { name: "確認", exact: true }).click();
+  await expect(page.locator('nav a[href="/inventory"]')).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(page).toHaveURL(/\/inventory$/);
+});
+test("a delayed real identity response cannot restore protected UI after another tab logs out", async ({
+  page,
+  context,
+}) => {
+  const user = account();
+  await login(page, user);
+  const other = await context.newPage();
+  await other.goto("/");
+  await expect(other.locator("nav")).toBeVisible();
+  await page.evaluate(() => {
+    const w = window as Window & {
+      held?: boolean;
+      delivered?: boolean;
+      release?: () => void;
+    };
+    const original = window.fetch.bind(window);
+    window.fetch = async (...args: Parameters<typeof fetch>) => {
+      const actual = await original(...args);
+      if (String(args[0]).endsWith("/auth/me") && actual.ok && !w.held) {
+        w.held = true;
+        await new Promise<void>((resolve) => {
+          w.release = resolve;
+        });
+        w.delivered = true;
+      }
+      return actual;
+    };
+    window.dispatchEvent(new Event("pageshow"));
+  });
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        Boolean((window as Window & { held?: boolean }).held),
+      ),
+    )
+    .toBe(true);
+  await other
+    .getByRole("button", { name: "ログアウト", exact: true })
+    .first()
+    .click();
+  await expect(other.getByRole("heading", { level: 1 })).toHaveText("ログイン");
+  await page.evaluate(() => {
+    (window as Window & { release?: () => void }).release?.();
+  });
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        Boolean((window as Window & { delivered?: boolean }).delivered),
+      ),
+    )
+    .toBe(true);
+  await page.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      ),
+  );
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("ログイン");
+  await expect(page.locator("nav")).toHaveCount(0);
+  await other.close();
 });

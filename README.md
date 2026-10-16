@@ -1,6 +1,6 @@
 # Project-WMS
 
-일본 전자상거래용 WMS. **DEV-01 실행 기반 구현 / 운영 업무 미구현**.
+일본 전자상거래용 WMS. **DEV-02 인증 구현·검증 / 운영 업무 미구현**.
 React·TypeScript·Vite·Tailwind 웹, Fastify API, PostgreSQL/Drizzle, 독립 Worker.
 최소50 SKU는 수용 목표이며 상한이 아닙니다. Dot/유료 AI/운영 API 키 없이 실행합니다.
 
@@ -12,8 +12,6 @@ Windows에서는 Linux 컨테이너 모드를 사용합니다. 이 작업의 실
 ```bash
 git clone https://github.com/Raccoon26/Project-WMS.git
 cd Project-WMS
-# DEV-01 PR 미병합 동안만 아래 브랜치로 이동합니다. 병합 후에는 이 줄을 생략합니다.
-git switch dev/dev-01-foundation
 corepack enable
 pnpm --version
 pnpm install --frozen-lockfile
@@ -21,6 +19,8 @@ cp .env.example .env
 pnpm dev:setup
 pnpm db:up
 pnpm db:migrate
+pnpm auth:setup
+pnpm auth:bootstrap
 ```
 
 `dev:setup`은 예제의 placeholder만 로컬 무작위 값으로 바꾸며 비밀값을 출력하지 않습니다.
@@ -39,7 +39,8 @@ pnpm dev:web
 API와 Worker는 root `.env`를 읽습니다. 웹에는 DB 주소·비밀번호를 전달하지 않습니다.
 개발 watch가 필요 없으면 `pnpm start:api`, `pnpm start:worker`를 사용합니다.
 Production build 검증은 `pnpm build`, 정적 build 확인은 `pnpm --filter @wms/web preview`입니다.
-현재 NODE_ENV=production 실행은 DEV02/12 보안·배포 gate가 없어서 의도적으로 중단됩니다.
+preview에서 로그인하려면 API 실행 환경의 AUTH_ORIGIN을 `http://127.0.0.1:4173`으로 명시하고 API를 다시 시작합니다. 기존 .env 키를 재생성하지 마세요.
+현재 NODE_ENV=production 실행은 DEV12 HTTPS·운영 배포 gate가 없어 의도적으로 중단됩니다.
 
 ```bash
 curl --fail http://127.0.0.1:3001/api/v1/health/live
@@ -78,7 +79,17 @@ Linux 브라우저 라이브러리가 없으면 `pnpm exec playwright install --
 장애 테스트는 지정된 **테스트 컨테이너만 실제 stop/start**합니다. 다른 DB와 동시 테스트하지 마세요.
 GitHub CI는 고정 이미지의 별도 PostgreSQL service와 같은 명령, 데스크톱·모바일 Chromium E2E를 실행합니다.
 
-PowerShell에서는 `Copy-Item .env.example .env`를 사용하고 테스트 환경을 아래처럼 설정합니다.
+PowerShell에서는 `cp` 대신 `Copy-Item .env.example .env`를 사용합니다. 나머지 최초 실행 명령은 동일합니다.
+`pnpm auth:setup`은 기존 .env를 유지하며 무작위 암호화 키를 추가합니다. `pnpm auth:bootstrap`의
+로그인 ID/표시 이름/숨김 비밀번호를 입력하고 출력되는 일회 등록 URI를 Authenticator 앱에 등록한 뒤
+현재 코드를 확인하세요. 복구 코드는 한 번만 표시되므로 별도 안전한 장소에 저장합니다.
+로그인 화면에서 ID/비밀번호→MFA를 입력합니다. 공개 기본 계정이나 고정 비밀번호는 없습니다.
+Windows Terminal/PowerShell의 TTY가 필요하며 입력 리다이렉션은 거부합니다. 실제 Windows 실행은 NOT RUN입니다.
+전체 CLI PTY integration suite는 POSIX/Python3를 사용하므로 Windows에서는 WSL2/Linux에서 실행합니다.
+개발 전용 비밀번호·MFA 복구는 `pnpm auth:recover`, 실제 운영 복구 절차는 DEV12/13 별도입니다.
+기존 키가 있으면 auth:setup은 덮어쓰지 않고 중단합니다.
+
+테스트 환경은 아래처럼 설정합니다.
 
 ```powershell
 $env:TEST_DATABASE_URL = 'postgresql://wms_test:wms_test_only@127.0.0.1:5433/wms_test'
@@ -87,6 +98,8 @@ $env:WMS_TEST_CONTAINER = (docker compose -f infra/compose/compose.test.yaml ps 
 
 ## 문제 해결
 
+- 인증503: `pnpm auth:setup`, root.env AUTH_ORIGIN과 접속 origin의 host/port, migration을 확인합니다. `localhost`와 `127.0.0.1`은 서로 다릅니다.
+- TOTP 거부: 이미 사용한 30초 step은 재승인하지 않습니다. 새 코드 또는 사용하지 않은 복구 코드를 사용합니다.
 - `CONFIG_INVALID`: NODE_ENV/DATABASE_URL/포트/loopback HOST 확인. 값 자체를 로그/issue에 붙이지 마세요.
 - Readiness503 + Liveness200: DB 시작·접근·migration/checksum을 확인합니다. DB 장애만으로 API를 재시작할 필요는 없습니다.
 - 비밀번호 불일치: 기존 volume은 최초 비밀번호를 유지합니다. `.env`를 복구하세요. 재생성 전에 개발 데이터 보존을 결정하세요.
@@ -98,7 +111,7 @@ $env:WMS_TEST_CONTAINER = (docker compose -f infra/compose/compose.test.yaml ps 
 
 `apps/{web,api,worker}`, `packages/{domain,contracts,db,integrations,runtime}`, `tests/{unit,integration,fault,e2e}`, `infra/compose`.
 
-[상태](PROJECT_STATUS.md) · [개발 안내](docs/DEVELOPMENT.md) · [DEV01 보고](docs/dev-reports/DEV-01.md) ·
+[상태](PROJECT_STATUS.md) · [개발 안내](docs/DEVELOPMENT.md) · [DEV01 보고](docs/dev-reports/DEV-01.md) · [인증 계약](docs/AUTHENTICATION.md) · [DEV02 보고](docs/dev-reports/DEV-02.md) ·
 [요구](REQUIREMENTS.md) · [구조](ARCHITECTURE.md) · [DB](DATA_MODEL.md) · [업무](OPERATIONS.md) ·
 [범위](docs/PROJECT_SCOPE.md) · [모듈](docs/contracts/MODULES.md) · [로드맵](DEV_PROGRESS.md) ·
 [테스트](TEST_PLAN.md) · [보안](SECURITY.md) · [배포](DEPLOYMENT.md) · [백업](BACKUP_RECOVERY.md) ·

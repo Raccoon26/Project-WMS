@@ -1,4 +1,6 @@
+import type { AuthenticatedIdentity } from "@wms/contracts";
 import {
+  useRef,
   createContext,
   useContext,
   useState,
@@ -8,16 +10,7 @@ import {
 import type { ReactNode, FormEvent } from "react";
 import { localeOf } from "./i18n";
 import type { Locale } from "./i18n";
-export interface Identity {
-  id: string;
-  login: string;
-  displayName: string;
-  locale: string;
-  mfaEnabled: boolean;
-  expiresAt: string;
-  roles: string[];
-  permissions: string[];
-}
+export type Identity = AuthenticatedIdentity;
 const messages = {
   ja: {
     login: "ログイン",
@@ -145,7 +138,9 @@ export async function authRequest(
   if (!response.ok) {
     if (
       response.status === 401 &&
-      !["auth/login", "auth/mfa/verify", "auth/reauth"].includes(path)
+      !["auth/login", "auth/mfa/verify", "auth/reauth", "auth/me"].includes(
+        path,
+      )
     )
       window.dispatchEvent(new Event("wms-unauthorized"));
     throw new Error("REQUEST_FAILED");
@@ -164,6 +159,8 @@ const AuthContext = createContext<AuthState>({
 });
 export const useAuth = () => useContext(AuthContext);
 export function AuthGate({ children }: { children: ReactNode }) {
+  const generation = useRef(0);
+  const stageRef = useRef("loading");
   const [user, setUser] = useState<Identity | null>(null),
     [stage, setStage] = useState("loading"),
     [locale, setLocale] = useState<Locale>(() =>
@@ -176,21 +173,30 @@ export function AuthGate({ children }: { children: ReactNode }) {
     [recovery, setRecovery] = useState(false);
   const t = (key: keyof typeof messages.ja) => authText(locale, key);
   const refresh = useCallback(async () => {
+    const current = ++generation.current;
     try {
       const data = (await authRequest("auth/me")) as Identity;
-      setUser(data);
-      setStage("authenticated");
+      if (current === generation.current && navigator.onLine) {
+        setUser(data);
+        setStage("authenticated");
+      }
     } catch {
-      setUser(null);
-      setStage(navigator.onLine ? "login" : "offline");
+      if (current === generation.current) {
+        setUser(null);
+        setStage(navigator.onLine ? "login" : "offline");
+      }
     }
   }, []);
+  useEffect(() => {
+    stageRef.current = stage;
+  }, [stage]);
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
   useEffect(() => {
     const channel = new BroadcastChannel("wms-auth");
     const reset = () => {
+      generation.current++;
       setUser(null);
       setSecret("");
       setCodes([]);
@@ -200,12 +206,17 @@ export function AuthGate({ children }: { children: ReactNode }) {
       reset();
       setStage("offline");
     };
-    const visible = () => {
-      if (!document.hidden) {
+    const visible = (event: Event) => {
+      if (document.hidden) return;
+      // Switching to a mobile authenticator must preserve the restricted MFA
+      // challenge/enrollment. It never grants access to the protected UI.
+      if (!["authenticated", "loading", "offline"].includes(stageRef.current))
+        return;
+      if (event.type === "pageshow" || event.type === "online") {
         reset();
         setStage("loading");
-        void refresh();
       }
+      void refresh();
     };
     channel.onmessage = () => {
       reset();
@@ -240,10 +251,14 @@ export function AuthGate({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [user]);
   const logout = async () => {
+    generation.current++;
     try {
       await authRequest("auth/logout", {});
     } finally {
+      generation.current++;
       setUser(null);
+      setSecret("");
+      setCodes([]);
       setStage("login");
       csrf = "";
       const c = new BroadcastChannel("wms-auth");
@@ -404,6 +419,15 @@ export function AuthGate({ children }: { children: ReactNode }) {
             <button disabled={busy}>
               {t(stage === "login" ? "login" : "verify")}
             </button>
+            {stage !== "login" && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void logout()}
+              >
+                {t("logout")}
+              </button>
+            )}
           </form>
         )}
       </main>
@@ -571,36 +595,50 @@ interface UserRow {
   id: string;
   login: string;
   display_name: string;
+  roles: string[];
   status: string;
 }
 export function UsersPanel({ locale }: { locale: Locale }) {
   const t = (key: keyof typeof messages.ja) => authText(locale, key);
+  const pageCursor = useRef<string | undefined>(undefined);
+  const listGeneration = useRef(0);
+  const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<UserRow[]>([]),
     [error, setError] = useState(false),
     [busy, setBusy] = useState(false),
     [cursor, setCursor] = useState<string | null>(null);
   async function load(next?: string) {
+    const current = ++listGeneration.current;
+    setLoading(true);
     try {
       const r = (await authRequest(
         "users" + (next ? "?cursor=" + encodeURIComponent(next) : ""),
       )) as { items: UserRow[]; nextCursor: string | null };
+      if (current !== listGeneration.current) return;
+      pageCursor.current = next;
       setItems(r.items);
       setCursor(r.nextCursor);
     } catch {
-      setError(true);
+      if (current === listGeneration.current) setError(true);
+    } finally {
+      if (current === listGeneration.current) setLoading(false);
     }
   }
   useEffect(() => {
     let active = true;
+    const current = ++listGeneration.current;
     void authRequest("users")
       .then((r) => {
-        if (active) {
+        if (active && current === listGeneration.current) {
           setItems((r as { items: UserRow[] }).items);
           setCursor((r as { nextCursor: string | null }).nextCursor);
         }
       })
       .catch(() => {
         if (active) setError(true);
+      })
+      .finally(() => {
+        if (active && current === listGeneration.current) setLoading(false);
       });
     return () => {
       active = false;
@@ -612,7 +650,9 @@ export function UsersPanel({ locale }: { locale: Locale }) {
     setError(false);
     try {
       await authRequest(path, body, method);
-      await load();
+      await load(
+        path === "users" && method === "POST" ? undefined : pageCursor.current,
+      );
     } catch {
       setError(true);
     } finally {
@@ -620,7 +660,7 @@ export function UsersPanel({ locale }: { locale: Locale }) {
     }
   }
   return (
-    <section className="panel security">
+    <section className="panel security" aria-busy={busy || loading}>
       <h2>{t("users")}</h2>
       {error && <p role="alert">{t("failure")}</p>}
       <form
@@ -649,13 +689,13 @@ export function UsersPanel({ locale }: { locale: Locale }) {
           {t("password")}
           <input name="password" type="password" minLength={14} required />
         </label>
-        <button disabled={busy}>{t("create")}</button>
+        <button disabled={busy || loading}>{t("create")}</button>
       </form>
       {items.map((u) => (
-        <article key={u.id}>
+        <article key={u.id + u.roles.join()}>
           <h3>{u.display_name}</h3>
           <p>
-            {u.login} · {u.status}
+            {u.login} · {u.status} · {u.roles.join(", ")}
           </p>
           <label>
             {t("status")}
@@ -686,16 +726,25 @@ export function UsersPanel({ locale }: { locale: Locale }) {
             {["Administrator", "Manager", "Operator", "Viewer", "Auditor"].map(
               (r) => (
                 <label key={r}>
-                  <input name="roles" type="checkbox" value={r} />
+                  <input
+                    name="roles"
+                    type="checkbox"
+                    value={r}
+                    defaultChecked={u.roles.includes(r)}
+                  />
                   {r}
                 </label>
               ),
             )}
-            <button disabled={busy}>{t("save")}</button>
+            <button disabled={busy || loading}>{t("save")}</button>
           </form>
         </article>
       ))}
-      {cursor && <button onClick={() => void load(cursor)}>{t("next")}</button>}
+      {cursor && (
+        <button disabled={busy || loading} onClick={() => void load(cursor)}>
+          {t("next")}
+        </button>
+      )}
     </section>
   );
 }

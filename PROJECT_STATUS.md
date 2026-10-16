@@ -1,6 +1,6 @@
 # Project-WMS 상태
 
-2026-10-16. DEV00 설계 및 AUTO-01 정책은 main 적용 완료. DEV01 실행 기반도 PR4로 main 반영 완료. 다음 단계는 DEV02 인증·권한이다.
+2026-10-16. DEV00 설계 및 AUTO-01 정책은 main 적용 완료. DEV01 실행 기반도 PR4로 main 반영 완료. DEV02는 dev/dev-02-auth-security에서 인증·권한 구현·로컬 및 독립 검증 완료이며 원격 CI·병합 확인 전 전체 완료 선언하지 않는다.
 
 ## 확인된 GitHub 이력
 
@@ -30,3 +30,10 @@ DEV02 인증/RBAC/MFA/CSRF; DEV03 제품·SKU·창고; DEV04 원장·예약·물
 Pi5 실물 없음: ARM64 manifest 사전검증만, 실장비 검증은 DEV12 이후. main merge는 운영 배포가 아니다.
 
 [개발 안내](README.md) · [정책](docs/GITHUB_WORKFLOW.md) · [DEV01](docs/dev-reports/DEV-01.md) · [AUTO-01](docs/dev-reports/GITHUB-AUTOMATION-01.md).
+
+## DEV02 현재 작업
+
+선행 [PR9](https://github.com/Raccoon26/Project-WMS/pull/9) 실제 자동병합 `aebdb09773638b2a8c22cd0c93340d93ec1e4818`.
+Argon2id/TOTP/서버세션/RBAC/CSRF/사용자·역할/감사/UI를 개발 환경에 구현했다.
+[구현 계약](docs/AUTHENTICATION.md) · [실제 테스트·최종 GitHub 상태](docs/dev-reports/DEV-02.md).
+실제 운영 HTTPS/키 escrow/Pi/7년보존·복원은 후속 DEV12/13, 운영배포 없음.

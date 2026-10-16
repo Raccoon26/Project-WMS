@@ -1,3 +1,4 @@
+import { ConfigError } from "@wms/runtime";
 import type { Permission } from "./policy.js";
 declare module "fastify" {
   interface FastifyContextConfig {
@@ -20,14 +21,25 @@ export function authOptions(
   env: NodeJS.ProcessEnv,
 ): AuthOptions | undefined {
   if (!env.AUTH_ENCRYPTION_KEY && !env.AUTH_ORIGIN) return undefined;
-  encryptionKey(env.AUTH_ENCRYPTION_KEY);
-  const u = new URL(env.AUTH_ORIGIN ?? "");
+  try {
+    encryptionKey(env.AUTH_ENCRYPTION_KEY);
+  } catch {
+    throw new ConfigError("AUTH_ENCRYPTION_KEY");
+  }
+  let u: URL;
+  try {
+    u = new URL(env.AUTH_ORIGIN ?? "");
+  } catch {
+    throw new ConfigError("AUTH_ORIGIN");
+  }
   if (
     !["127.0.0.1", "localhost"].includes(u.hostname) ||
     !["http:", "https:"].includes(u.protocol) ||
     u.origin !== env.AUTH_ORIGIN
   )
-    throw new Error("AUTH_ORIGIN_INVALID");
+    throw new ConfigError(
+      "AUTH_ORIGIN (exact loopback browser origin required)",
+    );
   return { pool, key: env.AUTH_ENCRYPTION_KEY!, origin: u.origin };
 }
 export function registerAuth(
@@ -87,6 +99,8 @@ export function registerAuth(
     )
       return;
     const matched = req.routeOptions.url;
+    if (service && path.startsWith("/api/"))
+      await service.rate("http-ip", req.ip, 600, 60);
     if (registered.has(method + " " + matched)) {
       if (!service) throw new AuthError("SERVICE_UNAVAILABLE", 503);
       return; // Every existing auth handler performs its own transactional policy.

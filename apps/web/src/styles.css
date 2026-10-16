@@ -698,3 +698,7 @@ select:focus-visible {
   outline: 3px solid #247ea2;
   outline-offset: 3px;
 }
+.security p,
+.security h3 {
+  overflow-wrap: anywhere;
+}

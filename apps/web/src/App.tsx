@@ -147,6 +147,15 @@ export function App() {
     setMenu(false);
     document.getElementById("main")?.focus();
   };
+  const routePermissions: Record<string, string> = {
+    "/automation": "settings.manage",
+    "/approvals": "outbound.approve",
+    "/activity-logs": "audit.read",
+    "/integrations": "settings.manage",
+  };
+  const requiredPermission = routePermissions[path];
+  const denied =
+    !!requiredPermission && !user?.permissions.includes(requiredPermission);
   const route = routeFor(path);
   const dashboard = path === "/" || path === "/system-health";
   return (
@@ -206,8 +215,8 @@ export function App() {
             {routes
               .filter(
                 ([p]) =>
-                  p !== "/activity-logs" ||
-                  user?.permissions.includes("audit.read"),
+                  !routePermissions[p] ||
+                  user?.permissions.includes(routePermissions[p]!),
               )
               .map(([p, key], i) => (
                 <a
@@ -235,7 +244,7 @@ export function App() {
           <div className="sidebar-foot">
             <span className="status-dot" />
             {t("dev")}
-            <small>DEV-01</small>
+            <small>DEV-02</small>
           </div>
         </aside>
         {menu && (
@@ -310,7 +319,11 @@ export function App() {
               user?.permissions.includes("audit.read") && (
                 <AuditPanel locale={locale} />
               )}
-            {!route ? (
+            {denied ? (
+              <section className="panel empty">
+                <h1>{authText(locale, "forbidden")}</h1>
+              </section>
+            ) : !route ? (
               <section className="panel empty">
                 <span className="empty-symbol" aria-hidden="true">
                   ?

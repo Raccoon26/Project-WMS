@@ -96,10 +96,30 @@ def preflight(root, baseline):
     return errors
 
 
+def auth_preflight(root, baseline):
+    errors = []
+    auth_registry = root/'scripts/verification-auth.json'
+    if auth_registry.exists():
+        proposed_auth = json.loads(auth_registry.read_text())
+        for name, text in proposed_auth.items():
+            if (not isinstance(text, str) or '..' in Path(name).parts
+                    or not (name.startswith('tests/') or name == 'scripts/auth-test-seed.ts')):
+                errors.append('Authenticated baseline must contain test fixtures only: ' + name)
+    trusted_auth = baseline/'scripts/verification-auth.json'
+    if trusted_auth.exists():
+        proposed_auth = json.loads(auth_registry.read_text()) if auth_registry.exists() else {}
+        for name, text in json.loads(trusted_auth.read_text()).items():
+            if not (root/name).is_file():
+                errors.append('Established authentication test file removed: ' + name)
+            if text not in proposed_auth.get(name, ''):
+                errors.append('Established authentication safety baseline removed/weakened: ' + name)
+    return errors
+
+
 def execute(root, baseline):
     def run(*args):
         subprocess.run(args, cwd=root, check=True)
-    errors = preflight(root, baseline)
+    errors = preflight(root, baseline) + auth_preflight(root, baseline)
     if errors:
         raise ValueError('; '.join(errors))
     run('python3', str(baseline/'scripts/run_policy_tests.py'))
@@ -151,7 +171,7 @@ if __name__ == '__main__':
     parser.add_argument('--preflight-only', action='store_true')
     args = parser.parse_args()
     if args.preflight_only:
-        errors = preflight(args.root.resolve(), args.base.resolve())
+        errors = preflight(args.root.resolve(), args.base.resolve()) + auth_preflight(args.root.resolve(), args.base.resolve())
         if errors: raise SystemExit('\n'.join(errors))
     else:
         execute(args.root.resolve(), args.base.resolve())
