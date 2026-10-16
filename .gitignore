@@ -20,3 +20,5 @@ backups/
 rclone.conf
 .secrets/
 .runtime/
+test-results/
+playwright-report/

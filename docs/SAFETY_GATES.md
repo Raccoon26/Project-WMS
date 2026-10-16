@@ -12,7 +12,8 @@
 10. 암호화6h backup+월실제복원+epoch quarantine, 외부heartbeat+업무실패 독립감시.
 11. 같은SHA typecheck/lint/build/unit/integration/invariants/failures+요구감사; skip/미실행/불명은 green 아님.
 12. 고위험 CI/보호/인증/DB/재고/중복방지/금전/배포/복구는 owner review·수동병합.
-13. main PR+현재SHA check+up-to-date/no bypass 보호 확인 안되면 자동병합 중지. bootstrap PR1 Draft/manual.
+13. 최신 GitHub Actions guarded 모드는 trusted main·정확 current SHA/CI/base·안전경로만 병합. 고위험은 수동.
+   protection 없는 구성은 직접main push 차단을 보장하지 못하며 보호는 권장; legacy native helper는 보호확인 필수.
 14. main merge≠운영배포; 사전백업/drain/별도승인/rollback 후 운영 반영.
 15. 최소50SKU는 하한, AI는 default OFF/선택, 운영의존0.
 

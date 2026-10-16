@@ -13,6 +13,19 @@ jobs:
     name: WMS Quality Gate
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:17.11-bookworm@sha256:3645570cccdfa447589da9f57dd740faa29b30938e861289a5574b6ca6b03826
+        env:
+          POSTGRES_USER: wms_test
+          POSTGRES_DB: wms_test
+          POSTGRES_PASSWORD: wms_test_only
+        ports: ["127.0.0.1:5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U wms_test -d wms_test"
+          --health-interval 2s --health-timeout 3s --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgresql://wms_test:wms_test_only@127.0.0.1:5433/wms_test
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -39,19 +52,24 @@ jobs:
       - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
         if: ${{ hashFiles('package.json') != '' }}
         with:
-          version: '10'
+          version: "10.34.7"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         if: ${{ hashFiles('package.json') != '' }}
         with:
-          node-version: '24'
+          node-version-file: ".node-version"
       - name: Build and test application (DEV01 onward)
         if: ${{ hashFiles('package.json') != '' }}
         shell: bash
+        env:
+          WMS_TEST_CONTAINER: ${{ job.services.postgres.id }}
         run: |
           set -euo pipefail
           pnpm install --frozen-lockfile
+          pnpm audit --audit-level=high
+          pnpm check:boundaries
           pnpm lint
           pnpm typecheck
+          pnpm db:migrate:test
           pnpm test:unit
           pnpm test:integration
           pnpm test:failures
@@ -59,3 +77,17 @@ jobs:
             pnpm test:invariants
           fi
           pnpm build
+      - name: Browser smoke tests (desktop and mobile)
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm exec playwright install --with-deps chromium
+          pnpm test:e2e
+      - name: Preserve synthetic test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dev-01-test-results
+          path: test-results/*.json
+          if-no-files-found: error
+          retention-days: 7

@@ -24,3 +24,12 @@ Astra는 완성 직전 FINAL-AUDIT-01. 초기 report의 테스트 예정은 실�
 
 미확정 ADR: DEV02 인증 provider, DEV06 이메일 provider/업체양식, DEV08/09 실제 권한/계약,
 DEV12 ingress/장비/자원한도, DEV13 키 소유자/외부감시 무료조건. 미래 결정으로 현재 성공을 추정하지 않는다.
+
+## DEV01 결정
+ADR014: runtime 공통패키지(config/log/shutdown) 추가, 실제 공유 로직만 이동. Domain에 infra 의존 없음.
+ADR015: 최초 foundation_metadata만 migration; 상품/재고 스키마는 DEV03/04로 유지. explicit/transaction+hash+lock migration.
+ADR016: DEV01 production/공개 bind 차단; 인증 없는 임시 업무API 금지. 외부 호출 모듈은 metadata disabled.
+ADR017: test PostgreSQL 분리·schema/container guard와 zero/skip 판정, browser 결과디렉터리 분리해 이전결과 보존.
+ADR018: PostgreSQL17.9 초기 검증 후 공식 최신17 minor17.11을 확인해 digest pin 업데이트·재검증.
+ADR019: transitive esbuild0.18 moderate는 해당 경로만0.25.12 override, Drizzle CLI/audit/전체 검증으로 확인.
+이전 branch-protection 필수/PR1미병합 표현은 현재 owner-confirmed Actions guarded 모드·PR1–3 병합 사실로 정정.

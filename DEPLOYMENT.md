@@ -38,3 +38,10 @@ Pi가 주기적 dead-man heartbeat를 보내고, 외부 runner는 API 인증 rea
 별도로 검사; heartbeat만 성공해도 due 작업 실패/지연이면 알림. tunnel 인증은 제한된 service identity,
 비밀을 URL/query에 넣지 않는다. Pi 전체정지 시 외부가 독립 경로(별도 Telegram 전송 또는 이메일)로 경보.
 외부 API·메일·Telegram은 read-only/synthetic canary만, 실제 출고/구매 작업을 healthcheck로 생성하지 않는다.
+
+## DEV01 현재 상태
+Pi5 실물은 **없음**(사용자 확인). 실측/온도/전원/24h 운영은 DEV12 이후.
+현재 개발 Compose는 PostgreSQL17.11 이미지+OCI digest 고정, loopback5432 및 별도 test5433/volume.
+앱은 host Node 프로세스로 실행하며 localhost로 DB 연결; production full-container/tunnel 배포는 아직 구현 안함.
+공식 Node24.19.0-bookworm-slim 및 Postgres17.11 OCI index에 linux/arm64/v8 manifest를 확인.
+[ARM64 사전검증](docs/ARM64.md), [실행·종료·volume 주의](README.md), [개발 계약](docs/DEVELOPMENT.md).

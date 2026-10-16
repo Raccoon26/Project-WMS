@@ -1,0 +1,19 @@
+{
+  "name": "@wms/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "source": "./src/index.ts",
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@wms/contracts": "workspace:*",
+    "pg": "8.23.1",
+    "drizzle-orm": "0.45.4"
+  }
+}
