@@ -110,3 +110,19 @@ DEV01 사전검토에서 disabled integration scaffold의 tsconfig를 실제 ada
 정책 전환 PR5 적용 후 PR6/7의 제어 코드 자동병합, PR4의 실제 앱/PG/browser 검증 및 bot Ready·병합을 확인했다.
 PR4 merge=`168a43ef2cc94bcd058bb0f366d07494817b924c`; 상세 run과 실패·차단 이력은 AUTO-01 보고 참조.
 최종 metadata 경합 회귀를 추가하고 PR 직전 title/base/source/author 변경도 차단한다. 상태 문서를 실제 main 결과로 정정한다.
+
+## DEV-02 선행 기준선 전환 (2026-10-16)
+
+인증 도입 전 독립 검증의 두 고정 가정을 조사했다: 익명 관리 화면 접근, migration count=1.
+원래 verification-baseline.json을 보존하고 별도의 main-owned successor를 추가했다.
+인증 서비스가 있는 후보만 successor를 사용한다. 기존 8개 Desktop/Mobile 화면 검사의
+모든 assertion을 보존하며 실제 CSRF→비밀번호→TOTP 로그인 fixture를 사용한다.
+DB 이력 검사는 manifest의 실제 migration 수와 정확히 일치해야 한다. 기존 checksum,
+rollback, 반복 실행, 데이터 보존 검사는 유지한다. 인증 기능 없는 DEV01 후보는 원래 기준선 그대로 실행된다.
+독립 검증은 read-only 격리 환경이며 merge controller 권한/워크플로/승인 정책은 변경하지 않는다.
+후속 DEV02 인증 엔진·보안 검증 완료를 이 전환 자체로 주장하지 않는다.
+
+전환 PR 로컬 실제 결과: Python68 / Unit34 / PG Integration4 / Failure14 / Browser8,
+모두 성공, 실패0·Skip0. lint/typecheck/boundary/build/docs/secret 검사 성공.
+기존 Python negative fixture의 manifest 누락과 새 Playwright fixture의 미사용 타입 인자를
+발견·수정 후 관련 검사를 재실행했다. 원격 CI/병합 결과는 GitHub에서 확인하며 미래 결과로 기록하지 않는다.
