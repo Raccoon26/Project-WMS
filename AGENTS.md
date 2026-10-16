@@ -2,7 +2,7 @@
 
 Use GPT-6.1 Sol Medium for DEV-00 through DEV-18. Reserve Astra for FINAL-AUDIT-01 near release; perform tests and safety reviews in EVERY DEV, not only final audit.
 
-1. Read existing requirements, architecture, status, progress, safety and GitHub workflow docs before editing. During DEV-00 create missing specifications.
+1. Read docs/PROJECT_SCOPE.md first, then existing requirements, architecture, status, progress, safety and GitHub workflow docs before editing. During DEV-00 create missing specifications.
 2. Branch from fresh main as `dev/dev-XX-topic`; never push directly to main.
 3. Work within the DEV scope; test, fix and self-review. Update `docs/dev-reports/DEV-XX.md` with tests ACTUALLY executed, coverage of all earlier requirements, risks, rollback and unresolved gaps.
 4. Commit to DEV branch, push and run `bash scripts/create-dev-pr.sh DEV-XX "Topic"`. Do not claim PR created or merged unless verified.
