@@ -15,6 +15,27 @@
       "when": 1792166400000,
       "tag": "0001_auth",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792166400001,
+      "tag": "0002_curvy_trish_tilby",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792166400002,
+      "tag": "0003_young_nebula",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792166400003,
+      "tag": "0004_black_xavin",
+      "breakpoints": true
     }
   ]
 }

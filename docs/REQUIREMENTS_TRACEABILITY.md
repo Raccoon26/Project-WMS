@@ -6,7 +6,7 @@ DEV01 실행 기반 및 DEV02 인증 기반은 실제 구현·검증하며 물�
 
 | ID | 요구 그룹 | 구현 기준 문서 | 담당 | 검증 계약 | 상태 |
 |---|---|---|---|---|---|
-| R01 | 제품·SKU | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-03,14 | 50+ 등록/검색/상태/매핑/페이지, fixture≠실제 기능 | 설계 완료 / 기능 NOT RUN |
+| R01 | 제품·SKU | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-03,14 | 50+ 등록/검색/상태/매핑/페이지, fixture≠실제 기능 | DEV03 실제 Catalog 검증; 원장·운영 DEV04/14 |
 | R02 | 원장/예약 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04 | F07/08/12/21/28, 불변식 | 설계 완료 / 기능 NOT RUN |
 | R03 | 입출고/이동 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04,15–17 | F18–20, partial/reservation/소유합 | 설계 완료 / 기능 NOT RUN |
 | R04 | 문서양식 | [OPERATIONS.md](../OPERATIONS.md) | DEV-05 | sample watermark/hash/금지필드 | 설계 완료 / 기능 NOT RUN |
@@ -156,3 +156,43 @@ U00–U29의 범위/순서/최소50 SKU/60개 fixture/AI01·FINAL 감사·운영
 
 DEV02 PR10은 실제 자동병합 ef3566c/원격211개 통과. 최종 UI 제한·만료 안내/동일IP공격/
 MFA lifecycle·세션회수 정상 경로는 새 파일로 추가, 이전 인증 snapshot은 보존했다. 최신219개 로컬 결과 및 원격 증거는 DEV02 보고에 연결한다.
+
+## DEV03 지시 §0–32 대조
+
+| ID | 요구 범위 | 구현·검증 및 후속 경계 |
+|---|---|---|
+| D03-00 | 원격·문서·기준선 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-01 | 실제 master 목표 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-02 | 재고/외부실행 제외 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-03 | 기술스택 유지 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-04 | Forward PG migration | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-05 | Product CRUD/상태 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-06 | SKU/코드/바코드 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-07 | 로컬 mapping/신뢰·이력 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-08 | 4유형 Warehouse | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-09 | 위치 계층·경쟁 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-10 | 실제 Warehouse FK/RBAC | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-11 | 일관 API·입력·오류 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-12 | 검색·sort·signed keyset | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-13 | CAS/actor-key 멱등 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-14 | 원자 audit/revision | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-15 | 실제 React UI | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-16 | PWA/offline/권한회수 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-17 | 60/120/1000 합성실제DB | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-18 | Unit 및 PG 책임 분리 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-19 | PG 통합·upgrade·경합 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-20 | C01–C35 failure/security | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-21 | Desktop/Mobile real E2E | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-22 | 인덱스/성능/RSS | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-23 | DEV01/02 assertion 회귀 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-24 | AUTO01 Catalog profile | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-25 | Windows 문서/실기기NOT RUN | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-26 | 보안 Self Review | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-27 | R01–25/U00–29/과거 DEV 감사 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-28 | 계약·보고·상태 문서 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-29 | 일반 PR/독립CI/자동병합 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-30 | 실제 완료 조건 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-31 | 실측·SHA·원격 보고 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+| D03-32 | DEV04 stable FK 준비/운영금지 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
+
+R01의 Catalog/다중창고/Scope는 실제 구현했으며 결과는 DEV03 report를 따른다. 물류/수량/운영 출시 부분은 R02–11/R14–17/R23의 담당 단계에 남긴다. DEV02의 S13은 실제창고 API로 확장하지만 F24 출고 승인 업무는 DEV07 NOT RUN이다.

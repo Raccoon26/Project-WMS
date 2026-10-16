@@ -81,3 +81,8 @@ DEV01 시점에는 읽기전용 health/version만 실행했다. DEV02는 인증 
 복잡한 replay/locking 쿼리는 parameterized PostgreSQL, ORM schema/snapshot/migration은 Drizzle을 사용한다.
 웹 AuthGate는 보호 UI/만료/오프라인/다중 탭을 담당하며 API의 권한 검사를 대체하지 않는다.
 실제 [인증 흐름·API·확장 경계](docs/AUTHENTICATION.md). Worker는 사람 세션과 독립된 읽기 전용 기반을 유지한다.
+
+## DEV03 현재 구현
+
+CatalogService는 AuthService의 실제 UoW/session/grant/CSRF/audit를 재사용한다. Domain catalog는 framework-free, DB는 forward migrations/constraints, HTTP adapter는 schema/DTO, 웹은 서버 metadata만 표시한다. 외부 네트워크 부작용은 없다.
+[Catalog 상세 계약](docs/CATALOG.md). 실제 결과는 [DEV03 보고](docs/dev-reports/DEV-03.md)에서 확인한다.

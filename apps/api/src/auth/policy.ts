@@ -1,5 +1,11 @@
 import type { SystemActor as SharedSystemActor } from "@wms/contracts";
 export const permissionCodes = [
+  "warehouses.read",
+  "warehouses.manage",
+  "locations.read",
+  "locations.manage",
+  "mappings.read",
+  "mappings.manage",
   "users.read",
   "users.manage",
   "roles.read",
@@ -22,6 +28,12 @@ export type Permission = (typeof permissionCodes)[number];
 export const rolePolicies: Record<string, readonly Permission[]> = {
   Administrator: permissionCodes,
   Manager: [
+    "warehouses.read",
+    "warehouses.manage",
+    "locations.read",
+    "locations.manage",
+    "mappings.read",
+    "mappings.manage",
     "system.read",
     "settings.read",
     "products.read",
@@ -34,6 +46,9 @@ export const rolePolicies: Record<string, readonly Permission[]> = {
     "procurement.read",
   ],
   Operator: [
+    "warehouses.read",
+    "locations.read",
+    "mappings.read",
     "system.read",
     "products.read",
     "inventory.read",
@@ -41,6 +56,9 @@ export const rolePolicies: Record<string, readonly Permission[]> = {
     "outbound.create",
   ],
   Viewer: [
+    "warehouses.read",
+    "locations.read",
+    "mappings.read",
     "system.read",
     "products.read",
     "inventory.read",
@@ -48,6 +66,9 @@ export const rolePolicies: Record<string, readonly Permission[]> = {
     "procurement.read",
   ],
   Auditor: [
+    "warehouses.read",
+    "locations.read",
+    "mappings.read",
     "system.read",
     "audit.read",
     "products.read",

@@ -16,3 +16,5 @@ export interface Drainable {
   stopAccepting(): void;
   drain(): Promise<void>;
 }
+
+export * from "./catalog.js";

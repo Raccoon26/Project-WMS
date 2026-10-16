@@ -702,3 +702,89 @@ select:focus-visible {
 .security h3 {
   overflow-wrap: anywhere;
 }
+.catalog {
+  padding: 24px;
+  margin-bottom: 24px;
+  min-width: 0;
+}
+.catalog-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 16px 0;
+}
+.catalog label,
+.reference-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.catalog input,
+.catalog select {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px;
+  border: 1px solid #9ba8b9;
+  border-radius: 6px;
+  background: white;
+}
+.catalog button {
+  min-height: 44px;
+  white-space: normal;
+}
+.table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.catalog table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.catalog td,
+.catalog th {
+  padding: 12px;
+  border-bottom: 1px solid #dde3eb;
+  max-width: 240px;
+  overflow-wrap: anywhere;
+}
+.catalog td button {
+  margin: 3px;
+}
+.catalog-editor {
+  display: grid;
+  gap: 16px;
+  max-width: 650px;
+  margin-top: 20px;
+  border-top: 1px solid #cbd5e1;
+  padding-top: 20px;
+}
+.catalog-parent {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.reference-picker {
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  margin: 12px 0;
+  gap: 8px;
+}
+.catalog fieldset label {
+  flex-direction: row;
+  align-items: center;
+}
+@media (max-width: 760px) {
+  .catalog {
+    padding: 16px;
+  }
+  .catalog-toolbar > * {
+    max-width: 100%;
+  }
+  .catalog td,
+  .catalog th {
+    padding: 8px;
+    min-width: 100px;
+  }
+}

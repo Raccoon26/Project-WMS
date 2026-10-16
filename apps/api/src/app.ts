@@ -1,3 +1,5 @@
+import { registerCatalog } from "./catalog/routes.js";
+import { CatalogError } from "./catalog/service.js";
 import { registerAuth } from "./auth/routes.js";
 import type { AuthOptions } from "./auth/routes.js";
 import { AuthError } from "./auth/service.js";
@@ -44,6 +46,8 @@ export function buildApi(db: DatabaseProbe, log: Logger, auth?: AuthOptions) {
         .send(
           apiError(err.message as "INVALID_INPUT" | "RATE_LIMITED", req.id),
         );
+    if (err instanceof CatalogError)
+      return void reply.code(err.status).send(apiError(err.code, req.id));
     if (err instanceof AuthError) {
       log.error("authentication_rejected", {
         requestId: req.id,
@@ -51,6 +55,12 @@ export function buildApi(db: DatabaseProbe, log: Logger, auth?: AuthOptions) {
       });
       return void reply.code(err.status).send(apiError(err.code, req.id));
     }
+    if (
+      auth &&
+      err instanceof Error &&
+      err.message === "Cannot use a pool after calling end on the pool"
+    )
+      return void reply.code(503).send(apiError("SERVICE_UNAVAILABLE", req.id));
     if (
       auth &&
       typeof err === "object" &&
@@ -117,5 +127,6 @@ export function buildApi(db: DatabaseProbe, log: Logger, auth?: AuthOptions) {
     apiVersion: "v1",
   }));
   registerAuth(app, auth);
+  registerCatalog(app, auth);
   return app;
 }

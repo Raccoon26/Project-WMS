@@ -62,3 +62,8 @@ createUser/updateUser/setRoles/list. HTTP adapter만 Cookie/Origin/header를 Con
 `mutate(ctx,callback,permission)`는 user/session lock·최근 MFA 재인증·현재 grants·CSRF·audit transaction 경계다.
 `authorize`의 사전 허가만으로 transaction 밖 업무쓰기를 허용하지 않는다. 후속 업무는 같은 UoW 안에서 재검증한다.
 공통 contracts의 SystemActor는 명시 권한만 가지며 사용자 session을 상속하지 않는다. Worker는 API 앱 소스를 상대 import하지 않는다. [구현/API 계약](../AUTHENTICATION.md).
+
+## DEV03 현재 구현
+
+CatalogService list/get/change/history는 Permission·resolved warehouse scope·현재 session을 같은 query/쓰기 transaction에서 확인한다. metadata+command result+revision+Audit는 원자 commit이다. warehouseRoles는 기존 AuthService.mutate의 최근 MFA/CSRF/보안 잠금을 유지한다. catalogEligible은 향후 원장 업무의 필요조건만 제공하며 수량 계산/출고 실행은 없다.
+[Catalog 상세 계약](../CATALOG.md). 실제 결과는 [DEV03 보고](../dev-reports/DEV-03.md)에서 확인한다.

@@ -43,3 +43,8 @@ WCAG AA 수준 대비, 키보드·포커스·44px 터치 목표. 승인 UI는 �
 DEV00은 설계/안전 개발 도구이며 실제 상품·재고 엔진·봇·메일·운영 API·Pi·백업·AI를 구현하지 않는다.
 업체 양식, 창고 SLA, API 계약, 보충 정책의 리드타임/한도, 계정, 장비, 도메인 및 복구키 관리자는 각 담당 DEV에서 확정한다.
 임의 자격증명·실제 운영 데이터·공급처 계약을 만들어 넣지 않는다. [위험](docs/RISK_REGISTER.md), [비용](INTEGRATIONS.md#비용).
+
+## DEV03 현재 구현
+
+R01의 Product/SKU/Mapping/Warehouse/Scope/Cursor 기반을 실제 구현한다. 최소50은 상한이 아니며60/120/1000은 실제 PG 검증 대상이다. R02–R10 재고·외부 실행·금전 기능은 담당 DEV에 남는다.
+[Catalog 상세 계약](docs/CATALOG.md). 실제 결과는 [DEV03 보고](docs/dev-reports/DEV-03.md)에서 확인한다.

@@ -1,6 +1,6 @@
 # Project-WMS
 
-일본 전자상거래용 WMS. **DEV-02 인증 구현·검증 / 운영 업무 미구현**.
+일본 전자상거래용 WMS. **DEV-03 Catalog 구현·검증 / 운영 물류 미구현**.
 React·TypeScript·Vite·Tailwind 웹, Fastify API, PostgreSQL/Drizzle, 독립 Worker.
 최소50 SKU는 수용 목표이며 상한이 아닙니다. Dot/유료 AI/운영 API 키 없이 실행합니다.
 
@@ -119,3 +119,14 @@ $env:WMS_TEST_CONTAINER = (docker compose -f infra/compose/compose.test.yaml ps 
 
 Public 저장소입니다. 실제 고객/공급처/원가/거래/운영키/설정/백업을 올리지 마세요.
 CI·DB·API·Worker·패키지·인프라를 포함한 모든 변경은 main 소유 독립 검증과 필수 테스트 성공 시 승인 없이 병합합니다. main 병합은 운영 배포가 아닙니다.
+
+## DEV03 상품·SKU·창고 사용
+
+기존 DEV02 설치는 `.env`·암호화 키·관리자를 보존한 채 frozen install → DB up → migration으로 업그레이드합니다.
+로그인 후 상품 화면에서 상품 생성/수정/상태 변경, 행의 SKU에서 내부 코드/바코드와 외부 mapping을 관리합니다.
+창고 화면은 external_email/internal/fba/rsl 마스터와 기본 위치 계층을 관리합니다.
+외부 연동 화면은 **비밀 없는 계정 참조와 로컬 코드 매핑**만 제공하며 실제 Provider 호출은 없습니다.
+설정의 창고별 권한은 실제 창고 ID에 연결됩니다. 정상 상품 수정은 반복 MFA 없이 가능하지만 권한·매핑 등은 최근 재인증이 필요합니다.
+기본25/최대100 keyset 페이지, 검색/정렬/필터/409 충돌 안내, 실패 입력 보존을 제공합니다.
+재고는 미연동·미측정이며 알 수 없는 수량을0으로 표시하지 않습니다. 원장/입출고는 DEV04 이후입니다.
+[Catalog 계약](docs/CATALOG.md) · [Windows PowerShell/문제 해결](docs/DEVELOPMENT.md#dev03-windows-powershell-개발-순서) · [DEV03 증거](docs/dev-reports/DEV-03.md).

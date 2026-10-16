@@ -1,5 +1,6 @@
 import type { UtcTimestamp } from "@wms/domain";
 export type ErrorCode =
+  | "INVALID_RELATION"
   | "NOT_FOUND"
   | "INVALID_INPUT"
   | "INTERNAL_ERROR"
@@ -17,6 +18,7 @@ export interface ApiError {
   details: null;
 }
 const messageKeys: Record<ErrorCode, string> = {
+  INVALID_RELATION: "catalog.invalidRelation",
   UNAUTHORIZED: "auth.unauthorized",
   FORBIDDEN: "auth.forbidden",
   CONFLICT: "auth.conflict",
@@ -76,6 +78,7 @@ export interface AuthenticatedIdentity {
   expiresAt: string;
   roles: string[];
   permissions: string[];
+  grants?: { permission: string; scope: string; policyVersion: number }[];
 }
 // Future OIDC adapters may prove a subject, but cannot assign permissions or sessions.
 export interface VerifiedIdentity {
@@ -94,4 +97,31 @@ export interface SystemActor {
   readonly kind: "system";
   readonly id: string;
   readonly permissions: readonly string[];
+}
+
+// Catalog DTOs carry metadata only: no inferred stock balances or provider verification.
+export interface CatalogRecord {
+  id: string;
+  version: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+export interface ProductDto extends CatalogRecord {
+  name_ja: string;
+  name_ko: string | null;
+  name_en: string | null;
+  description: string | null;
+}
+export interface SkuDto extends CatalogRecord {
+  product_id: string;
+  code: string;
+  barcode: string | null;
+  catalog_active?: boolean;
+}
+export interface WarehouseDto extends CatalogRecord {
+  code: string;
+  name: string;
+  type: "external_email" | "internal" | "fba" | "rsl";
+  adapter_config_ref: string | null;
 }

@@ -1,3 +1,4 @@
+import { CatalogPanel, WarehouseGrantsPanel, catalogText } from "./catalog";
 import {
   useAuth,
   SecurityPanel,
@@ -41,6 +42,7 @@ export function App() {
   const [mobile, setMobile] = useState(
     () => matchMedia("(max-width:760px)").matches,
   );
+  const lastPath = useRef(location.pathname + location.search);
   const drawer = useRef<HTMLElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -67,6 +69,15 @@ export function App() {
   }, [locale]);
   useEffect(() => {
     const pop = () => {
+      if (
+        !window.dispatchEvent(
+          new Event("wms-before-navigation", { cancelable: true }),
+        )
+      ) {
+        history.pushState({}, "", lastPath.current);
+        return;
+      }
+      lastPath.current = location.pathname + location.search;
       setPath(location.pathname);
       setMenu(false);
     };
@@ -142,20 +153,49 @@ export function App() {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
       return;
     event.preventDefault();
-    history.pushState({}, "", next);
+    if (
+      !window.dispatchEvent(
+        new Event("wms-before-navigation", { cancelable: true }),
+      )
+    )
+      return;
+    const target = new URL(next, location.href);
+    const language = new URLSearchParams(location.search).get("lang");
+    if (language) target.searchParams.set("lang", language);
+    lastPath.current = target.pathname + target.search;
+    history.pushState({}, "", lastPath.current);
     setPath(next);
     setMenu(false);
     document.getElementById("main")?.focus();
   };
   const routePermissions: Record<string, string> = {
+    "/products": "products.read",
+    "/warehouses": "warehouses.read",
     "/automation": "settings.manage",
     "/approvals": "outbound.approve",
     "/activity-logs": "audit.read",
-    "/integrations": "settings.manage",
+    "/integrations": "mappings.read",
   };
+  const hasMenuPermission = (permission: string) =>
+    user?.permissions.includes(permission) ||
+    (["mappings.read", "products.read", "warehouses.read"].includes(
+      permission,
+    ) &&
+      user?.grants?.some(
+        (g) => g.permission === permission && g.policyVersion === 1,
+      ));
+  const authorityKey =
+    user?.id +
+    ":" +
+    (user?.grants ?? [])
+      .map((g) => g.permission + ":" + g.scope + ":" + g.policyVersion)
+      .sort()
+      .join(";");
+  const catalogRoute = ["/products", "/warehouses", "/integrations"].includes(
+    path,
+  );
   const requiredPermission = routePermissions[path];
-  const denied =
-    !!requiredPermission && !user?.permissions.includes(requiredPermission);
+  const denied = !!requiredPermission && !hasMenuPermission(requiredPermission);
   const route = routeFor(path);
   const dashboard = path === "/" || path === "/system-health";
   return (
@@ -216,7 +256,7 @@ export function App() {
               .filter(
                 ([p]) =>
                   !routePermissions[p] ||
-                  user?.permissions.includes(routePermissions[p]!),
+                  hasMenuPermission(routePermissions[p]!),
               )
               .map(([p, key], i) => (
                 <a
@@ -279,6 +319,7 @@ export function App() {
                   const url = new URL(location.href);
                   url.searchParams.set("lang", next);
                   history.replaceState({}, "", url);
+                  lastPath.current = url.pathname + url.search;
                   setLocale(next);
                 }}
               >
@@ -311,9 +352,33 @@ export function App() {
               <>
                 <SecurityPanel locale={locale} />
                 {user?.permissions.includes("users.manage") && (
-                  <UsersPanel locale={locale} />
+                  <>
+                    <UsersPanel locale={locale} />
+                    <WarehouseGrantsPanel locale={locale} />
+                  </>
                 )}
               </>
+            )}
+            {path === "/products" && !denied && (
+              <CatalogPanel
+                key={authorityKey + "products"}
+                initial="products"
+                locale={locale}
+              />
+            )}
+            {path === "/warehouses" && !denied && (
+              <CatalogPanel
+                key={authorityKey + "warehouses"}
+                initial="warehouses"
+                locale={locale}
+              />
+            )}
+            {path === "/integrations" && !denied && (
+              <CatalogPanel
+                key={authorityKey + "accounts"}
+                initial="accounts"
+                locale={locale}
+              />
             )}
             {path === "/activity-logs" &&
               user?.permissions.includes("audit.read") && (
@@ -340,11 +405,13 @@ export function App() {
                     <p className="eyebrow">{t("eyebrow")}</p>
                     <h1>{dashboard ? t("heading") : t(route[1])}</h1>
                     <p className="intro">
-                      {t(dashboard ? "intro" : "plannedNote")}
+                      {catalogRoute
+                        ? catalogText(locale, "unknown")
+                        : t(dashboard ? "intro" : "plannedNote")}
                     </p>
                   </div>
                   <span className="pill neutral">
-                    {t(dashboard ? "dev" : "planned")}
+                    {catalogRoute ? "DEV-03" : t(dashboard ? "dev" : "planned")}
                   </span>
                 </div>
                 {dashboard ? (
@@ -419,8 +486,12 @@ export function App() {
                       ◇
                     </span>
                     <span className="pill neutral">{t("planned")}</span>
-                    <h2>{t(route[1])}</h2>
-                    <p>{t("plannedNote")}</p>
+                    <h2>{catalogRoute ? t("inventory") : t(route[1])}</h2>
+                    <p>
+                      {catalogRoute
+                        ? catalogText(locale, "unknown")
+                        : t("plannedNote")}
+                    </p>
                   </section>
                 )}
               </>

@@ -28,3 +28,8 @@ DEV01을 포함해 패키지/CI/DB/인프라도 독립 검증 성공 시 자동�
 
 로컬 인증·MFA·session·RBAC·CSRF·audit 검증을 운영 HTTPS/실장비/키 보관/백업/복원/보존 완료로 체크하지 않는다.
 [DEV02 증거](docs/dev-reports/DEV-02.md)의 실제 결과와 원격 CI/병합 확인 후 DEV03 개발을 시작할 수 있다.
+
+## DEV03 현재 구현
+
+Catalog 개발 검증은 최소50SKU 원장·예약·보충·운영 출시 gate를 완료하지 않는다. 실제 창고/위치 FK·매핑 신뢰·scope·CAS·멱등/감사 rollback의 DEV03 증거와 후속 DEV04 수량 검증을 구분한다.
+[Catalog 상세 계약](docs/CATALOG.md). 실제 결과는 [DEV03 보고](docs/dev-reports/DEV-03.md)에서 확인한다.

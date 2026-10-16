@@ -9,6 +9,7 @@ from pr_policy import validate
 DISABLED_SCAFFOLD_SHA256 = 'a37892240494b7e4964e9b16084def1be4d34edf2ef33c8bfe7e09c388bc8a79'
 
 PROFILES = {
+    'catalog': ('catalog: unique sku', 'catalog: warehouse scope', 'catalog: mapping integrity', 'catalog: optimistic concurrency', 'catalog: transaction rollback', 'catalog: cursor pagination'),
     'migration': (
         'real PostgreSQL migrations are atomic, repeatable and schema checked',
         'failed migration rolls back both schema and history',
@@ -25,6 +26,7 @@ PROFILES = {
 # Main owns the required case catalog. Future DEV must implement these real
 # cases; catalog membership does not imply any business test has run.
 BUSINESS = {
+    'catalog': r'catalog|(?:^|/)(?:products|skus|warehouses|locations|sku-mappings)/',
     'inventory': r'inventory|ledger|stock|reservation|inbound|outbound|shipment|idempot|outbox|transfer',
     'auth': r'auth|session|csrf|permission|rbac',
     'email': r'email|mail|warehouse.?adapter',

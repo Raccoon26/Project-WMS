@@ -30,3 +30,8 @@
 | K22 | MFA/복구코드 동시사용·로그아웃 지연 응답 | Critical | DEV02 PG row lock/일회소비/session rotation/epoch/브라우저 generation 회귀; 실제 테스트는 DEV02 report |
 | K23 | 암호화 키 분실/운영 DB 슈퍼유저 감사변조 | High | 개발 auth:setup 별도 설정, 운영키 escrow/최소권한은 DEV12; off-device anchor/7년 보존/실제복원은 DEV13, 현재 운영준비 아님 |
 | K24 | 구버전 익명 기준선이 인증 보호와 충돌 | High | main-owned successor PR9, 원래 assertion 유지+실제로그인, 새 auth baseline은 tests/합성seed만 허용 |
+
+## DEV03 현재 구현
+
+K04의 로컬 매핑 고유성/신뢰·버전/이력, K18의 창고 FK/scope 누락을 DEV03에서 검증한다. 외부 Provider 확인·실제 오출고/물류 복구는 DEV08/09/04 이후다. 새 위험: mutable sort key의 실시간 cursor에서 중복·누락 가능(첫 페이지 갱신), metadata mutation 짧은 직렬화로 운영 대규모 부하 한계, DB superuser 변조·7년 보존은 DEV12/13. Windows/Pi 실기기 NOT RUN.
+[Catalog 상세 계약](CATALOG.md). 실제 결과는 [DEV03 보고](dev-reports/DEV-03.md)에서 확인한다.

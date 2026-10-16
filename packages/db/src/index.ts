@@ -80,6 +80,12 @@ export function createDatabase(
   async function migrate(folder = migrationFolder): Promise<void> {
     const files = readMigrationFiles({ migrationsFolder: folder });
     if (!files.length) throw new Error("NO_MIGRATIONS");
+    if (
+      files.some(
+        (m, i) => i > 0 && m.folderMillis <= files[i - 1]!.folderMillis,
+      )
+    )
+      throw new Error("MIGRATION_ORDER_INVALID");
     await orm.transaction(async (tx) => {
       await tx.execute(sql`SELECT pg_advisory_xact_lock(74001)`);
       await tx.execute(
@@ -127,3 +133,4 @@ export function createDatabase(
 }
 export type Database = ReturnType<typeof createDatabase>;
 export * from "./auth-schema.js";
+export * from "./catalog-schema.js";

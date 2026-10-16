@@ -136,3 +136,8 @@ users.login/identity_subject, sessions.token_hash, mfa_codes.code_hash는 unique
 MFA verified이면 user NOT NULL CHECK. 토큰 원문 미저장, MFA Secret은 AAD 암호화, 복구 코드는 hash만 저장.
 감사는 sequence 인덱스와 predecessor digest, UPDATE/DELETE 거부 trigger; 중요한 변경과 같은 transaction.
 [세션 시간·락 순서·권한·암호화·API 계약](docs/AUTHENTICATION.md). Drizzle generate의 BigInt default 직렬화 문제는 SQL literal default(-1)로 해결했다.
+
+## DEV03 현재 구현
+
+실제 Catalog schema는 products/skus/warehouses/locations/integration_accounts/sku_mappings/command_results/catalog_revisions와 warehouse_id FK를 추가한다. 0000/0001은 보존했다. PK/FK/partial unique/CAS/DB cycle trigger/이력·상태 계약은 CATALOG의 현재 구현이 기준이다.
+[Catalog 상세 계약](docs/CATALOG.md). 실제 결과는 [DEV03 보고](docs/dev-reports/DEV-03.md)에서 확인한다.

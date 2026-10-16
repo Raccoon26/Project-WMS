@@ -89,3 +89,8 @@ PR9는 기존 verification-baseline.json을 보존하고 verification-auth-trans
 DEV02의 verification-auth.json은 새 인증 suite/합성 fixture만 보관한다. 구현 코드 overlay·경로 탈출은 차단한다.
 현재 auth profile은 실제 실행된 `auth: privilege escalation` / `auth: session` / `auth: CSRF`를 요구한다.
 실제 물류/승인 안전 테스트가 설치된 것으로 간주하지 않으며 AUTO-01 세 workflow/권한/자동병합 정책은 유지한다.
+
+## DEV03 현재 구현
+
+DEV03은 기존 main-owned 인증/DEV01 snapshot을 byte-for-byte 보존한다. catalog profile은 실제 unique sku/warehouse scope/mapping integrity/optimistic concurrency/transaction rollback/cursor pagination runner case를 요구한다. Catalog와 재고 profile은 별개이며 원장 경로의 검증을 약화시키지 않는다. 새 Catalog 테스트/합성 import는 verification-catalog.json의 test-only registry에 보존한다. 새 catalog_preflight는 기존 snapshot 삭제·약화/앱 overlay/경로 탈출/과대 크기를 거부하며 이전 main의 모든 인증 검증을 유지한다. workflow 권한/3단계 구조/병합 조건은 변경하지 않는다.
+[Catalog 상세 계약](CATALOG.md). 실제 결과는 [DEV03 보고](dev-reports/DEV-03.md)에서 확인한다.

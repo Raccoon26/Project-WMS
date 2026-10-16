@@ -45,3 +45,8 @@ Argon2id/TOTP 암호화·replay/복구코드 일회 사용/세션·epoch/CSRF/�
 로그아웃·offline·오래된 me 응답은 UI identity를 지우며 PWA는 민감 API를 캐시하지 않는다.
 정확한 파라미터·제한·공개 경로·DB 역할 한계·실제 결과는 [인증 계약](docs/AUTHENTICATION.md)과 [보고](docs/dev-reports/DEV-02.md).
 실제 HTTPS/DB role 분리/키 escrow/백업 복원/7년 보존/Pi 검증은 아직 NOT RUN, DEV12/13에서 완료한다.
+
+## DEV03 현재 구현
+
+Warehouse grant를 실제 FK와 SQL 범위 필터에 연결했다. 공유 Catalog read와 Global 정의 변경을 분리하며 scope만으로 users/roles/상품 전역 쓰기를 허용하지 않는다. mapping/account/역할 중요 변경은 기존 최근 MFA, 일반 metadata 수정은 session/CSRF/Permission을 매 transaction 재평가한다. no-store/static-only PWA/로그 allowlist/운영 차단을 유지한다.
+[Catalog 상세 계약](docs/CATALOG.md). 실제 결과는 [DEV03 보고](docs/dev-reports/DEV-03.md)에서 확인한다.

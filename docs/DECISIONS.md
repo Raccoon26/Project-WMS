@@ -49,3 +49,13 @@ Pi 실측은 DEV12에서 결정한다. 시크릿 암호화는 Node AES-GCM으로
 원래 기준선과 모든 화면 assertion을 보존하며 실제 로그인 fixture/manifest 수 검증으로 의미를 확장한다.
 새 인증 테스트·seed는 별도 인증 registry로 보존하고 구현 코드를 overlay할 수 없게 경로를 제한한다.
 이 전환은 AUTO-01 workflow/merge 권한 및 실패·skip 차단을 완화하지 않는다.
+
+## ADR-DEV03-01 — Catalog와 실제 창고 Scope
+
+마스터 metadata는 단일 PG 모듈로 구현하고 실제 수량 엔진을 앞당기지 않는다. 기존 Global grant를 보존하는
+warehouse_id FK/partial unique를 추가하고 공유 read와 Global write를 분리한다. 권한 버전1 의미를 변경하지 않는
+additive catalog-policy-v1을 명시적 SQL로 업그레이드하여 기존 관리자도 Bootstrap 없이 새 Permission을 받는다.
+CAS+actor별 command_results+append-only revision/audit, mapping 종료/대체, warehouse row-lock recursive 위치 검사로
+중복/경합을 통제한다. code/name keyset B-tree와 표준 PostgreSQL pg_trgm GIN을 사용하며 별도 검색 서비스는 도입하지 않는다.
+일반 Catalog 수정은 반복 MFA를 요구하지 않고 mapping/account/역할 변경은 최근 재인증을 유지한다.
+기존 검증 snapshot/워크플로를 유지하고 Catalog profile과 새 테스트만 확장한다.

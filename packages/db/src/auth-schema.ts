@@ -1,3 +1,4 @@
+import { warehouses } from "./catalog-schema.js";
 import { sql } from "drizzle-orm";
 import {
   pgTable,
@@ -82,6 +83,7 @@ export const userRoles = pgTable(
       .references(() => roles.id)
       .notNull(),
     scope: text("scope").notNull().default("global"),
+    warehouseId: uuid("warehouse_id").references(() => warehouses.id),
     grantedBy: uuid("granted_by").references(() => users.id),
     grantedAt: time("granted_at"),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
@@ -89,9 +91,15 @@ export const userRoles = pgTable(
   },
   (t) => [
     uniqueIndex("user_roles_active")
-      .on(t.userId, t.roleId, t.scope)
-      .where(sql`${t.revokedAt} IS NULL`),
-    check("user_roles_scope_check", sql`${t.scope} = 'global'`),
+      .on(t.userId, t.roleId)
+      .where(sql`${t.revokedAt} IS NULL AND ${t.scope}='global'`),
+    uniqueIndex("user_roles_warehouse_active")
+      .on(t.userId, t.roleId, t.warehouseId)
+      .where(sql`${t.revokedAt} IS NULL AND ${t.scope}='warehouse'`),
+    check(
+      "user_roles_scope_check",
+      sql`(${t.scope}='global' AND ${t.warehouseId} IS NULL) OR (${t.scope}='warehouse' AND ${t.warehouseId} IS NOT NULL)`,
+    ),
   ],
 );
 export const sessions = pgTable(
