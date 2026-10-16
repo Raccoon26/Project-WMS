@@ -217,3 +217,8 @@ main verifier 보정 PR7은 [Quality38854161305](https://github.com/Raccoon26/Pr
 [Independent38854199451](https://github.com/Raccoon26/Project-WMS/actions/runs/38854199451),
 [Guarded38854247811](https://github.com/Raccoon26/Project-WMS/actions/runs/38854247811) 성공 후 `17d6cda`로 자동병합됨.
 이전 수동 승인 요구를 구현에 남기지 않도록 release/decision/risk/trace 문서도 감사·정정했다.
+
+원격 1067b7e의 Policy38854424684는 실제 CLI 호환성 오류(exit2)로 실패했다. main verifier가 아직 필수로 받는
+legacy --reviews/--comments 인자를 workflow에서 먼저 제거했기 때문이다. 이 실패는 무시하지 않았다.
+승인 데이터 조회 없이 빈 배열 compatibility 인자를 유지하고 새 CLI는 두 인자를 optional로 받아 순차 전환하게 수정했다.
+현재 main CLI와 새 CLI 양쪽을 실제 실행해 Draft 정상종료/mergeAllowed=false를 확인하고 회귀를 추가한다.

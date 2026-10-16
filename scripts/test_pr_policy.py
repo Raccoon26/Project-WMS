@@ -65,3 +65,33 @@ class PaginationCompatibilityTests(unittest.TestCase):
         for text in ('', ' ', '[]junk', '1', 'null'):
             with self.assertRaises(ValueError):
                 pages(text)
+
+class PolicyCliTests(unittest.TestCase):
+    def run_cli(self, legacy):
+        import json
+        import subprocess
+        import sys
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            metadata = {'head':{'ref':'dev/dev-03-catalog','sha':'a'*40,'repo':{'full_name':REPO}},
+                        'base':{'ref':'main'},'title':'[DEV-03] Catalog','state':'open','draft':True,
+                        'labels':[],'changed_files':2}
+            payloads = {'meta':metadata,'files':[[{'filename':REPORT},{'filename':'README.md'}]],
+                        'reviews':[],'comments':[]}
+            for name, value in payloads.items(): (root/f'{name}.json').write_text(json.dumps(value))
+            args=[sys.executable,str(Path(__file__).parent/'pr_policy.py'), '--metadata',str(root/'meta.json'),
+                  '--files',str(root/'files.json'),'--repo',REPO]
+            if legacy: args += ['--reviews',str(root/'reviews.json'),'--comments',str(root/'comments.json')]
+            result=subprocess.run(args,capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            parsed=json.loads(result.stdout)
+            self.assertEqual(parsed['status'],'NOT_READY')
+            self.assertIs(parsed['mergeAllowed'],False)
+
+    def test_legacy_empty_review_arguments_need_no_owner_approval(self):
+        self.run_cli(True)
+
+    def test_current_cli_draft_is_not_a_failure_or_merge_authorization(self):
+        self.run_cli(False)
