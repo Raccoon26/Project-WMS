@@ -91,3 +91,7 @@ A documentation-only follow-up PR verifies GitHub Actions guarded automatic merg
 ## AUTO-01 후속 자동화 정책 전환
 기존 DEV00 설계 결과를 보존한다. 최신 사용자 지시로 경로별 수동 승인 정책을 폐기하고 독립 자동 검증으로 대체한다.
 별도 dev/dev-00-auto-01 전환 작업의 코드·테스트·미해결 제약은 [AUTO-01 보고](GITHUB-AUTOMATION-01.md) 참조.
+
+## AUTO-01 live negative probe
+의도적으로 baseline의 DB 장애 검사를 삭제한 변경을 독립 검증기가 차단하는지 실증한다.
+이 probe는 실패가 기대 결과이며 병합하면 안 된다. 기준선을 복원한 뒤 같은 PR에서 정상 경로를 검증한다.
