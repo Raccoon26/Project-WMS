@@ -140,3 +140,13 @@ raw EXPLAIN/측정은 ignored test-results/catalog-*.json 및 CI artifact에 보
 SKU code 정렬은 B-tree 계획을 사용하며 작은1000행 substring 검색은 planner가 Seq Scan을 선택할 수 있다.
 실제 GIN/B-tree/active mapping unique index 존재도 PG로 확인했다. 강제로 index를 쓰게 해 성능을 꾸미지 않았다.
 RSS는 Vitest/API 공유 프로세스이며 독립 운영 API/Pi 메모리 성과로 해석하지 않는다. 대량 원장 이력은 DEV04/11/14에 남는다.
+
+## 이전 main의 로컬 독립 검증 완료
+
+별도 git archive 합성 checkout에서 ad3aa1b main의 검증기를 실제 실행했다. 기존 baseline/auth snapshot과
+검사 명령을 main에서 복원한 뒤 candidate Python77 + main 회귀77, Unit75/실제PG47/Failure51/Browser64,
+frozen install/audit/boundary/lint/typecheck/migration/build/docs/secret 모두 성공했다.
+실제6 Catalog case와3 Auth case가 증거 JSON에 존재하며 Skip/Todo/flaky0.
+local PR0/합성 SHA는 GitHub 원격 실행 또는 병합 증거로 사용하지 않는다.
+새 catalog test-only registry는 다음 main 실행에서 동일한 Catalog assertion과 합성 import guard를 보존한다.
+기존 verification-baseline/auth-transition/auth 파일과 workflow 권한은 byte-for-byte 유지했다.
