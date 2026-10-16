@@ -23,7 +23,8 @@ BLOCK_LABELS = {"do-not-merge", "manual-review", "hold", "security-review"}
 
 
 def api(repo: str, suffix: str, *, method: str = "GET", fields: dict[str, str] | None = None) -> Any:
-    cmd = ["gh", "api", "--method", method, f"repos/{repo}/{suffix}"]
+    endpoint = f"repos/{repo}" + (f"/{suffix}" if suffix else "")
+    cmd = ["gh", "api", "--method", method, endpoint]
     for key, value in (fields or {}).items():
         cmd.extend(["-f", f"{key}={value}"])
     p = subprocess.run(cmd, capture_output=True, text=True, check=False)
