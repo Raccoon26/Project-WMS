@@ -8,6 +8,7 @@ import {
   migrationFolder,
   testDatabaseUrl,
   schemaName,
+  developmentDatabaseUrl,
 } from "@wms/db";
 import { buildApi } from "../../apps/api/src/app";
 import { logger } from "@wms/runtime";
@@ -32,6 +33,16 @@ it("destructive test tooling rejects production/remote targets", () => {
   ])
     expect(() => testDatabaseUrl(url)).toThrow();
   expect(() => schemaName("public; DROP TABLE x")).toThrow();
+  expect(() =>
+    developmentDatabaseUrl(
+      "postgresql://wms_dev:synthetic@db.example.invalid/wms_dev",
+    ),
+  ).toThrow();
+  expect(() =>
+    developmentDatabaseUrl(
+      "postgresql://wms_dev:synthetic@127.0.0.1/production",
+    ),
+  ).toThrow();
 });
 it("query delay times out, readiness degrades, and recovers after lock release", async () => {
   const scope = await scopedDatabase(200);

@@ -34,6 +34,8 @@ const ja = {
   checking: "確認中",
   unknown: "未確認",
   offlineNotice: "オフラインです。サーバーの処理は実行できません。",
+  databaseNotice:
+    "API は応答していますが、データベースの準備を確認できません。",
   errorNotice:
     "API に接続できません。接続先とサーバーの状態を確認してください。",
   updated: "最終確認",

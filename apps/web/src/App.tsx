@@ -46,7 +46,7 @@ export function App() {
       drawer.current?.querySelector<HTMLElement>("button,a")?.focus();
   }, [mobile, menu]);
   const [connection, setConnection] = useState<
-    "checking" | "online" | "unavailable" | "offline"
+    "checking" | "online" | "degraded" | "unavailable" | "offline"
   >("checking");
   const [checked, setChecked] = useState<string>();
   const [sequence, setSequence] = useState(0);
@@ -93,7 +93,9 @@ export function App() {
               data.status === "ok"
               ? "online"
               : navigator.onLine
-                ? "unavailable"
+                ? res.status === 503
+                  ? "degraded"
+                  : "unavailable"
                 : "offline",
           );
       } catch {
@@ -264,9 +266,11 @@ export function App() {
                 {t("offlineNotice")}
               </p>
             )}
-            {connection === "unavailable" && (
+            {(connection === "unavailable" || connection === "degraded") && (
               <p className="banner error" role="alert">
-                {t("errorNotice")}
+                {t(
+                  connection === "degraded" ? "databaseNotice" : "errorNotice",
+                )}
               </p>
             )}
             {!route ? (
@@ -313,14 +317,18 @@ export function App() {
                           <div className="card-label">
                             {t(kind)}
                             <span
-                              className={`status-dot ${connection === "online" ? "green" : ""}`}
+                              className={`status-dot ${connection === "online" || (kind === "api" && connection === "degraded") ? "green" : ""}`}
                             />
                           </div>
                           <strong data-testid={`${kind}-status`}>
                             {t(
-                              kind === "database" && connection !== "online"
-                                ? "unknown"
-                                : connection,
+                              connection === "degraded"
+                                ? kind === "api"
+                                  ? "online"
+                                  : "unavailable"
+                                : kind === "database" && connection !== "online"
+                                  ? "unknown"
+                                  : connection,
                             )}
                           </strong>
                           <p>

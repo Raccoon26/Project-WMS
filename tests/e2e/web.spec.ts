@@ -50,6 +50,14 @@ test("locale switch, invalid locale and API failure are visible", async ({
   );
   await page.getByRole("button", { name: /다시 확인/ }).click();
   await expect(page.getByRole("alert")).toBeVisible();
+  await expect(page.getByTestId("database-status")).toHaveText(
+    "연결할 수 없음",
+  );
+  await expect(page.getByTestId("api-status")).toHaveText("연결됨");
+  await page.unroute("**/api/v1/health/ready");
+  await page.route("**/api/v1/health/ready", (route) => route.abort());
+  await page.getByRole("button", { name: /다시 확인/ }).click();
+  await expect(page.getByTestId("api-status")).toHaveText("연결할 수 없음");
   await expect(page.getByTestId("database-status")).toHaveText("미확인");
 });
 test("installed static shell works offline without API caching or replaying writes", async ({

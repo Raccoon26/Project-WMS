@@ -18,7 +18,7 @@ DATABASE_URL은 PostgreSQL URL만, 비밀을 오류에 출력하지 않습니다
 
 ## DB/마이그레이션
 `pnpm db:generate`는 Drizzle schema에서 SQL/snapshot/journal을 생성합니다.
-`pnpm db:migrate`는 .env로 지정된 development/test DB에만, `pnpm db:migrate:test`는 엄격한 TEST_DATABASE_URL guard를 거칩니다.
+`pnpm db:migrate`는 .env의 loopback wms_dev user/DB(또는 test의 wms_test)에만, `pnpm db:migrate:test`는 엄격한 TEST_DATABASE_URL guard를 거칩니다.
 허용 테스트 대상: loopback 또는 db-test, DB명/사용자 wms_test, query 옵션 없음.
 production DB 실행/자동 reset/drop 명령은 제공하지 않습니다. 앱 시작은 migration을 실행하지 않습니다.
 
@@ -80,3 +80,5 @@ Windows/macOS는 실행 문서/플랫폼 중립 Node/패키지 지원을 준비�
 ARM64 manifest/native optional package 존재는 사전검증일 뿐 Pi 실측/arm64 실행/전원검증을 대신하지 않습니다.
 
 라이선스 metadata inventory: MIT/Apache-2.0/ISC/BSD-2/BSD-3/BlueOak-1.0.0, caniuse-lite CC-BY-4.0, LightningCSS MPL-2.0. 배포 시 LICENSE/NOTICE 및 관련 소스 의무를 유지하며 자동 법률준수 보증으로 보지 않는다.
+
+Vitest SSR은 explicit workspace source alias로 fresh checkout에서도 build 없이 unit/integration을 실행한다. 로컬 dist를 지운 상태로 CI 순서 검증 완료.

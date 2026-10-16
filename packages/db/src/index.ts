@@ -14,22 +14,35 @@ export function schemaName(value: string): string {
     throw new Error("UNSAFE_SCHEMA");
   return value;
 }
-export function testDatabaseUrl(value: string | undefined): string {
+function localDatabaseUrl(
+  value: string | undefined,
+  expected: "wms_test" | "wms_dev",
+): string {
   let u: URL;
   try {
     u = new URL(value ?? "");
   } catch {
-    throw new Error("TEST_DATABASE_URL_REQUIRED");
+    throw new Error("DATABASE_URL_REQUIRED");
   }
+  const hosts =
+    expected === "wms_test"
+      ? ["127.0.0.1", "localhost", "db-test"]
+      : ["127.0.0.1", "localhost"];
   if (
     !["postgres:", "postgresql:"].includes(u.protocol) ||
-    !["127.0.0.1", "localhost", "db-test"].includes(u.hostname) ||
-    u.pathname !== "/wms_test" ||
-    decodeURIComponent(u.username) !== "wms_test" ||
+    !hosts.includes(u.hostname) ||
+    u.pathname !== "/" + expected ||
+    decodeURIComponent(u.username) !== expected ||
     u.search
   )
-    throw new Error("UNSAFE_TEST_DATABASE");
+    throw new Error("UNSAFE_DATABASE_TARGET");
   return u.toString();
+}
+export function testDatabaseUrl(value: string | undefined): string {
+  return localDatabaseUrl(value, "wms_test");
+}
+export function developmentDatabaseUrl(value: string | undefined): string {
+  return localDatabaseUrl(value, "wms_dev");
 }
 export function createDatabase(
   url: string,

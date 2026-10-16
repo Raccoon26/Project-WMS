@@ -68,11 +68,11 @@ Linux amd64, Node24.19.0, AMD EPYC 9V74, availableParallelism4, host RAM약34088
 Docker28.4.0/Compose2.40.3, PostgreSQL17.11 실제 SHOW server_version 확인.
 최종 로컬 단위34/DB통합4/장애14/browser8/Python45 =105 passed, 실패/skip0.
 실제 업무테스트/실제ARM64/Pi/실기기 모바일·Windows·macOS는 별도 미실행.
-compiled Node 앱을 별도포트3301/3302로 실행해 준비완료까지 API 589.29ms / Worker 460.99ms.
+초안 e41756e 기반 compiled Node 앱을 별도포트3301/3302로 실행해 준비완료까지 API 589.29ms / Worker 460.99ms.
 시작 직후 약1초 RSS API 336.1MiB / Worker 206.84MiB(현 호스트 Node runtime 포함, 장기안정치 아님).
 각100회 sequential loopback HTTP: live p50/p95 0.455/0.811ms,
 ready 1.172/1.593ms. synthetic·비인증 상태조회이며 업무처리 throughput/SLO 검증 아님.
-Vite 최종 build: index JS235.33kB(gzip74.61), CSS11.56kB(gzip3.56), indexHTML0.63kB.
+Vite 최종 build: index JS235.58kB(gzip74.71), CSS11.56kB(gzip3.56), indexHTML0.63kB.
 Docker 관측: dev/test PG 각각약21.7MiB RSS, CPU약4%(단일시점 healthcheck 포함, 부하테스트 아님).
 Chromium 새 context의 첫 navigation: DOMContentLoaded 38.10ms / load 38.20ms(현 로컬호스트·단일표본).
 개발 Compose 실제 down/up/repeated-up과 synthetic metadata 보존 확인, 자신의 probe행 제거.
@@ -167,3 +167,15 @@ License metadata8종검토(MIT/Apache/ISC/BSD2/BSD3/CC-BY4/MPL2/BlueOak), attrib
 - `tsconfig.base.json`
 - `tsconfig.json`
 - `vitest.config.ts`
+
+## 첫 원격 CI 실패 및 수정
+[Run38850324489](https://github.com/Raccoon26/Project-WMS/actions/runs/38850324489), head e41756e:
+frozen install/audit/boundary/lint/typecheck/실제PG migration까지 성공했지만 fresh checkout에서 Vitest SSR이
+workspace source condition을 적용하지 못하고 미생성 dist를 찾으며 두 suite import 실패(테스트0, CI 실패).
+로컬 retained dist가 숨긴 문제였음. Vitest workspace→source alias를 명시하고, 모든8개 ignored dist를
+제거한 뒤 **typecheck→lint→boundary→migration→unit34→integration4→fault14→build→browser8**를 실제 순서대로 재실행, 전부 통과.
+테스트0을 성공 처리하지 않았으며 CI 순서를 완화하거나 선행 build로 결함을 숨기지 않았다.
+동시에 source 검토에서 readiness503을 API 단절로 표시하던 UI를 수정(API응답/DB준비실패 구분),
+일반 development migration도 wms_dev user/DB/loopback guard를 추가. 해당 DB검증·browser API503/네트워크단절 케이스 재통과.
+[Policy Run38850324492](https://github.com/Raccoon26/Project-WMS/actions/runs/38850324492)는 Draft+고위험 owner검토 부재로 예상 BLOCK,
+수동검토 gate를 해제하거나 소유자승인/label을 대행하지 않았다. PR4 Open/Draft 유지.
