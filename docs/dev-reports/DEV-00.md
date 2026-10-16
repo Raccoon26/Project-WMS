@@ -99,3 +99,9 @@ A documentation-only follow-up PR verifies GitHub Actions guarded automatic merg
 [PR6 negative Quality 성공](https://github.com/Raccoon26/Project-WMS/actions/runs/38853596100),
 [독립 검증의 의도된 차단](https://github.com/Raccoon26/Project-WMS/actions/runs/38853650332):
 `Established verification baseline removed/weakened: tests/fault/database.test.ts`. 실제 merge job은 skipped, main 보존 확인.
+
+## AUTO-01 verifier follow-up
+DEV01 사전검토에서 disabled integration scaffold의 tsconfig를 실제 adapter 코드로 오인하는 분류 결함을 발견했다.
+소스 파일 집합·정확한 hash·실제 no-effects case를 함께 확인하도록 수정하고 tsconfig 동반 회귀를 추가했다.
+독립 문서 validator는 baseline 자체 대신 candidate root를 검사하게 수정했다.
+새 제어 코드도 이전 main verifier와 모든 실제 정책 검사를 통과한 경우에만 자동병합한다.

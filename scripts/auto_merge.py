@@ -80,7 +80,7 @@ def eligible(repo_name: str, pr: dict, run: dict, repo: dict,
         if not REQUIRED_STEPS.issubset(passed_steps):
             errors.append('Required quality steps absent/skipped/failed')
     classification = classify(paths, added_tests)
-    external = [p for p in paths if p.startswith('packages/integrations/') and not p.endswith('package.json')]
+    external = [p for p in paths if p.startswith('packages/integrations/src/')]
     if (external == ['packages/integrations/src/index.ts']
             and (evidence or {}).get('disabledScaffoldHash') == DISABLED_SCAFFOLD_SHA256
             and 'external effects including AI are disabled' in (evidence or {}).get('passedCases', [])):

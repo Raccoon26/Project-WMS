@@ -53,6 +53,7 @@ class GovernanceTests(unittest.TestCase):
         e['disabledScaffoldHash'] = DISABLED_SCAFFOLD_SHA256
         e['passedCases'].append('external effects including AI are disabled')
         self.assertEqual(decision('packages/integrations/src/index.ts', e), [])
+        self.assertEqual(auto_merge.eligible(REPO_NAME, P, R, REPO, FILES + ['packages/integrations/src/index.ts', 'packages/integrations/tsconfig.build.json'], W, BASE, R, JOBS, e), [])
         e['disabledScaffoldHash'] = 'changed'
         self.assertTrue(decision('packages/integrations/src/index.ts', e))
         e['disabledScaffoldHash'] = DISABLED_SCAFFOLD_SHA256
