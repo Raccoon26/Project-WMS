@@ -1,0 +1,71 @@
+name: WMS PR CI
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wms-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  quality:
+    name: WMS Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Policy tests and shell syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts python3 -m unittest -v test_pr_policy
+          for f in scripts/*.sh; do bash -n "$f"; done
+      - name: Check prohibited tracked credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess,sys
+          sys.path.insert(0,"scripts")
+          from pr_policy import forbidden
+          paths=subprocess.check_output(["git","ls-files"],text=True).splitlines()
+          bad=[p for p in paths if forbidden(p)]
+          if bad:raise SystemExit("FORBIDDEN files: "+str(bad))
+          PY
+      - name: Require application test entrypoints when application exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -f package.json; then
+            test -f pnpm-lock.yaml || { echo "Missing pnpm-lock.yaml";exit 1; }
+            node -e 'const p=require("./package.json");for(const k of ["lint","typecheck","test","build"])if(!p.scripts?.[k])throw Error("Missing "+k)'
+          elif find . -path './.git' -prune -o -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' \) -print | grep -q .; then
+            echo "Application code found without package.json";exit 1
+          fi
+      - uses: actions/setup-node@v4
+        if: ${{ hashFiles('package.json') != '' }}
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+        if: ${{ hashFiles('package.json') != '' }}
+        with:
+          version: '10'
+      - name: Build and test
+        if: ${{ hashFiles('package.json') != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm lint
+          pnpm typecheck
+          pnpm test
+          if test -f docs/dev-reports/DEV-04.md; then test -f .wms-inventory-engine || exit 1; fi
+          if test -f .wms-inventory-engine; then
+            node -e 'const p=require("./package.json");for(const k of ["test:invariants","test:failures"])if(!p.scripts?.[k])throw Error("Missing "+k)'
+            pnpm test:invariants
+            pnpm test:failures
+          fi
+          pnpm build

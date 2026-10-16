@@ -1,0 +1,39 @@
+name: WMS PR Policy
+on:
+  pull_request_target:
+    types: [opened,reopened,synchronize,ready_for_review,converted_to_draft,labeled,unlabeled]
+    branches: [main]
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: wms-policy-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  policy:
+    name: WMS Policy Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+      HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+      BASE_REPO: ${{ github.repository }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      IS_DRAFT: ${{ github.event.pull_request.draft }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - run: |
+          set -euo pipefail
+          gh api "repos/$BASE_REPO/pulls/$PR_NUMBER/files?per_page=100" --paginate --jq '.[].filename' > "$RUNNER_TEMP/files.txt"
+          gh api "repos/$BASE_REPO/issues/$PR_NUMBER/labels" --jq '.[].name' > "$RUNNER_TEMP/labels.txt"
+      - shell: bash
+        run: |
+          set -euo pipefail
+          args=(--head "$HEAD_BRANCH" --title "$PR_TITLE" --changed-files "$RUNNER_TEMP/files.txt" --labels "$RUNNER_TEMP/labels.txt" --head-repo "$HEAD_REPO" --base-repo "$BASE_REPO")
+          if [[ "$IS_DRAFT" == true ]]; then args+=(--draft); fi
+          python3 scripts/pr_policy.py "${args[@]}"
