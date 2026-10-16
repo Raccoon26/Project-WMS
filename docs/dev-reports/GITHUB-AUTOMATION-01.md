@@ -2,7 +2,7 @@
 
 최신 사용자 지시가 이전 C 수동 승인 정책을 대체한다. 모든 경로를 자동 병합 대상으로 허용하되
 실제 필수 검증 누락/실패/취소/불명은 차단한다. 승인 label/comment/review 요구를 제거한다.
-PR4 기존 DEV01을 보존하고 별도 dev/dev-00-auto-01 전환 PR을 먼저 적용한다. 현재 main에 새 정책은 아직 적용 전이다.
+PR4 기존 DEV01을 보존하고 별도 dev/dev-00-auto-01 전환 PR을 먼저 적용한다. 새 정책 main 적용 및 PR4 자동병합 실증 완료. 초기 진행 기록은 아래 이력과 구분한다.
 
 ## 구현
 
@@ -76,3 +76,27 @@ Python 후보63/기준선62 실행, no fail/skip. 앱 없는 전환 PR이므로 
 
 GitHub 공식 [2026-09-17 공지](https://github.blog/changelog/2026-09-17-workflow-execution-protections-in-github-actions-generally-available) 확인:
 11월2일 대상 공개repo의 default pull_request_target rule enforcement가 적용된다. 이 구현은 해당 이벤트 사용0이다.
+
+## DEV01 실제 자동 Ready·병합 및 최종 감사
+
+| 검증 | 실제 결과 |
+|---|---|
+| PR4 원격 HEAD | cdd9fcd22575340b8579f7956053fd48bc220cd0 |
+| Quality | [38854559218](https://github.com/Raccoon26/Project-WMS/actions/runs/38854559218) SUCCESS; Python65+unit34+PG4+fault14+browser8=125 passed/0 fail/0 skip |
+| Policy | [38854720372](https://github.com/Raccoon26/Project-WMS/actions/runs/38854720372) SUCCESS; Draft WAITING이며 허가와 분리 |
+| Independent | [38854703602](https://github.com/Raccoon26/Project-WMS/actions/runs/38854703602) SUCCESS; 실제 PG/앱/브라우저 재검증 |
+| Controller | [38854877732](https://github.com/Raccoon26/Project-WMS/actions/runs/38854877732) SUCCESS; READY/MERGED log 확인 |
+| 실제 이벤트 | github-actions[bot], Ready05:16:11 UTC → merged05:16:14 UTC |
+| 실제 squash/main SHA | 168a43ef2cc94bcd058bb0f366d07494817b924c |
+
+수동 승인/위험 label/SHA 승인 comment0. 신규 PR5/6/7 일반 PR 생성, 기존 Draft PR4 자동 Ready를 실제 확인했다.
+일반 UI/API/DB/Worker와 CI/정책 코드가 실제 독립 검증 후 자동병합됐다. 재고 엔진/인증/메일 등의 업무 기능은 아직 없어
+실제 해당 업무 성공 병합은 미실행이며 case catalog 충족/실패/누락은 정책 회귀 모사로만 확인한다.
+
+최종 snapshot이 head/base뿐 아니라 title/base branch/source ref/repository/author 변경도 차단하도록 보강했다.
+새 metadata 경합 회귀1개를 더해 로컬 정책66, 전체 고유 테스트126개(앱60+정책66)가 된다.
+기준선 삭제 negative의 의도된 Actions 실패, 수정 전 CLI exit2/DB환경 오류는 위 이력에 보존했고 최종 성공과 혼동하지 않는다.
+
+변경 파일: pr_policy/auto_merge/create-dev-pr/merge_gate, 독립 verifier/runner/evidence/catalog/baseline,
+관련 Python 회귀, pr-ci/pr-policy/independent-verification/auto-merge workflows, AGENTS 및 상태·요구·테스트·안전·위험·결정·DEV 보고.
+rollback은 별도 revert PR+동일 자동검증으로 수행하고 운영 DB reset/자동 운영배포를 하지 않는다.

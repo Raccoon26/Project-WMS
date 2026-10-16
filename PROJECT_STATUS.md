@@ -1,6 +1,6 @@
 # Project-WMS 상태
 
-2026-10-16. DEV00 설계 및 AUTO-01 정책은 main 적용 완료. DEV01 앱은 PR4에서 재검증·자동병합 진행 중.
+2026-10-16. DEV00 설계 및 AUTO-01 정책은 main 적용 완료. DEV01 실행 기반도 PR4로 main 반영 완료. 다음 단계는 DEV02 인증·권한이다.
 
 ## 확인된 GitHub 이력
 
@@ -10,13 +10,15 @@
   병합 `435e69daa2582f75e970b3c8bbd718bf3b63abf8`, [controller 성공](https://github.com/Raccoon26/Project-WMS/actions/runs/38853918542).
 - [PR7](https://github.com/Raccoon26/Project-WMS/pull/7): verifier 보정 자동병합 `17d6cdadce3b7b47da116c0a2f9f5dfaf552718f`.
 - [PR4](https://github.com/Raccoon26/Project-WMS/pull/4): 기존 dev/dev-01-foundation을 재사용. 최신 main으로 정상 merge했고 force push/main 직접 push 없음.
-  구현·로컬 재검증 완료, 최신 HEAD의 원격 Quality/독립검증/자동 Ready·병합 결과는 후속 기록한다.
+  검증 HEAD `cdd9fcd22575340b8579f7956053fd48bc220cd0`, 실제 자동 squash merge `168a43ef2cc94bcd058bb0f366d07494817b924c`.
+  05:16:11 UTC github-actions[bot] Ready, 05:16:14 UTC 같은 bot merged. 사용자 승인0.
+  [Quality](https://github.com/Raccoon26/Project-WMS/actions/runs/38854559218) / [Independent](https://github.com/Raccoon26/Project-WMS/actions/runs/38854703602) / [Guarded](https://github.com/Raccoon26/Project-WMS/actions/runs/38854877732) 모두 성공.
 
 ## 실행 기반 및 안전성
 
 pnpm TypeScript workspace, 일본어 React/Vite/Tailwind15화면/PWA, Fastify 읽기전용 상태·버전,
 실제 PostgreSQL17.11·Drizzle migration/hash/lock, 별도 readonly Worker/config/log/shutdown.
-Unit34/실제DB integration4/fault14/browser8 로컬 재통과, 실제 업무쓰기0. 정책/Python 검사는 AUTO-01 보고 참조.
+Unit34/실제DB integration4/fault14/browser8 로컬 재통과, 실제 업무쓰기0. 원격 정책65 포함 총125 passed/0 fail/0 skip 확인. 후속 metadata 경합 회귀를 추가한 현재 로컬 정책66 통과; AUTO-01 보고 참조.
 수동 승인 label/comment/review 및 위험 경로별 Draft 강제 없음. 모든 유형에 main-owned 독립 자동 검증을 요구한다.
 부족한 업무 suite는 필수 테스트 누락으로 차단한다. 보호 없는 자기 수정 CI는 완전 보안을 보장하지 않는다.
 
