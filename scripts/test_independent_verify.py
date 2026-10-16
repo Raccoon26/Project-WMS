@@ -81,3 +81,38 @@ class IndependentTests(unittest.TestCase):
             self.assertTrue(quality_errors(REPO_NAME, P, BASE, dict(proof,sourceRunAttempt=1)))
             jobs['jobs'][0]['conclusion'] = 'skipped'
             self.assertTrue(quality_errors(REPO_NAME, P, BASE, proof))
+
+class AuthTransitionTests(unittest.TestCase):
+    def test_successor_preserves_every_original_browser_assertion(self):
+        old = json.loads((ROOT/'scripts/verification-baseline.json').read_text())
+        successor = json.loads((ROOT/'scripts/verification-auth-transition.json').read_text())['files']
+        before = old['tests/e2e/web.spec.ts']
+        after = successor['tests/e2e/web.spec.ts']
+        self.assertEqual(before.replace('from "@playwright/test"', 'from "./auth-fixture"'), after)
+        self.assertIn('readMigrationFiles({ migrationsFolder: migrationFolder }).length', successor['tests/integration/postgres.test.ts'])
+        self.assertIn('history.rowCount', successor['tests/integration/postgres.test.ts'])
+        self.assertNotIn('test.skip', after)
+        fixture = successor['tests/e2e/auth-fixture.ts']
+        self.assertIn('/api/v1/auth/login', fixture)
+        self.assertIn('/api/v1/auth/mfa/verify', fixture)
+        self.assertNotIn('route.fulfill', fixture)
+
+    def test_successor_cannot_be_removed_or_weakened(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            shutil.copytree(ROOT/'.github', root/'.github')
+            for manifest in ROOT.glob('**/package.json'):
+                relative = manifest.relative_to(ROOT)
+                if any(part in {'node_modules', '.git', '.trusted-base'} for part in relative.parts): continue
+                target = root/relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(manifest, target)
+            (root/'scripts').mkdir()
+            shutil.copy(ROOT/'scripts/verification-baseline.json', root/'scripts')
+            self.assertTrue(preflight(root, ROOT))
+            shutil.copy(ROOT/'scripts/verification-auth-transition.json', root/'scripts')
+            self.assertEqual(preflight(root, ROOT), [])
+            data = json.loads((root/'scripts/verification-auth-transition.json').read_text())
+            del data['files']['tests/e2e/web.spec.ts']
+            (root/'scripts/verification-auth-transition.json').write_text(json.dumps(data))
+            self.assertTrue(preflight(root, ROOT))

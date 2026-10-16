@@ -85,6 +85,14 @@ def preflight(root, baseline):
             if name == 'package-scripts': continue
             if name not in new or value not in new[name]:
                 errors.append('Established verification baseline removed/weakened: ' + name)
+    successor = baseline/'scripts/verification-auth-transition.json'
+    if successor.exists():
+        expected = json.loads(successor.read_text())
+        candidate_successor = root/'scripts/verification-auth-transition.json'
+        proposed = json.loads(candidate_successor.read_text()) if candidate_successor.exists() else {}
+        for name, text in expected['files'].items():
+            if text not in proposed.get('files', {}).get(name, ''):
+                errors.append('Established authenticated baseline removed/weakened: ' + name)
     return errors
 
 
@@ -108,6 +116,21 @@ def execute(root, baseline):
             target = root/name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(text)
+        # Explicit, main-owned DEV01 -> DEV02 semantic transition. Original
+        # registry remains immutable history; successor preserves every UI
+        # assertion and uses real login, plus the actual migration manifest.
+        successor = baseline/'scripts/verification-auth-transition.json'
+        if (root/'apps/api/src/auth/service.ts').exists() and successor.exists():
+            for name, text in json.loads(successor.read_text())['files'].items():
+                target = root/name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(text)
+        auth_registry = baseline/'scripts/verification-auth.json'
+        if auth_registry.exists():
+            for name, text in json.loads(auth_registry.read_text()).items():
+                target = root/name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(text)
         run('pnpm', 'install', '--frozen-lockfile')
         for name, scripts in data['package-scripts'].items():
             target = root/name
