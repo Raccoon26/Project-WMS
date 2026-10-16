@@ -19,8 +19,23 @@ python3 scripts/check_public_files.py
 PYTHONPATH=scripts python3 -m unittest discover -s scripts -p 'test_*.py' -q
 git push origin "HEAD:refs/heads/$branch"
 if [[ "$state" == absent ]]; then
-  # Creation is always draft. Readiness is a separate explicit reviewed step.
-  gh pr create --repo "$repo" --draft --base main --head "$branch" --title "[$dev] $title" --body-file "$report"
+  # Low-risk branch only: ready PR triggers trusted CI-verified auto merge.
+  # Never treat an uninspectable diff as safe.
+  if PYTHONPATH=scripts python3 - "$report" <<'PY'
+import subprocess,sys
+from pr_policy import forbidden,manual
+r=subprocess.run(['git','diff','--name-only','-z','origin/main...HEAD'],
+                 capture_output=True,check=False)
+if r.returncode: raise SystemExit(1)
+paths=[p.decode('utf-8') for p in r.stdout.split(b'\0') if p]
+if not paths or sys.argv[1] not in paths or any(forbidden(p) or manual(p) for p in paths):
+    raise SystemExit(1)
+PY
+  then
+    gh pr create --repo "$repo" --base main --head "$branch" --title "[$dev] $title" --body-file "$report"
+  else
+    gh pr create --repo "$repo" --draft --base main --head "$branch" --title "[$dev] $title" --body-file "$report"
+  fi
 fi
 gh pr view "$branch" --repo "$repo" --json url --jq .url
-echo "PR preserved/created. Inspect current-SHA CI and manual-risk policy before readiness or auto-merge."
+echo "PR created/reused. Guarded Auto Merge workflow handles ONLY safe, current-SHA successful CI; risk PRs stay draft."
