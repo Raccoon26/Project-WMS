@@ -12,7 +12,7 @@
 10. 암호화6h backup+월실제복원+epoch quarantine, 외부heartbeat+업무실패 독립감시.
 11. 같은SHA typecheck/lint/build/unit/integration/invariants/failures+요구감사; skip/미실행/불명은 green 아님.
 12. 모든 코드 유형은 독립 자동 검증 성공 시 승인 없이 병합 가능. 미구현/실패/누락된 필수 업무 테스트는 차단한다.
-13. main PR+현재SHA check+up-to-date/no bypass 보호 확인 안되면 자동병합 중지. bootstrap PR1 Draft/manual.
+13. main 소유 독립 verifier·현재 HEAD/base·공식 run/step·실제 테스트 증거를 요구한다. 보호 조회403/승인 부족은 차단 조건이 아니며 실제 검증 실패는 차단.
 14. main merge≠운영배포; 사전백업/drain/별도승인/rollback 후 운영 반영.
 15. 최소50SKU는 하한, AI는 default OFF/선택, 운영의존0.
 

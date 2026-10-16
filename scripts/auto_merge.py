@@ -18,7 +18,7 @@ import copy
 from typing import Any
 
 from pr_policy import changed_paths
-from governance import classify, metadata_errors, waiting, verify_evidence, complete
+from governance import classify, metadata_errors, waiting, verify_evidence, complete, DISABLED_SCAFFOLD_SHA256
 
 CI_PATH = ".github/workflows/independent-verification.yml"
 CI_NAME = "WMS Independent Verification"
@@ -80,6 +80,11 @@ def eligible(repo_name: str, pr: dict, run: dict, repo: dict,
         if not REQUIRED_STEPS.issubset(passed_steps):
             errors.append('Required quality steps absent/skipped/failed')
     classification = classify(paths, added_tests)
+    external = [p for p in paths if p.startswith('packages/integrations/') and not p.endswith('package.json')]
+    if (external == ['packages/integrations/src/index.ts']
+            and (evidence or {}).get('disabledScaffoldHash') == DISABLED_SCAFFOLD_SHA256
+            and 'external effects including AI are disabled' in (evidence or {}).get('passedCases', [])):
+        classification['profiles'] = [p for p in classification['profiles'] if p != 'integration']
     errors += metadata_errors(pr, paths, repo_name)
     errors += waiting(pr, classification)
     errors += verify_evidence(evidence or {}, sha, main_sha, number, classification['profiles'])

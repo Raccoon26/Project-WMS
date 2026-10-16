@@ -7,7 +7,7 @@
 
 | DEV | 산출물 영역 | 선행 | 상세 구현 범위 | 필수 검증·완료 기준 | 상태 |
 |---|---|---|---|---|---|
-| DEV-00 | 설계·GitHub 개발 기반 | 기존 PR1/문서 | 전체 요구사항/모델/계약/테스트 명세·정책 도구 | 정책 unit/통합/실패·문서·CI·Secret 검토; 최초 수동 병합 | REVIEW_PENDING |
+| DEV-00 | 설계·GitHub 개발 기반 | 기존 PR1/문서 | 전체 요구사항/모델/계약/테스트 명세·정책 도구 | 정책 unit/통합/실패·문서·CI·Secret 검토; 최초 수동 병합 | MERGED (PR1–3; AUTO-01 PR5) |
 | DEV-01 | 웹/API/DB 기반 | 00 기준선 | pnpm workspace, React/Vite/Tailwind/PWA i18n, Fastify, Drizzle migrations, Compose, worker shell | typecheck/lint/build, real PG migration/API smoke, worker 종료·再起動, ARM64 manifest | PLANNED |
 | DEV-02 | 인증·권한·보안 | 01 | 세션/RBAC/MFA/CSRF/입력·감사 기반 | 권한별 401/403, 세션 만료/탈취·CSRF/XSS·무권한 승인, 회귀 | PLANNED |
 | DEV-03 | 상품·SKU·창고 | 02 | 제품/매핑/상태/다중 창고 CRUD와 페이지네이션 | 60 synthetic SKU, 검색/정렬/필터/동일코드/타창고 FK/비활성 | PLANNED |
@@ -33,6 +33,6 @@
 분리한다. 최초 운영 직전에는 해당 출시 범위 전체를 FINAL-AUDIT-01(Astra)로 감사하고 blocker를 해결한다.
 DEV18 확장판 완성 직전에는 전체 확장 범위를 같은 감사대장의 새 revision으로 다시 검증한다.
 표의 나열 순서가 DEV14 무감사 출시를 허용하지 않는다. 개발 중에는 Astra를 사용하지 않는다. [출시 조건](RELEASE_CHECKLIST.md).
-DEV00은 로컬 설계/자동화 증거가 있어도 owner review/보호설정/병합 미확인이면 완료로 바꾸지 않는다.
+DEV00 설계·기반은 PR1–3, AUTO-01 정책 전환은 PR5로 실제 병합됨. DEV01 앱은 PR4에서 별도 검증한다.
 
 AUTO-01: 별도 전환 PR 적용 중. DEV01 구현은 PR4에 보존; 전환 이후 최신 main으로 동기화·재검증·자동병합할 예정이며 아직 병합 완료가 아니다.

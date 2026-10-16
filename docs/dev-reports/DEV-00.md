@@ -94,4 +94,8 @@ A documentation-only follow-up PR verifies GitHub Actions guarded automatic merg
 
 ## AUTO-01 live negative probe
 의도적으로 baseline의 DB 장애 검사를 삭제한 변경을 독립 검증기가 차단하는지 실증한다.
-이 probe는 실패가 기대 결과이며 병합하면 안 된다. 기준선을 복원한 뒤 같은 PR에서 정상 경로를 검증한다.
+삭제 상태의 HEAD 8de73b2는 실제 독립 검증에서 차단됐다. 기준선을 복원한 현재 HEAD로 정상 경로를 검증한다.
+
+[PR6 negative Quality 성공](https://github.com/Raccoon26/Project-WMS/actions/runs/38853596100),
+[독립 검증의 의도된 차단](https://github.com/Raccoon26/Project-WMS/actions/runs/38853650332):
+`Established verification baseline removed/weakened: tests/fault/database.test.ts`. 실제 merge job은 skipped, main 보존 확인.
