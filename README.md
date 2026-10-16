@@ -1,6 +1,6 @@
 # Project-WMS
 
-일본 전자상거래용 WMS. **DEV-03 Catalog 구현·검증 / 운영 물류 미구현**.
+일본 전자상거래용 WMS. **DEV-04 내부 재고·물류 엔진 구현 / 실운영·외부 전송 미활성**.
 React·TypeScript·Vite·Tailwind 웹, Fastify API, PostgreSQL/Drizzle, 독립 Worker.
 최소50 SKU는 수용 목표이며 상한이 아닙니다. Dot/유료 AI/운영 API 키 없이 실행합니다.
 
@@ -130,3 +130,35 @@ CI·DB·API·Worker·패키지·인프라를 포함한 모든 변경은 main 소
 기본25/최대100 keyset 페이지, 검색/정렬/필터/409 충돌 안내, 실패 입력 보존을 제공합니다.
 재고는 미연동·미측정이며 알 수 없는 수량을0으로 표시하지 않습니다. 원장/입출고는 DEV04 이후입니다.
 [Catalog 계약](docs/CATALOG.md) · [Windows PowerShell/문제 해결](docs/DEVELOPMENT.md#dev03-windows-powershell-개발-순서) · [DEV03 증거](docs/dev-reports/DEV-03.md).
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+## DEV04 — 합성 재고를 로컬에서 확인
+
+먼저 위 Node/pnpm/DB/Migration/인증 Bootstrap/MFA 안내를 완료한다. 실제 운영 재고를 자동으로 가져오거나 입력하는 단계가 아니다.
+
+1. 기존 명령 `pnpm db:up`, `pnpm db:migrate`로 보존형 forward Migration을 적용한다. `down -v`/DB reset 금지.
+2. API·Worker·웹은 기존대로 실행한다. 일반 기본값에서 수동/외부 재고증거는 보류된다.
+3. 합성 재고를 명시적으로 실습할 때만 API 터미널에서 아래 opt-in을 설정한다. 실제 상품/실재고를 사용하지 않는다.
+
+```bash
+# Linux/macOS 개발 터미널 — 해당 API 프로세스에만 적용
+WMS_SYNTHETIC_INVENTORY=true pnpm dev:api
+```
+
+```powershell
+# Windows PowerShell / Docker Desktop+WSL2
+$env:WMS_SYNTHETIC_INVENTORY="true"
+pnpm dev:api
+# 종료 후 opt-in 제거
+Remove-Item Env:WMS_SYNTHETIC_INVENTORY
+```
+
+4. 기존 웹에 MFA 로그인하고 상품/SKU, 서로 다른 테스트 창고2개를 등록한다. 실제 UUID가 표시되는 상세에서 참조한다.
+5. Inventory에서 SKU 검색·선택, 출발/대상 창고, `合成初期在庫`, 정수 수량·사유·증거 참조를 입력한다. 출처는 `合成テスト専用`을 명시 선택하고 저장한다. 기본단계에는 합성 seed가 자동실행되지 않는다.
+6. Outbound/Transfer 계획→예약→명시된 부분 출발/수령 증거를 기록한다. 수령은 Inbound version과 Shipment line ID를 사용한다. 상세·원장·보류 상태를 확인한다. 같은 증거 재입력은 거부된다.
+7. Ctrl+C로 정상 종료한다. 실습 flag를 해제하고 기존 DB/인증 Secret을 보존한다.
+
+자동 검증은 기존 `pnpm test:unit`, `pnpm test:integration`, `pnpm test:failures`, `pnpm build`, `pnpm test:e2e`. Failure suite는 격리 테스트DB의 검증된 `WMS_TEST_CONTAINER`가 필요하며 다른 DB suite/브라우저와 동시 실행하지 않는다. [재고 계약](docs/INVENTORY_LEDGER.md), [DEV04 증거](docs/dev-reports/DEV-04.md).

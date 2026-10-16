@@ -152,3 +152,7 @@ React escaping을 유지하고 raw HTML/사용자 URL scheme 삽입을 사용하
 
 DEV02 당시 Global-only 제한은 DEV03 forward migration으로 확장했다. 기존 Global grant/세션/MFA는 보존하며 scope=warehouse는 실제 warehouse_id FK가 필요하다. auth/me permissions는 Global만, grants는 scope별 현재 Permission이다. 기존 Global 역할 교체 API는 warehouse grant를 지우거나 Global로 승격하지 않는다. 추가6 Permission·Global/공유 read/창고별 정책은 CATALOG가 기준이다.
 [Catalog 상세 계약](CATALOG.md). 실제 결과는 [DEV03 보고](dev-reports/DEV-03.md)에서 확인한다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

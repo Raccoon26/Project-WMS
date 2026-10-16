@@ -59,3 +59,7 @@ CAS+actor별 command_results+append-only revision/audit, mapping 종료/대체, 
 중복/경합을 통제한다. code/name keyset B-tree와 표준 PostgreSQL pg_trgm GIN을 사용하며 별도 검색 서비스는 도입하지 않는다.
 일반 Catalog 수정은 반복 MFA를 요구하지 않고 mapping/account/역할 변경은 최근 재인증을 유지한다.
 기존 검증 snapshot/워크플로를 유지하고 Catalog profile과 새 테스트만 확장한다.
+
+## DEV-04 / ADR-Inventory — PostgreSQL Commit 안전장치와 증거 분리
+
+원장 INSERT Trigger로만 수량 Projection을 갱신하고 Deferred Constraint로 SKU별 균형·잔액·예약·출고·수령 합계를 Commit 검증한다. 기존 Auth/Catalog 잠금과 충돌하지 않게 Session/User→Aggregate→metadata share→정렬 Account→예약→Audit 순서를 사용하며 전체재고 전역74002 mutex는 추가하지 않는다. 위험 조정과 미검증 Manual/External Evidence는 DEV07/08/09 Port가 없으므로held. 합성Posting은 isolated Test DB 또는 명시적인 loopback 개발 flag만 허용하며 운영활성화와 분리한다. DB timestamp는 JS Date로 복사하지 않는다. [구현 계약](INVENTORY_LEDGER.md).

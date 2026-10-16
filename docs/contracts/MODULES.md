@@ -67,3 +67,9 @@ createUser/updateUser/setRoles/list. HTTP adapter만 Cookie/Origin/header를 Con
 
 CatalogService list/get/change/history는 Permission·resolved warehouse scope·현재 session을 같은 query/쓰기 transaction에서 확인한다. metadata+command result+revision+Audit는 원자 commit이다. warehouseRoles는 기존 AuthService.mutate의 최근 MFA/CSRF/보안 잠금을 유지한다. catalogEligible은 향후 원장 업무의 필요조건만 제공하며 수량 계산/출고 실행은 없다.
 [Catalog 상세 계약](../CATALOG.md). 실제 결과는 [DEV03 보고](../dev-reports/DEV-03.md)에서 확인한다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+DEV04 실제 Port는 `InventoryService.command`의 Auth/Scope UoW와 `postInventoryTransaction`의 내부 Posting이다. Catalog/원장 UUID를 공유하고 원장의 account 권한을 stock 상태와 함께 다시 평가한다. `InventoryEvidenceVerificationPort`는 미래 Provider의 독립 proof 계약이며 현재 구현/운영 연결을 주장하지 않는다. Worker는 service actor 계약을 알고 있으나 원장 쓰기·Outbox 외부 소비자를 실행하지 않는다. Outbound/Inbound/Transfer의 조회/쓰기·Cursor·수량/증거 규칙은 INVENTORY_LEDGER가 현재 계약이다.

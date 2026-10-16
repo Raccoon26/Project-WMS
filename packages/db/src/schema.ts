@@ -9,3 +9,5 @@ export const foundationMetadata = pgTable("foundation_metadata", {
 export * from "./auth-schema.js";
 
 export * from "./catalog-schema.js";
+
+export * from "./inventory-schema.js";

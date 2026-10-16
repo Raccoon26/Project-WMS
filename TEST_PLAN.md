@@ -24,35 +24,35 @@ received<=shipped(초과는 격리), 출고처+transit+목적지=기초+외부�
 ## 필수 장애 명세 30개
 | ID | 장애 | 기대 결과 | 검증 방법 | 구현·실행 담당 | 현재 |
 |---|---|---|---|---|---|
-| F01 | 동일 출고 요청 두 번 생성 | 동일 key/hash는 같은 ID; 다른 payload409; 신규 업무 중복 참조도 unique | 동시 POST 두 connection, row/예약/outbox 각각1 | DEV-04 | NOT RUN |
+| F01 | 동일 출고 요청 두 번 생성 | 동일 key/hash는 같은 ID; 다른 payload409; 신규 업무 중복 참조도 unique | 동시 POST 두 connection, row/예약/outbox 각각1 | DEV-04 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
 | F02 | 동일 출고 요청 이메일 두 번 발송 위험 | action_key unique; 동시 worker도 원격 전송≤1 또는 unknown 보류 | fake EmailPort 호출 카운트+DB unique 경쟁 | DEV-06 | NOT RUN |
 | F03 | 이메일 발송 직후 서버 종료 | sending 작업은 unknown; 자동 replay0, 예약 유지 | send 직후 kill, worker 재기동·발송함 대조 | DEV-06 | NOT RUN |
 | F04 | 이메일 성공 후 ACK 유실 | unknown+알림, 출고 원장변화0; 확인 전 재전송0 | provider success 뒤 timeout 주입 | DEV-06 | NOT RUN |
 | F05 | 승인 버튼 연속 클릭 | 하나의 유효 결정·한 번 실행, 나머지는 동일 결과/충돌 | 동시 approval endpoint100회, nonce/CAS 검사 | DEV-07 | NOT RUN |
 | F06 | Telegram 콜백 중복 | user/chat/nonce/version/expiry 확인, 승인1회 | 동일 update/callback 재생·변조·권한회수 | DEV-07 | NOT RUN |
-| F07 | 중복 API 요청 | 업무/원장/outbox 각각 한번, hash변경409 | 동일 idempotency 동시/재시도 응답유실 | DEV-04 | NOT RUN |
-| F08 | DB 트랜잭션 도중 장애 | ledger/balance/reservation/audit/outbox 전부 commit 또는0 | posting 단계별 connection kill·rollback 조회 | DEV-04 | NOT RUN |
+| F07 | 중복 API 요청 | 업무/원장/outbox 각각 한번, hash변경409 | 동일 idempotency 동시/재시도 응답유실 | DEV-04 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
+| F08 | DB 트랜잭션 도중 장애 | ledger/balance/reservation/audit/outbox 전부 commit 또는0 | posting 단계별 connection kill·rollback 조회 | DEV-04 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
 | F09 | Pi 정전 | WAL 복구·균형 유지, sending unknown·자동부작용 보류 | 실장비 통제 전원중단+재기동; VM kill은 대체 증거 구분 | DEV-12 | NOT RUN |
 | F10 | 인터넷 단절 | 안전한 로컬 조회 지속; 외부 영향 unknown, stale 자동출고 hold | 네트워크 차단·재접속·요청 카운트 | DEV-06,12 | NOT RUN |
 | F11 | 저장 공간 부족 | DB 실패 rollback; 백업 실패 경고, 성공 허위표시 없음 | 격리 작은 volume 채우기, 원장/마지막 백업 검사 | DEV-12,13 | NOT RUN |
-| F12 | PostgreSQL 재시작 | API503/worker 중단 후 DB 복구 재검증, 중복0 | 테스트 Compose DB restart mid command | DEV-04,12 | NOT RUN |
+| F12 | PostgreSQL 재시작 | API503/worker 중단 후 DB 복구 재검증, 중복0 | 테스트 Compose DB restart mid command | DEV-04,12 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
 | F13 | Amazon 인증 만료 | 제한 refresh/실패 격리·stale hold, 다른 모듈 정상 | mock401/invalid_grant, real key 없음 | DEV-08 | NOT RUN |
 | F14 | Rakuten 오류 | integration circuit 개방·수동CSV 경로, 원장 덮어쓰기0 | mock5xx/오류body/정상화 | DEV-09 | NOT RUN |
 | F15 | Rate Limit | Retry-After+jitter·최대5회/read 재시도, 쓰기 불명 hold | fake clock429/헤더누락·retry budget | DEV-08,09 | NOT RUN |
-| F16 | 출처별 수량 불일치 | source/time 별 분리, 차이 hold·수동증거 후 조정 | 동일 cutoff 불일치 snapshot/ledger 합 검증 | DEV-04,08,09 | NOT RUN |
+| F16 | 출처별 수량 불일치 | source/time 별 분리, 차이 hold·수동증거 후 조정 | 동일 cutoff 불일치 snapshot/ledger 합 검증 | DEV-04,08,09 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
 | F17 | 잘못된 SKU 매핑 | 미검증/중복/변경 mapping 차단·기존승인 무효 | 외부코드 다른SKU 주입, shipment0 | DEV-03,08,09 | NOT RUN |
-| F18 | 100 요청 중95 출고 | good5,transit95,미출고5 예약 보류, 손실 확정0 | 부분증거95 재생, ledger/reservation 대조 | DEV-04,06 | NOT RUN |
-| F19 | 95 출고 중93 입고 | 목적지93,transit2,차이 hold; 원창고5 유지 | receipt93 중복/역순 테스트, 소유총량100 | DEV-04,08,09 | NOT RUN |
-| F20 | 이미 출고한 요청 재처리 | 증거 key unique/상태전이 차단, 추가원장0 | shipped evidence/API 재생+다른key 동일ref | DEV-04,06 | NOT RUN |
-| F21 | 예약 재고 부족 | 한 경쟁자만 할당 또는 합≤good; 음수가용0 | 동일 SKU 다connection lock 경쟁 | DEV-04 | NOT RUN |
+| F18 | 100 요청 중95 출고 | good5,transit95,미출고5 예약 보류, 손실 확정0 | 부분증거95 재생, ledger/reservation 대조 | DEV-04,06 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
+| F19 | 95 출고 중93 입고 | 목적지93,transit2,차이 hold; 원창고5 유지 | receipt93 중복/역순 테스트, 소유총량100 | DEV-04,08,09 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
+| F20 | 이미 출고한 요청 재처리 | 증거 key unique/상태전이 차단, 추가원장0 | shipped evidence/API 재생+다른key 동일ref | DEV-04,06 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
+| F21 | 예약 재고 부족 | 한 경쟁자만 할당 또는 합≤good; 음수가용0 | 동일 SKU 다connection lock 경쟁 | DEV-04 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
 | F22 | 자동작업 도중 업데이트 | claim중지/drain; 불명 격리; 기존 lease 새실행 금지 | worker SIGTERM/lease expiry/fencing | DEV-12 | NOT RUN |
 | F23 | 복원 후 오래된 작업 재실행 | epoch 변경/queue quarantine·외부대조 전 발송0 | 이전backup restore+이미 sent remote fake | DEV-13 | NOT RUN |
 | F24 | 무권한 출고 승인 | 403/audit, 승인·원장·전송0 | operator/viewer/회수된admin/잘못된chat | DEV-02,07 | 공통 권한401/403·감사 검증; 실제 출고 승인 NOT RUN(DEV07) |
 | F25 | 백업 손상 | 검증/복원 실패, 이전정상 보존, 서비스 재개금지 | cipher bit flip·누락파일/hash 변조 | DEV-13 | NOT RUN |
 | F26 | Drive 인증 만료 | upload 실패/긴급 알림·last_success 유지 | mock401/quota, 이전backup 존재 검사 | DEV-13 | NOT RUN |
 | F27 | 정상 heartbeat 성공·업무 실패 | 업무지연/실패율 별도 alert; 전체green 금지 | liveness200+stuck due job/backup age 초과 | DEV-13 | NOT RUN |
-| F28 | 50 SKU 동시 갱신 | SKU별 balanced/예약일치/중복0, lock 순서 deadlock회복 | 50 SKU×동시 요청·seed고정·실제PG | DEV-04,14 | NOT RUN |
-| F29 | 대량 이력 조회 메모리 증가 | cursor/stream RSS bounded; 무제한 결과 금지 | 100만 entries, EXPLAIN/RSS/p95 측정, 페이지100 | DEV-04,11,14 | NOT RUN |
+| F28 | 50 SKU 동시 갱신 | SKU별 balanced/예약일치/중복0, lock 순서 deadlock회복 | 50 SKU×동시 요청·seed고정·실제PG | DEV-04,14 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
+| F29 | 대량 이력 조회 메모리 증가 | cursor/stream RSS bounded; 무제한 결과 금지 | 100만 entries, EXPLAIN/RSS/p95 측정, 페이지100 | DEV-04,11,14 | DEV04 내부 PG/합성 검증; 운영·외부 범위는 DEV04 보고 구분 |
 | F30 | 창고 회신 형식 변경 | 파싱실패 격리·원장변화0·관리자 증거검토 | 다른 column/누락/음수/unknown SKU/첨부오염 | DEV-06 | NOT RUN |
 
 ## 최소50 SKU 수용성
@@ -118,3 +118,9 @@ E2E의 별도 Catalog 시나리오 시작 때 공유 synthetic rate bucket만 �
 합성 SKU 규모별 query plan/평균·p95/샘플·동시성/RSS는 test-results/catalog-*.json으로 남긴다.
 API inject 측정의 RSS는 Vitest와 API가 공유한 프로세스이며 독립 서버/Pi 실측과 구분한다.
 실제 결과·C01–C35·보안 Self Review·미실행은 [DEV03 보고](docs/dev-reports/DEV-03.md).
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+DEV04 실제 기준선은 [423개 검증 및 F/L 추적](docs/dev-reports/DEV-04.md), [원장 계약](docs/INVENTORY_LEDGER.md)을 따른다. 별도100만 Entry 실험은 실제 실행했으나 필수 CI 테스트 수에 포함하지 않는다. 운영/Pi/Provider 시험은 담당DEV에 남는다.

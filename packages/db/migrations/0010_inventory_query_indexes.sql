@@ -1,0 +1,10 @@
+ALTER TABLE inventory_transactions ADD CONSTRAINT inventory_transaction_evidence_unique UNIQUE(evidence_id);
+CREATE INDEX inventory_shipments_outbound ON shipments(outbound_id,id);
+CREATE INDEX inventory_shipment_lines_outbound ON shipment_lines(outbound_line_id,id);
+CREATE INDEX inventory_inbound_lines_parent ON inbound_lines(inbound_id,id);
+CREATE INDEX inventory_receipts_parent ON receipts(inbound_id,id);
+CREATE INDEX inventory_receipt_lines_shipment ON receipt_lines(shipment_line_id,receipt_id);
+CREATE UNIQUE INDEX inventory_receipt_line_identity ON receipt_lines(receipt_id,shipment_line_id);
+CREATE INDEX inventory_reservation_history ON reservations(account_id,id);
+CREATE INDEX inventory_outbound_source ON outbounds(source_warehouse_id,id);
+CREATE INDEX inventory_outbound_destination ON outbounds(destination_warehouse_id,id);

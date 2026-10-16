@@ -1,6 +1,7 @@
 # Project-WMS 상태
 
-2026-10-16. DEV00 설계 및 AUTO-01 정책은 main 적용 완료. DEV01 실행 기반도 PR4로 main 반영 완료. DEV02 인증 기반은 PR10으로 자동 병합·검증 완료했다. 마지막 UI·추가 보안 회귀의 증거는 DEV02 보고 최신 구간을 따른다.
+2026-10-16 UTC 확인: DEV00/DEV01/DEV02/AUTO-01 및 DEV03(PR12)이 main에 병합되었다. DEV04는 `dev/dev-04-inventory-ledger`에서 내부 구현·로컬423 검증을 완료했다. 시작 main `cbf4e291df5bc952aaa7e3a211889220953b57a3`. 실제 운영 배포/외부 전송 없음.
+최신 DEV04 결과는 [보고](docs/dev-reports/DEV-04.md)와 실제 PR/Actions를 따른다. 아래 이전 DEV 수치는 당시 이력이며 현재 전체 테스트 수와 구분한다.
 
 ## 확인된 GitHub 이력
 
@@ -48,3 +49,7 @@ DEV02 실제 기반 병합: [PR10](https://github.com/Raccoon26/Project-WMS/pull
 시작 기준선 ad3aa1bb08aa3a8391179ba66c2207d84280c3a4, DEV02 PR11 병합을 원격 확인했다.
 상품/SKU/매핑/창고/위치/실제 Warehouse Scope 구현·로컬 검증 완료(314 passed/0 failed/0 skipped). [계약](docs/CATALOG.md)과 [보고](docs/dev-reports/DEV-03.md)를 따른다.
 원격 CI·병합은 보고에 연결된 DEV03 PR의 현재 HEAD/실제 merged 결과로 별도 판정한다. 원장/외부 실행/운영 배포 없음.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

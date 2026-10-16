@@ -86,3 +86,7 @@ DEV01 시점에는 읽기전용 health/version만 실행했다. DEV02는 인증 
 
 CatalogService는 AuthService의 실제 UoW/session/grant/CSRF/audit를 재사용한다. Domain catalog는 framework-free, DB는 forward migrations/constraints, HTTP adapter는 schema/DTO, 웹은 서버 metadata만 표시한다. 외부 네트워크 부작용은 없다.
 [Catalog 상세 계약](docs/CATALOG.md). 실제 결과는 [DEV03 보고](docs/dev-reports/DEV-03.md)에서 확인한다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

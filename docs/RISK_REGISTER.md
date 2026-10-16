@@ -35,3 +35,7 @@
 
 K04의 로컬 매핑 고유성/신뢰·버전/이력, K18의 창고 FK/scope 누락을 DEV03에서 검증한다. 외부 Provider 확인·실제 오출고/물류 복구는 DEV08/09/04 이후다. 새 위험: mutable sort key의 실시간 cursor에서 중복·누락 가능(첫 페이지 갱신), metadata mutation 짧은 직렬화로 운영 대규모 부하 한계, DB superuser 변조·7년 보존은 DEV12/13. Windows/Pi 실기기 NOT RUN.
 [Catalog 상세 계약](CATALOG.md). 실제 결과는 [DEV03 보고](dev-reports/DEV-03.md)에서 확인한다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

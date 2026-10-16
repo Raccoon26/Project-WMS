@@ -1,3 +1,4 @@
+import { InventoryPanel, inventoryNotice } from "./inventory";
 import { CatalogPanel, WarehouseGrantsPanel, catalogText } from "./catalog";
 import {
   useAuth,
@@ -178,9 +179,13 @@ export function App() {
   };
   const hasMenuPermission = (permission: string) =>
     user?.permissions.includes(permission) ||
-    (["mappings.read", "products.read", "warehouses.read"].includes(
-      permission,
-    ) &&
+    ([
+      "mappings.read",
+      "products.read",
+      "warehouses.read",
+      "inventory.read",
+      "outbound.read",
+    ].includes(permission) &&
       user?.grants?.some(
         (g) => g.permission === permission && g.policyVersion === 1,
       ));
@@ -191,6 +196,13 @@ export function App() {
       .map((g) => g.permission + ":" + g.scope + ":" + g.policyVersion)
       .sort()
       .join(";");
+  const inventoryRoute = [
+    "/inventory",
+    "/inbound",
+    "/outbound",
+    "/transfers",
+    "/activity-logs",
+  ].includes(path);
   const catalogRoute = ["/products", "/warehouses", "/integrations"].includes(
     path,
   );
@@ -359,6 +371,20 @@ export function App() {
                 )}
               </>
             )}
+            {[
+              "/inventory",
+              "/inbound",
+              "/outbound",
+              "/transfers",
+              "/activity-logs",
+            ].includes(path) &&
+              !denied && (
+                <InventoryPanel
+                  key={authorityKey + path}
+                  locale={locale}
+                  path={path}
+                />
+              )}
             {path === "/products" && !denied && (
               <CatalogPanel
                 key={authorityKey + "products"}
@@ -405,13 +431,19 @@ export function App() {
                     <p className="eyebrow">{t("eyebrow")}</p>
                     <h1>{dashboard ? t("heading") : t(route[1])}</h1>
                     <p className="intro">
-                      {catalogRoute
-                        ? catalogText(locale, "unknown")
-                        : t(dashboard ? "intro" : "plannedNote")}
+                      {inventoryRoute
+                        ? inventoryNotice(locale)
+                        : catalogRoute
+                          ? catalogText(locale, "unknown")
+                          : t(dashboard ? "intro" : "plannedNote")}
                     </p>
                   </div>
                   <span className="pill neutral">
-                    {catalogRoute ? "DEV-03" : t(dashboard ? "dev" : "planned")}
+                    {inventoryRoute
+                      ? "DEV-04"
+                      : catalogRoute
+                        ? "DEV-03"
+                        : t(dashboard ? "dev" : "planned")}
                   </span>
                 </div>
                 {dashboard ? (
@@ -486,11 +518,23 @@ export function App() {
                       ◇
                     </span>
                     <span className="pill neutral">{t("planned")}</span>
-                    <h2>{catalogRoute ? t("inventory") : t(route[1])}</h2>
+                    <h2>
+                      {inventoryRoute
+                        ? locale === "ja"
+                          ? "外部送信・業務承認・運用配備"
+                          : locale === "ko"
+                            ? "외부 전송·업무 승인·운영 배포"
+                            : "External dispatch, business approvals and deployment"
+                        : catalogRoute
+                          ? t("inventory")
+                          : t(route[1])}
+                    </h2>
                     <p>
-                      {catalogRoute
-                        ? catalogText(locale, "unknown")
-                        : t("plannedNote")}
+                      {inventoryRoute
+                        ? inventoryNotice(locale)
+                        : catalogRoute
+                          ? catalogText(locale, "unknown")
+                          : t("plannedNote")}
                     </p>
                   </section>
                 )}
