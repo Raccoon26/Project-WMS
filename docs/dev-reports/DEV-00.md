@@ -68,3 +68,22 @@ Python3.12.14/Node24.19.0 확인. actionlint1.7.12 Linux amd64 공식 릴리스�
 
 ## Safe auto-merge smoke exercise
 A documentation-only follow-up PR verifies GitHub Actions guarded automatic merging. The expected outcome is a successful `WMS PR CI` run followed by `WMS Guarded Auto Merge`. The actual result must be confirmed in the GitHub PR and workflow logs; no WMS functionality or production process is exercised.
+
+
+---
+
+## GitHub 병합 및 테스트 실증 후속 정정 — 2026-10-16
+
+이 문서의 위쪽에 기재된 `REVIEW_PENDING`, `PR #1 Open/Draft`, `allow_auto_merge=false`, `main protection 403로 자동병합 불가`는 **보고서 작성 당시 기록**이며 현재 상태가 아닙니다.
+
+실제 GitHub 확인:
+- PR #1: **병합 완료**, commit `694ef9a1ae2dfb05c10c5683b0a63913d5deaf72` (DEV-00 문서·GitHub bootstrap).
+- PR #2: **GitHub Actions 자동 병합 완료**, commit `6086ddfb8281a5a9adff2d2b6f3aca7f3a05c3b5` (문서만 변경한 무해한 자동병합 실증).
+- PR #2 WMS Quality Gate와 Policy Gate 성공, Guarded Auto Merge 워크플로 성공.
+- 현재 `main` 기반 DEV-01 진행을 가로막던 최초 bootstrap 병합 문제는 해소됨.
+- branch protection이 없는 새 자동병합은 CI로 확인된 안전한 경로의 PR만 해당. 고위험 변경은 Draft·수동 검토를 유지함.
+- 옛 `scripts/enable-safe-auto-merge.sh`는 여전히 protection API 접근이 필요하지만, 새 `.github/workflows/auto-merge.yml`은 이를 사용하지 않음.
+
+**DEV-00 설계 및 GitHub 기반 저장소 병합은 완료로 구분하되, 실제 WMS 앱 기능, 운영 연동, 50 SKU 실부하, Raspberry Pi 배포 및 백업/복원 테스트를 수행했다고 주장하지 않음.** 이는 향후 DEV 수용 조건으로 남습니다.
+
+[최신 상태 문서](../../PROJECT_STATUS.md)와 PR/Actions 실제 기록을 우선 참조하세요.
