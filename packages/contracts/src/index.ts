@@ -88,3 +88,10 @@ export interface IdentityProvider {
   readonly kind: "local" | "oidc";
   verify(assertion: unknown): Promise<VerifiedIdentity | null>;
 }
+
+// Worker identities are explicit; a browser session/role is never inherited.
+export interface SystemActor {
+  readonly kind: "system";
+  readonly id: string;
+  readonly permissions: readonly string[];
+}

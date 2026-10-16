@@ -61,4 +61,4 @@ createUser/updateUser/setRoles/list. HTTP adapter만 Cookie/Origin/header를 Con
 `allowed(grants,permission,warehouse?,knownWarehouses)`는 프레임워크 없는 Permission 평가, 기본 deny.
 `mutate(ctx,callback,permission)`는 user/session lock·최근 MFA 재인증·현재 grants·CSRF·audit transaction 경계다.
 `authorize`의 사전 허가만으로 transaction 밖 업무쓰기를 허용하지 않는다. 후속 업무는 같은 UoW 안에서 재검증한다.
-SystemActor는 명시 권한만 가지며 사용자 session을 상속하지 않는다. [구현/API 계약](../AUTHENTICATION.md).
+공통 contracts의 SystemActor는 명시 권한만 가지며 사용자 session을 상속하지 않는다. Worker는 API 앱 소스를 상대 import하지 않는다. [구현/API 계약](../AUTHENTICATION.md).
