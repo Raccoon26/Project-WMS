@@ -54,3 +54,13 @@ DEV01 재실행 중 PostgreSQL 테스트4개가 DB 미기동 ECONNREFUSED로 실
 이를 성공으로 숨기지 않고 PR4 재검증에서 실제 PG 전체 suite를 다시 실행한다.
 Project-PDF의 실제 Foundation CI(읽기전용/frozen install/독립 validator/browser 구조)를 read-only로 참고했다.
 GitHub 공식 이벤트 문서는 조회 성공. 11월2일 변경의 정확한 공지 원문은 미확인이고 pull_request_target 의존을 제거했다.
+
+## 최초 적용 및 실제 차단 증거
+- 전환 PR5/head 0eac5f9, Quality38853428587 성공, 정책62+이전 main 구조5 통과.
+- 구 Policy38853428695 실패 원인은 폐기된 owner label/현재SHA 승인 조건 하나뿐이었다.
+- 사용자 AUTO-01 지시에 따른 정상 SHA 조건 PR merge API로 최초 전환. 승인 label/comment/review 생성0.
+- main 적용 `9bc5abc3a92227cf27b6a929747e70a30f4423da`. 최초 전환 API 병합과 이후 Actions 자동병합은 구분한다.
+- PR6/head8de73b2: Quality38853596100 SUCCESS인데 독립검증38853650332가 baseline DB 장애 테스트 삭제를 검출해 FAIL.
+  Guarded38853692380 SKIPPED, PR6 미병합/main 불변 확인. 의도된 negative 실증 성공.
+- baseline 복원 후 새 HEAD로 검증한다. disabled integration scaffold는 정확한 SHA256+기존 실제 no-effects unit case로만
+  외부연동 업무 profile에서 제외한다. 기능을 추가하거나 해시가 바뀌면 실제 integration safety case가 필요하다.

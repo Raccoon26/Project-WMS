@@ -47,6 +47,17 @@ class GovernanceTests(unittest.TestCase):
             e['passedCases'] += ['privilege escalation', 'session']
             self.assertTrue(decision('apps/api/src/auth.ts', e))
 
+    def test_disabled_integration_scaffold_is_exact_content_and_test_bound(self):
+        from governance import DISABLED_SCAFFOLD_SHA256
+        e = copy.deepcopy(EVIDENCE)
+        e['disabledScaffoldHash'] = DISABLED_SCAFFOLD_SHA256
+        e['passedCases'].append('external effects including AI are disabled')
+        self.assertEqual(decision('packages/integrations/src/index.ts', e), [])
+        e['disabledScaffoldHash'] = 'changed'
+        self.assertTrue(decision('packages/integrations/src/index.ts', e))
+        e['disabledScaffoldHash'] = DISABLED_SCAFFOLD_SHA256
+        self.assertTrue(decision('packages/integrations/src/client.ts', e))
+
     def test_zero_skipped_failed_missing_and_stale_evidence(self):
         for suite in ('unit', 'integration', 'fault', 'e2e'):
             for field, value in (('passed', 0), ('passed', True), ('failed', 1), ('skipped', 1)):

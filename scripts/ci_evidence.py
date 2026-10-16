@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Produce data-only proof from real runner reports; no skipped/zero tests."""
 import json
+import hashlib
 import os
 from pathlib import Path
 from governance import verify_evidence
@@ -37,6 +38,9 @@ def collect(root, head, base, number):
     evidence = {'version': 1, 'head': head, 'base': base, 'pr': number,
                 'application':True, 'suites': suites, 'passedCases': cases,
                 'completion': json.loads(completion_path.read_text()) if completion_path.exists() else {}}
+    scaffold = root/'packages/integrations/src/index.ts'
+    if scaffold.exists():
+        evidence['disabledScaffoldHash'] = hashlib.sha256(scaffold.read_bytes()).hexdigest()
     errors = verify_evidence(evidence, head, base, number, [])
     if errors:
         raise ValueError('; '.join(errors))

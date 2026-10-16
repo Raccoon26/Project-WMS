@@ -6,6 +6,8 @@ Control paths require stronger independent contracts, not human approval.
 import re
 from pr_policy import validate
 
+DISABLED_SCAFFOLD_SHA256 = 'a37892240494b7e4964e9b16084def1be4d34edf2ef33c8bfe7e09c388bc8a79'
+
 PROFILES = {
     'migration': (
         'real PostgreSQL migrations are atomic, repeatable and schema checked',
