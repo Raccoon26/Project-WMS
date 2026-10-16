@@ -55,3 +55,14 @@ review/comment 후 label을 다시 적용하여 trusted policy 재실행; 타인
 
 소유자 설정 변경/새 PR 실증/보호 조회를 이번 권한으로 완료했다고 주장하지 않는다.
 `main` 병합은 Pi배포가 아님. 실제 운영은 [배포](../DEPLOYMENT.md) 별도 승인/백업/drain/rollback.
+
+
+## 2026-10-16 amendment: GitHub Actions automatic merge without branch protection
+
+Per owner request, ordinary non-sensitive DEV PRs can be auto-merged **without** main branch-protection or GitHub native Auto-merge settings. The privileged workflow `.github/workflows/auto-merge.yml` (main only) reacts to a successful, current-head `WMS PR CI` run, or a manually marked-ready PR. It checks trusted main `scripts/auto_merge.py`, GitHub PR identity and complete diff, current main baseline, exact CI workflow identity, latest run and all CI jobs, then uses the GitHub merge API with a SHA precondition and squash mode.
+
+`scripts/create-dev-pr.sh` creates ready PRs for reviewed safe-path diffs, draft PRs for unsafe/unknown diffs. Existing PRs are reused, not duplicated. Manual-risk PRs (CI/config/security/DB/inventory/shipping/payment and unknown application paths) must be owner-reviewed and manually merged; labels cannot bypass this. CI failure, stale head/base, missing run, draft or GitHub 403 all prevent auto-merge.
+
+GitHub branch protection is still RECOMMENDED: absent protection, maintainers can directly push main and potentially modify CI; this Actions-only scheme cannot supply repository-enforced guarantees. Never turn on automatic Raspberry Pi deployment from main. The older `scripts/enable-safe-auto-merge.sh` remains the optional GitHub-native protected-mode helper and is NOT used by the new Actions flow.
+
+The initial bootstrap PR #1 itself changes CI/merge controls and stays manual review; owner explicitly approves its merge. The privileged workflow first becomes available on main after bootstrap merge. Actions must have granted its requested `contents: write` and `pull-requests: write` token permissions, otherwise safe-stop on authorization failure.
