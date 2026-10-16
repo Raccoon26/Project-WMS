@@ -179,3 +179,9 @@ workspace source condition을 적용하지 못하고 미생성 dist를 찾으며
 일반 development migration도 wms_dev user/DB/loopback guard를 추가. 해당 DB검증·browser API503/네트워크단절 케이스 재통과.
 [Policy Run38850324492](https://github.com/Raccoon26/Project-WMS/actions/runs/38850324492)는 Draft+고위험 owner검토 부재로 예상 BLOCK,
 수동검토 gate를 해제하거나 소유자승인/label을 대행하지 않았다. PR4 Open/Draft 유지.
+
+## 개발 실행 명령 검증
+README의 pnpm dev:api/dev:worker/dev:web 실제 기동·HTTP준비를 별도로 확인하고 자신의 process group만 SIGINT로 종료.
+초기 watch 명령에서 Node flags가 subcommand 앞에 있어 tsx가 watch를 파일로 오인함을 발견,
+`tsx watch --conditions=source --env-file-if-exists=.env ...`로 수정 후3개 명령 모두 통과.
+이 검증은 compiled start/E2E와 별도로 실시; 문서상 명령을 추정으로 정상 처리하지 않음.
