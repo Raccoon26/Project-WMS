@@ -1,0 +1,41 @@
+# Privileged stage checks only GitHub metadata + trusted main code.
+# NEVER checkout, import, execute or download PR-head code or artifacts here.
+name: WMS Guarded Auto Merge
+on:
+  workflow_run:
+    workflows: ["WMS PR CI"]
+    types: [completed]
+  pull_request_target:
+    types: [ready_for_review, reopened]
+    branches: [main]
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+  issues: read
+concurrency:
+  group: wms-guarded-merge-main
+  cancel-in-progress: false
+jobs:
+  merge:
+    name: Guarded Auto Merge
+    if: >-
+      ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request')
+       || (github.event_name == 'pull_request_target') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      WMS_REPO: ${{ github.repository }}
+      RUN_ID: ${{ github.event.workflow_run.id || '0' }}
+      PR_NUMBER: ${{ github.event.pull_request.number || '0' }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Merge only a current, verified, low-risk PR
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/auto_merge.py --repo "$WMS_REPO" --run-id "$RUN_ID" --pr-number "$PR_NUMBER"
