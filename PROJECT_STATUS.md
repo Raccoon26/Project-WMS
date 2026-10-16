@@ -1,24 +1,20 @@
 # Project-WMS 상태
 
-기준일: 2026-10-16. **DEV00 IN PROGRESS / REVIEW_PENDING. 완료 선언 아님.**
-설계 기준선·개발 안전 도구 보완, 기존 PR1 검토 준비. 실제 웹/API/DB원장/연동/발송/봇/Pi/백업 미구현.
-[DEV00 증거](docs/dev-reports/DEV-00.md), [진행표](DEV_PROGRESS.md), [요구 추적](docs/REQUIREMENTS_TRACEABILITY.md).
+기준일: 2026-10-16. **DEV-00 설계·GitHub bootstrap 반영 완료 / DEV-01 시작 가능.**
+여기서 DEV-00 '완료'는 설계 문서와 소스 관리 기반의 병합을 의미합니다. 실제 웹/API/DB 재고 원장/물류 연동/이메일/Telegram/Pi/백업 및 운영 검증은 **아직 미구현**이며 해당 DEV에서 검증해야 합니다.
 
-## GitHub 및 남은 gate
-- 기존 브랜치 `dev/dev-00-github-bootstrap`, PR [#1](https://github.com/Raccoon26/Project-WMS/pull/1) Open/Draft 유지; 중복PR 없음.
-- Public, auto-merge=false 관측. main protection 조회403(연동권한), 설정 여부 불명 → 자동병합 불가.
-- bootstrap CI/정책 변경은 수동검토. owner review/보호설정/병합 미완료.
-- 설계 commit `0ac3244`의 Quality CI [성공](https://github.com/Raccoon26/Project-WMS/actions/runs/38844330317).
-  trusted Policy는 main 미설치로 NOT RUN, app 관련 step도 미구현으로 SKIPPED.
-- 현재 PR SHA의 remote CI 결과와 commit 식별자는 DEV00 report 및 GitHub check가 권위.
-  자기 SHA를 문서에 포함하면 SHA가 바뀌므로 파일 내 마지막 커밋 hash는 GitHub 이력/최종보고에서 확인한다.
+## 실제 GitHub 반영 상태 (GitHub REST API 확인)
+- [PR #1](https://github.com/Raccoon26/Project-WMS/pull/1) **Merged**. Bootstrap + DEV-00 설계가 `main`에 반영됨. 병합 커밋 `694ef9a1ae2dfb05c10c5683b0a63913d5deaf72`.
+- [PR #2](https://github.com/Raccoon26/Project-WMS/pull/2) **자동 Merged**. 보호 규칙 미사용 GitHub Actions workflow-run 병합 실증(문서 변경에 한함). 병합 커밋 `6086ddfb8281a5a9adff2d2b6f3aca7f3a05c3b5`.
+- [WMS PR CI #38845791520](https://github.com/Raccoon26/Project-WMS/actions/runs/38845791520): SUCCESS; [WMS PR Policy #38845791325](https://github.com/Raccoon26/Project-WMS/actions/runs/38845791325): SUCCESS; [Guarded Auto Merge #38845810037](https://github.com/Raccoon26/Project-WMS/actions/runs/38845810037): SUCCESS.
+- 보호 상세 조회에 `403`이 발생하더라도 새로운 보호 규칙 **없는** 별도 GitHub Actions 자동 병합에는 영향을 주지 않습니다. 레거시 `scripts/enable-safe-auto-merge.sh`는 여전히 보호 설정이 없으면 중단됩니다.
+- 위험도가 낮은 문서·표현 UI 변경만 엄격한 GitHub Actions 검사 및 현재 SHA 확인 후 자동 병합; CI/보안/재고/출고/금전/DB/배포 및 미분류 경로는 **수동 검토·병합**.
+- **GitHub main 병합은 Raspberry Pi 운영 배포가 아닙니다.** Branch protection이 없는 구성은 `main` 직접 푸시를 GitHub가 차단하지 못하므로 보호 규칙 사용이 가능하면 여전히 권장합니다.
 
-## DEV01 준비
-기술 스택/모듈 계약/DB·수량/전이/승인/재시도/복구/테스트/단계별 완료 기준 정의.
-DEV01 시작 전 이 PR 수동 검토/병합 및 새 main 확인, 인증/의존성patch/이미지/CI DB fixture 구현.
-최소50 SKU·하드한도0, Dot/유료AI 의존0. 모델 정책은 Sol Medium/Astra FINAL; 런타임 모델 설정은 저장소가 입증 못함.
-
-## 후속 prerequisite (지금 운영자 비밀값 요구하지 않음)
-DEV05/06 업체 양식/메일provider; DEV08/09 API계약/권한·최신요금; DEV12 장비/도메인/실측;
-DEV13 Drive OAuth/복호키 보관·외부감시. 미지원기능은 CSV/수동 증거대안.
-[위험대장](docs/RISK_REGISTER.md) K01–K18 추적. 보호/권한이 해결되기 전 강제병합/보호완화 금지.
+## DEV-00 산출물 및 남은 개발
+- [DEV-00 결과 보고](docs/dev-reports/DEV-00.md), [개발 진행표](DEV_PROGRESS.md), [요구사항](REQUIREMENTS.md), [추적 매트릭스](docs/REQUIREMENTS_TRACEABILITY.md), [안전 원칙](docs/SAFETY_GATES.md).
+- 기존 DEV-00 설계 보고서는 당시 시점의 원격 상태를 기록한 **이력 문서**입니다. 본 파일의 GitHub 현황이 최신입니다.
+- 50 SKU 이상 확장 설계, Dot 미사용(선택 AI-01), 외부 창고 이메일, FBA/RSL, 금전·재고 안정성 규칙은 설계되었습니다. 실제 운영 코드/50 SKU E2E/ARM64 성능/복원 실증은 미완료.
+- DEV-01은 최신 `main`에서 새로운 브랜치로 시작하세요. 요구사항 및 우선순위 재확인, 앱 기초 환경·DB 테스트/CI 어댑터를 구현하세요.
+- DEV-05/06은 실제 창고 양식과 메일 제공자, DEV-08/09는 플랫폼 계정/API 접근, DEV-12는 Pi 기기, DEV-13은 Drive OAuth/외부 감시가 필요할 수 있습니다. 초기 DEV-01에는 필요하지 않습니다.
+- Sol Medium DEV-00~18, Astra FINAL-AUDIT-01. 마지막 감사가 DEV별 실측·회귀·장애 테스트를 대체하지 않습니다.
