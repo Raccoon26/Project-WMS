@@ -13,3 +13,8 @@ for f in scripts/*.sh; do bash -n "$f"; done
 ```
 
 Do not claim remote tests succeeded before workflow runs. No real deliveries, payments or stock actions were performed.
+
+## Scope amendment
+- User currently has about 10 SKUs; initial WMS must support at least 50, without a hard-coded SKU cap.
+- Dot subscription is not available now. Dot implementation is postponed to optional AI-01; DEV-18 must not depend on access to Dot.
+- Source of truth: `docs/PROJECT_SCOPE.md` and `AGENTS.md`. Full requirements and executable capacity tests belong to DEV-00 continuation and subsequent implementation stages.
