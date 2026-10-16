@@ -16,7 +16,7 @@ def validate(root=ROOT):
         if not (root / name).is_file():
             errors.append('Missing ' + name)
     for p in root.rglob('*.md'):
-        if '.git' in p.parts or 'node_modules' in p.parts:
+        if any(part in p.parts for part in ('.git', 'node_modules', 'dist', 'test-results', 'playwright-report', '.runtime', '.trusted-base')):
             continue
         for link in re.findall(r'\[[^\]]*\]\(([^\s)]+)\)', p.read_text()):
             if '://' in link or link.startswith('#') or link.startswith('mailto:'):
@@ -44,6 +44,11 @@ def validate(root=ROOT):
         for i in range(19):
             if f'| DEV-{i:02} |' not in roadmap.read_text():
                 errors.append(f'Missing roadmap DEV-{i:02}')
+    if (root / 'docs/dev-reports/DEV-01.md').exists():
+        data = trace.read_text() if trace.exists() else ''
+        for i in range(33):
+            if f'| D01-{i:02} |' not in data:
+                errors.append(f'Missing DEV01 instruction D01-{i:02}')
     return errors
 
 

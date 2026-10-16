@@ -18,3 +18,10 @@
 - DEV-01은 최신 `main`에서 새로운 브랜치로 시작하세요. 요구사항 및 우선순위 재확인, 앱 기초 환경·DB 테스트/CI 어댑터를 구현하세요.
 - DEV-05/06은 실제 창고 양식과 메일 제공자, DEV-08/09는 플랫폼 계정/API 접근, DEV-12는 Pi 기기, DEV-13은 Drive OAuth/외부 감시가 필요할 수 있습니다. 초기 DEV-01에는 필요하지 않습니다.
 - Sol Medium DEV-00~18, Astra FINAL-AUDIT-01. 마지막 감사가 DEV별 실측·회귀·장애 테스트를 대체하지 않습니다.
+
+## AUTO-01 정책 전환 — 진행 중
+DEV01 구현은 기존 [PR4](https://github.com/Raccoon26/Project-WMS/pull/4)에 보존되어 있으며 main에는 아직 없다.
+AUTO-01은 별도 dev/dev-00-auto-01 브랜치/전환 PR에서 구현한다. 승인 label/comment/review 요구 제거,
+일반 PR 생성, 기존 Draft 자동 Ready, main-owned read-only 독립 검증과 trusted merge controller를 추가했다.
+전환 PR의 실제 main 적용/CI/병합 SHA는 검증 후 기록한다. 운영 배포 없음.
+[정책](docs/GITHUB_WORKFLOW.md) · [실행 대장](docs/dev-reports/GITHUB-AUTOMATION-01.md).

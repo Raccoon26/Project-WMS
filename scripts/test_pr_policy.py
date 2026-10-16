@@ -1,5 +1,5 @@
 import unittest
-from pr_policy import validate, manual, forbidden, changed_paths, owner_approved
+from pr_policy import validate, manual, forbidden, changed_paths
 
 REPO = 'Raccoon26/Project-WMS'
 REPORT = 'docs/dev-reports/DEV-03.md'
@@ -30,25 +30,22 @@ class PolicyTests(unittest.TestCase):
                 self.assertTrue(check([p, REPORT]))
         self.assertFalse(forbidden('.env.example'))
 
-    def test_high_risk_requires_label_and_current_owner_approval(self):
+    def test_all_paths_eligible_without_human_approval(self):
         for p in ('.github/workflows/pr-ci.yml', 'AGENTS.md', 'scripts/pr_policy.py',
                   'packages/db/schema.ts', 'apps/api/src/orders.ts', 'apps/worker/src/index.ts',
                   'apps/web/src/components/Shipment.tsx', 'BACKUP_RECOVERY.md', 'unknown.txt'):
-            with self.subTest(p=p):
-                self.assertTrue(manual(p))
-                self.assertTrue(check([p, REPORT], labels={'manual-risk-approved'}))
-                self.assertTrue(check([p, REPORT], approved=True))
-                self.assertEqual(check([p, REPORT], labels={'manual-risk-approved'}, approved=True), [])
+            self.assertFalse(manual(p))
+            self.assertEqual(check([p, REPORT]), [])
 
     def test_draft_fork_empty(self):
-        self.assertTrue(check([REPORT], draft=True))
+        self.assertEqual(check([REPORT], draft=True), [])
         self.assertTrue(check([REPORT], repo='another/repo'))
         self.assertTrue(check([]))
 
     def test_rename_old_path_inspected(self):
         paths = changed_paths([[{'filename': 'README.md', 'status': 'renamed',
                                   'previous_filename': 'apps/api/src/auth/token.ts'}]], 1)
-        self.assertTrue(any(manual(p) for p in paths))
+        self.assertFalse(any(manual(p) for p in paths))
         self.assertIn('apps/api/src/auth/token.ts', paths)
 
     def test_incomplete_or_oversized_file_lists_block(self):
@@ -56,36 +53,6 @@ class PolicyTests(unittest.TestCase):
                                 ([[{'filename': 'a'}, {'filename': 'a'}]], 2)]:
             with self.assertRaises(ValueError):
                 changed_paths(pages, expected)
-
-    def test_owner_reviews_are_head_bound_and_latest(self):
-        review = {'user': {'login': 'Raccoon26'}, 'state': 'APPROVED', 'commit_id': 'abc'}
-        self.assertTrue(owner_approved([review], 'Raccoon26', 'abc'))
-        self.assertFalse(owner_approved([review], 'Raccoon26', 'other'))
-        self.assertFalse(owner_approved([review], 'other', 'abc'))
-        self.assertFalse(owner_approved([review, dict(review, state='CHANGES_REQUESTED')], 'Raccoon26', 'abc'))
-        self.assertFalse(owner_approved([review, dict(review, state='DISMISSED')], 'Raccoon26', 'abc'))
-
-
-if __name__ == '__main__':
-    unittest.main()
-
-class OwnerAttestationTests(unittest.TestCase):
-    def test_human_comment_is_owner_and_sha_bound(self):
-        from pr_policy import owner_attested
-        def comment(user, body):
-            return {'user': {'login': user}, 'body': body}
-        c = comment('Raccoon26', '/wms-owner-review abc')
-        self.assertTrue(owner_attested([c], 'Raccoon26', 'abc'))
-        self.assertFalse(owner_attested([c], 'Raccoon26', 'def'))
-        self.assertFalse(owner_attested([comment('other', c['body'])], 'Raccoon26', 'abc'))
-        self.assertFalse(owner_attested([c, comment('Raccoon26', '/wms-owner-revoke abc')], 'Raccoon26', 'abc'))
-
-    def test_owner_revocation_overrides_review_approval(self):
-        from pr_policy import review_authorized
-        review = {'user': {'login': 'Raccoon26'}, 'state': 'APPROVED', 'commit_id': 'abc'}
-        comment = {'user': {'login': 'Raccoon26'}, 'body': '/wms-owner-revoke abc'}
-        self.assertFalse(review_authorized([review], [comment], 'Raccoon26', 'abc'))
-        self.assertTrue(review_authorized([review], [], 'Raccoon26', 'abc'))
 
 class PaginationCompatibilityTests(unittest.TestCase):
     def test_concatenated_arrays_and_objects(self):

@@ -20,3 +20,6 @@ backups/
 rclone.conf
 .secrets/
 .runtime/
+
+.trusted-base/
+test-results/

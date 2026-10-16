@@ -69,5 +69,5 @@ class MergeTests(unittest.TestCase):
         p['head']['repo']['full_name'] = 'fork/WMS'
         self.assertTrue(evaluate(REPO, p, PROTECTION, PATHS, RUNS))
 
-    def test_high_risk_never_auto_merges(self):
-        self.assertTrue(evaluate(REPO, PR, PROTECTION, PATHS + ['DATA_MODEL.md'], RUNS))
+    def test_document_paths_not_manually_blocked(self):
+        self.assertEqual(evaluate(REPO, PR, PROTECTION, PATHS + ['DATA_MODEL.md'], RUNS), [])

@@ -11,10 +11,12 @@
 9. 실제 재고·출고·구매 없는 mock CI, public secret/PII/backup 금지.
 10. 암호화6h backup+월실제복원+epoch quarantine, 외부heartbeat+업무실패 독립감시.
 11. 같은SHA typecheck/lint/build/unit/integration/invariants/failures+요구감사; skip/미실행/불명은 green 아님.
-12. 고위험 CI/보호/인증/DB/재고/중복방지/금전/배포/복구는 owner review·수동병합.
+12. 모든 코드 유형은 독립 자동 검증 성공 시 승인 없이 병합 가능. 미구현/실패/누락된 필수 업무 테스트는 차단한다.
 13. main PR+현재SHA check+up-to-date/no bypass 보호 확인 안되면 자동병합 중지. bootstrap PR1 Draft/manual.
 14. main merge≠운영배포; 사전백업/drain/별도승인/rollback 후 운영 반영.
 15. 최소50SKU는 하한, AI는 default OFF/선택, 운영의존0.
 
 [모델](../DATA_MODEL.md), [장애30개](../TEST_PLAN.md), [출시](../RELEASE_CHECKLIST.md),
 [GitHub](GITHUB_WORKFLOW.md)와 연결. 구현전 명세를 실제 불변식 테스트 통과로 표시하지 않는다.
+
+AUTO-01은 Draft를 NOT_READY로 구분하고 metadata green과 병합 허가를 분리한다. [신뢰 경계](GITHUB_WORKFLOW.md).

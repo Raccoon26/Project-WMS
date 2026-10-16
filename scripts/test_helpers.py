@@ -174,12 +174,12 @@ else:sys.exit(90)
         self.assertFalse(any(x[:2] == ['pr', 'create'] for x in self.calls('gh')))
         self.assertEqual(sum(x[:1] == ['push'] for x in self.calls('git')), 1)
 
-    def test_absent_pr_created_once_as_draft(self):
+    def test_absent_pr_created_ready(self):
         r = self.run_create('absent')
         self.assertEqual(r.returncode, 0, r.stderr)
         creates = [x for x in self.calls('gh') if x[:2] == ['pr', 'create']]
         self.assertEqual(len(creates), 1)
-        self.assertIn('--draft', creates[0])
+        self.assertNotIn('--draft', creates[0])
         self.assertFalse(any(x[:2] == ['pr', 'merge'] for x in self.calls('gh')))
 
     def test_denied_or_closed_queries_never_push_or_create(self):
