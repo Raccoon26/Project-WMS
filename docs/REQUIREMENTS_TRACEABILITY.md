@@ -16,17 +16,17 @@
 | R08 | 보충/재발주 | [OPERATIONS.md](../OPERATIONS.md) | DEV-10 | 중복incoming/MOQ/lead/cash | 설계 완료 / 기능 NOT RUN |
 | R09 | 금액/분석 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-10,11 | Decimal/환불/통화·수수료 | 설계 완료 / 기능 NOT RUN |
 | R10 | Telegram | [SECURITY.md](../SECURITY.md) | DEV-07 | F05/06/24 | 설계 완료 / 기능 NOT RUN |
-| R11 | 자동화/worker | [ARCHITECTURE.md](../ARCHITECTURE.md) | DEV-01,04,06,13 | F02–08/22/23/27 | 설계 완료 / 기능 NOT RUN |
-| R12 | 웹/모바일/PWA/i18n | [ARCHITECTURE.md](../ARCHITECTURE.md) | DEV-01–14 | 15화면/오프라인/중복/접근성 | 설계 완료 / 기능 NOT RUN |
+| R11 | 자동화/worker | [ARCHITECTURE.md](../ARCHITECTURE.md) | DEV-01,04,06,13 | F02–08/22/23/27 | Worker 기반 구현; scheduler/outbox 후속 |
+| R12 | 웹/모바일/PWA/i18n | [ARCHITECTURE.md](../ARCHITECTURE.md) | DEV-01–14 | 15화면/오프라인/중복/접근성 | 웹/PWA/i18n 기반 구현; 실제업무 후속 |
 | R13 | 보안 | [SECURITY.md](../SECURITY.md) | DEV-02 | 인증/역할/CSRF/XSS/MFA/세션 | 설계 완료 / 기능 NOT RUN |
 | R14 | Pi 운영 | [DEPLOYMENT.md](../DEPLOYMENT.md) | DEV-12 | F09–12/22 ARM64/실장비 | 설계 완료 / 기능 NOT RUN |
 | R15 | 백업 | [BACKUP_RECOVERY.md](../BACKUP_RECOVERY.md) | DEV-13 | F23/25/26 실제복원 | 설계 완료 / 기능 NOT RUN |
 | R16 | 외부감시 | [DEPLOYMENT.md](../DEPLOYMENT.md) | DEV-13 | F27 업무별 health | 설계 완료 / 기능 NOT RUN |
 | R17 | 자체창고 | [docs/contracts/MODULES.md](../docs/contracts/MODULES.md) | DEV-15–17 | 공존/바코드/피킹/택배 | 설계 완료 / 기능 NOT RUN |
 | R18 | AI 선택 | [docs/PROJECT_SCOPE.md](../docs/PROJECT_SCOPE.md) | DEV-18,AI-01 | disabled AI E2E | 설계 완료 / 기능 NOT RUN |
-| R19 | GitHub | [docs/GITHUB_WORKFLOW.md](../docs/GITHUB_WORKFLOW.md) | DEV-00–18 | 정책/helper unit+integration, current SHA CI/보호 | 설계 완료 / 기능 NOT RUN |
-| R20 | 개별DEV검증 | [TEST_PLAN.md](../TEST_PLAN.md) | DEV-00–18 | 30장애/회귀/보안/이전요구감사 | 설계 완료 / 기능 NOT RUN |
-| R21 | public 보호 | [SECURITY.md](../SECURITY.md) | DEV-전단계 | path/pattern scanner+수동PII검토 | 설계 완료 / 기능 NOT RUN |
+| R19 | GitHub | [docs/GITHUB_WORKFLOW.md](../docs/GITHUB_WORKFLOW.md) | DEV-00–18 | 정책/helper unit+integration, current SHA CI/보호 | AUTO-01 PR5/6 적용·실증; DEV01 최신 main 재검증 |
+| R20 | 개별DEV검증 | [TEST_PLAN.md](../TEST_PLAN.md) | DEV-00–18 | 30장애/회귀/보안/이전요구감사 | DEV01 실행증거 report 참조; 물류테스트 NOT RUN |
+| R21 | public 보호 | [SECURITY.md](../SECURITY.md) | DEV-전단계 | path/pattern scanner+수동PII검토 | 기반 경계/로그/secret 검사; 운영보안 후속 |
 | R22 | 단순·저비용 | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-전단계 | 비용 분류/단일DB/no paidAI | 설계 완료 / 기능 NOT RUN |
 | R23 | 출처/신뢰 | [OPERATIONS.md](../OPERATIONS.md) | DEV-04,08–10 | freshness/snapshot/CSV evidence | 설계 완료 / 기능 NOT RUN |
 | R24 | 승인정책 | [OPERATIONS.md](../OPERATIONS.md) | DEV-02,07,10 | 한도/위험/version/일회 | 설계 완료 / 기능 NOT RUN |
@@ -70,6 +70,46 @@
 기존 구현은 GitHub bootstrap뿐으로 과거 완료 기능 없음. 초기의 미완료 설계 문서/데이터 모델/30장애/50SKU전략을 보완.
 재고 상태 합산 오류·부분95/93·메일unknown·복원replay·위험경로/rename/현재SHA검사 누락을 설계/도구에서 수정.
 외부 계정/양식/가격/장비 미확인은 각 담당 단계 prerequisite로 명시; 운영 성공으로 처리 안함.
-PR1 수동검토/보호설정/실제병합은 현재 미완료이고 DEV00 완료 판정 차단.
+역사적 DEV00 미병합 blocker는 PR1–3 병합/guarded auto-merge 실증으로 해소. 현재 상태는 PROJECT_STATUS가 기준.
+
+## DEV01 지시서 §0–32 대조
+
+| ID | 요구영역 | 구현/범위판정 | 실제검증·증거 |
+|---|---|---|---|
+| D01-00 | 모델/작업환경 | 기존branch 재사용, main/PR1–3 원격재확인; 모델정책 유지 | GitHub 확인/DEV01 report |
+| D01-01 | 필수문서 | 17문서·최신scope/상태/안전 확인 및 오래된GitHub현황 정정 | PROJECT_STATUS/DEV_PROGRESS/GITHUB_WORKFLOW |
+| D01-02 | 목표/범위 | 실제웹/API/DB/Worker/개발CI, 실제업무기능 제외 | apps/packages/tests |
+| D01-03 | 기술/버전 | Node24.19/pnpm10.34.7/TS5.9/Postgres17.11 정확pin+lock | frozen install/build/typecheck |
+| D01-04 | 디렉터리/경계 | 요청구조+공유runtime, source import/declared graph 검사 | pnpm check:boundaries |
+| D01-05 | 웹 | 15route/nav/active/404/error/desktop/mobile/未実装 | browser routing tests |
+| D01-06 | i18n | ja 기본/ko/en fallback/잘못된locale/AsiaTokyo/정확bigint | unit locale/format + browser |
+| D01-07 | PWA | manifest/icon/static-only cache/no write queue/offline UI | browser cache/offline/no replay |
+| D01-08 | Fastify | live/ready/version/404/error/ID/input/loopback/no write | unit/API integration/fault |
+| D01-09 | PostgreSQL | actual PG pool/Drizzle/migration hash-lock-transaction/schema | integration4/fault DB cases |
+| D01-10 | Compose | digest17.11/health/volume/loopback/dev-test 분리/정지재개 | 실제 up/down/up/DB fault/evidence |
+| D01-11 | Worker | 독립readonly process/DB/status/signals/drain/restart | unit lifecycle/fault processes |
+| D01-12 | 환경 | schema validation/missing/bad port/env/url/production deny | unit config/fault startup |
+| D01-13 | 로그 | JSON allowlist/service/time/code/ID/duration, raw values 제외 | unit redaction/fault secret marker |
+| D01-14 | 공통계약 | 오류/page25–100/UTC/ID/bigint string; framework-free domain | contract unit/source boundary |
+| D01-15 | 테스트환경 | 실제실행/count>0/skip0 guard/results JSON/실제DB | runner reports |
+| D01-16 | Unit | 설정/error/ID/locale/date/routes/worker/config generation | test:unit |
+| D01-17 | DB통합 | 연결/migrate/repeat/schema/query/close/ready/격리 | test:integration+fault |
+| D01-18 | 장애 | PG delay/stop-recover/rollback/auth fail/signals/stop error | test:failures |
+| D01-19 | 웹통합 | actual browser desktop+mobile / API실패 mock명시 | test:e2e 8 cases |
+| D01-20 | CI | 기존workflow유지+실제PG/frozen/lint/TS/tests/build/browser/artifact | Quality CI current SHA 확인 |
+| D01-21 | 병합정책 | 모든 영역 독립 검증, 일반 PR, 기존 Draft Ready, 실제 suite 누락/실패 차단 | AUTO-01 live Actions/report |
+| D01-22 | Pi | 실물없음; Node/Pg ARM64manifest/nativeoptional 사전확인 | docs/ARM64; 실기기 NOT RUN |
+| D01-23 | 50SKU | 60 fixture 보존; page/ID/bigint; 실제CRUD엔진 후속 | 기존fixture tests+contract |
+| D01-24 | Dot/비용 | AI/유료backend/managedDB 의존0 | dependencies/source review |
+| D01-25 | 보안 | public/ignored env/secret/loopback/no unauthwrite/logredaction | scanner/unit/fault |
+| D01-26 | 성능 | buildsize/API/workerRSS/docker 관측; Pi 추정금지 | report 환경·측정값 |
+| D01-27 | 문서 | README beginner steps+개발/DB/API/worker/CI/문제해결 | validate_docs + 실제실행 |
+| D01-28 | 이전감사 | R01–25/DEV00 설계대조, 후속업무 미완료보존 | report/trace/RISK_REGISTER |
+| D01-29 | 체크리스트 | 실제테스트증거로만 상태표시, 구현과병합 분리 | report/status |
+| D01-30 | SelfReview | 의존성/자원/예외/로그/캐시/keyboard/CI차이 점검수정 | report 수정목록 |
+| D01-31 | 완료조건 | 실제실행·테스트·commit/push/PR/CI 확인; 병합별도 | 최종보고/GitHub |
+| D01-32 | 최종보고 | 요청13항목 순서대로 실제증거·미실행 표기 | 최종보고 |
+
+이 표는 구현 연결표이며 결과 자체는 [DEV01 보고](dev-reports/DEV-01.md)의 실제 실행과 현재SHA CI가 기준이다. 물류/원장/운영연동은 NOT RUN 유지.
 
 AUTO-01 최신 지시 §0–16: 수동 승인 제거/일반 PR/Ready·metadata 분리/영역별 실제 suite/main-owned 독립 검증/최초 전환/PR4 보존/이벤트 호환성/운영 배포 분리를 [실행 대장](dev-reports/GITHUB-AUTOMATION-01.md)으로 추적한다.

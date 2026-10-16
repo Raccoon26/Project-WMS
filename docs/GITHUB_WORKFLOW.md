@@ -61,7 +61,7 @@ Draft/미완료는 NOT_READY(정상 종료)이며 metadata의 mergeAllowed는 �
 
 HEAD 또는 main 변경 시 증거를 재사용하지 않는다. 자동 controller를 하나의 main concurrency group으로 직렬화하고
 Ready/merge 직전 head/main을 재조회한다. stale base는 최신 main을 DEV branch에 정상 merge해 새 CI를 유발한다.
-controller는 이벤트당 한 번만 평가하며 무한 재시도/자동 재실행을 하지 않는다. 실패 이유를 해결한 새 commit이 재검증 trigger다.
+Codex는 stale base를 발견하면 정상 merge/재검증을 최대2회 시도하고 지속 경합은 원인을 보고한다. controller는 이벤트당 한 번만 평가하며 무한 재시도/자동 재실행을 하지 않는다. 실패 이유를 해결한 새 commit이 재검증 trigger다.
 GitHub REST `sha`는 HEAD에만 원자적이며 base CAS가 없다. 마지막 조회 직후 외부 writer가 main을 바꾸는 경쟁까지
 원자적으로 차단한다고 보장하지 않는다. 직접 main push 금지/수동 병합과 동시 실행 금지. 서버 강제는 선택 merge queue/보호로 검토한다.
 권한 오류는 실패이며 보호 조회403은 현 Actions 모드의 필수 전제가 아니다.
@@ -75,7 +75,9 @@ GitHub REST `sha`는 HEAD에만 원자적이며 base CAS가 없다. 마지막 �
 공식 [이벤트 문서](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows),
 [보안 문서](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions) 확인.
 workflow_run은 기본 브랜치 workflow 정의와 권한 상승 가능성에 주의하고 chain을 CI→독립검증→병합 3단계로 제한한다.
-11월2일 pull_request_target 변경의 정확한 공지 원문은 별도 확인 대상이며, 이 구현은 **해당 이벤트 의존성을 제거**했다.
+[2026-09-17 공식 공지](https://github.blog/changelog/2026-09-17-workflow-execution-protections-in-github-actions-generally-available)에서
+공개 저장소의 기존 기본 pull_request_target 정책을 사용하던 대상에 2026-11-02 default rule enforcement가 적용됨을 확인했다.
+이 구현은 **해당 이벤트 의존성을 제거**했으며 allow-unsafe-pr-checkout opt-out을 사용하지 않는다.
 Policy는 읽기 전용 pull_request+base checkout이며 병합 허가의 단독 근거가 아니다.
 
 main merge ≠ Raspberry Pi 배포. 재고/출고/결제 업무의 승인·불변식·백업·별도 운영배포 통제는 그대로다.

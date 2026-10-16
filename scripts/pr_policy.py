@@ -74,8 +74,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--metadata', required=True)
     p.add_argument('--files', required=True)
-    p.add_argument('--reviews', required=True)
-    p.add_argument('--comments', required=True)
+    p.add_argument('--reviews')
+    p.add_argument('--comments')
     p.add_argument('--repo', required=True)
     a = p.parse_args()
     meta = json.loads(Path(a.metadata).read_text())
@@ -86,7 +86,7 @@ def main():
     added = [f['filename'] for f in records if f.get('status') == 'added']
     classification = classify(paths, added)
     pending = waiting(meta, classification)
-    status = 'FAIL' if errors else 'WAITING' if pending else 'ELIGIBLE_FOR_CI_VERIFICATION'
+    status = 'FAIL' if errors else 'NOT_READY' if meta.get('draft') else 'WAITING' if pending else 'ELIGIBLE_FOR_CI_VERIFICATION'
     # A successful metadata check is explicitly NOT permission to merge.
     result = {'status': status, 'mergeAllowed': False,
               'classification': classification, 'errors': errors, 'waiting': pending}

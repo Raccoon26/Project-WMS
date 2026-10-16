@@ -64,3 +64,15 @@ GitHub 공식 이벤트 문서는 조회 성공. 11월2일 변경의 정확한 �
   Guarded38853692380 SKIPPED, PR6 미병합/main 불변 확인. 의도된 negative 실증 성공.
 - baseline 복원 후 새 HEAD로 검증한다. disabled integration scaffold는 정확한 SHA256+기존 실제 no-effects unit case로만
   외부연동 업무 profile에서 제외한다. 기능을 추가하거나 해시가 바뀌면 실제 integration safety case가 필요하다.
+
+## 실제 정상 자동병합 실증
+PR6 restored head `67f247302148c7005847c4ffcc4607fffb966269`:
+[Quality38853815455](https://github.com/Raccoon26/Project-WMS/actions/runs/38853815455) SUCCESS,
+[Independent38853857916](https://github.com/Raccoon26/Project-WMS/actions/runs/38853857916) SUCCESS,
+[Guarded38853918542](https://github.com/Raccoon26/Project-WMS/actions/runs/38853918542) SUCCESS.
+실제 자동 squash merge `435e69daa2582f75e970b3c8bbd718bf3b63abf8`. 사용자 승인/label/comment 없음.
+이 PR에는 merge 프로그램/증거 builder/정책 코드 변경도 포함되어 이전 main verifier를 통한 제어 코드 자동병합을 실증했다.
+Python 후보63/기준선62 실행, no fail/skip. 앱 없는 전환 PR이므로 PG/웹 suite는 NOT APPLICABLE이며 실행했다고 주장하지 않는다.
+
+GitHub 공식 [2026-09-17 공지](https://github.blog/changelog/2026-09-17-workflow-execution-protections-in-github-actions-generally-available) 확인:
+11월2일 대상 공개repo의 default pull_request_target rule enforcement가 적용된다. 이 구현은 해당 이벤트 사용0이다.

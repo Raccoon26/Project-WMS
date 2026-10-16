@@ -1,0 +1,61 @@
+{
+  "name": "project-wms",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.34.7",
+  "engines": {
+    "node": "24.19.0",
+    "pnpm": "10.34.7"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "build": "pnpm -r build",
+    "dev:setup": "tsx --conditions=source scripts/dev-setup.ts",
+    "dev:web": "pnpm --filter @wms/web dev",
+    "dev:api": "tsx watch --conditions=source --env-file-if-exists=.env apps/api/src/main.ts",
+    "dev:worker": "tsx watch --conditions=source --env-file-if-exists=.env apps/worker/src/main.ts",
+    "start:api": "tsx --conditions=source --env-file-if-exists=.env apps/api/src/main.ts",
+    "start:worker": "tsx --conditions=source --env-file-if-exists=.env apps/worker/src/main.ts",
+    "db:generate": "drizzle-kit generate --config packages/db/drizzle.config.ts",
+    "db:migrate": "tsx --conditions=source --env-file-if-exists=.env scripts/db-cli.ts",
+    "db:migrate:test": "tsx --conditions=source scripts/db-cli.ts --test",
+    "db:up": "docker compose --env-file .env -f infra/compose/compose.yaml up -d --wait",
+    "db:down": "docker compose --env-file .env -f infra/compose/compose.yaml down",
+    "db:test:up": "docker compose -f infra/compose/compose.test.yaml up -d --wait",
+    "db:test:down": "docker compose -f infra/compose/compose.test.yaml down",
+    "test:unit": "node scripts/run-tests.mjs unit",
+    "test:integration": "node scripts/run-tests.mjs integration",
+    "test:failures": "node scripts/run-tests.mjs fault",
+    "test:e2e": "node scripts/run-browser-tests.mjs",
+    "test:policy": "python3 -m unittest discover -s scripts -p 'test_*.py'",
+    "check:boundaries": "tsx --conditions=source scripts/check-boundaries.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.19.2",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@wms/contracts": "workspace:*",
+    "@wms/db": "workspace:*",
+    "@wms/domain": "workspace:*",
+    "@wms/runtime": "workspace:*",
+    "drizzle-kit": "0.31.11",
+    "drizzle-orm": "0.45.4",
+    "eslint": "10.12.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "prettier": "3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2",
+    "vitest": "4.1.12"
+  },
+  "pnpm": {
+    "overrides": {
+      "@esbuild-kit/core-utils>esbuild": "0.25.12"
+    }
+  }
+}

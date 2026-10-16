@@ -30,3 +30,11 @@ DB 복제만으로 변조 불가 증거가 되지 않으므로 감사 digest+암
 ## 보안 사고
 자동 부작용 중지→세션/키 회수→증거 보존(비밀 공개 금지)→외부 작업 대조→복구→원인/범위/재발방지 기록.
 보안 보고는 GitHub private vulnerability reporting 사용 가능 여부 확인 후 이용; 공개 issue에 secret/PII 첨부 금지.
+
+## DEV01 실행 기반의 실제 경계
+production NODE_ENV 및 non-loopback bind를 차단, health/version GET만 제공; 실제 무인증 업무쓰기 없음.
+DB credentials는 root.env(ignored), 웹 VITE 변수로 전달하지 않음. 테스트 URL/사용자/DB/schema/container guard.
+API/worker 로그는 필드 allowlist로 raw URL/header/cookie/body/error/DB URL을 직렬화하지 않는다.
+SW는 build-static allowlist만, API/no-store 및 write queue 없음. DEV02 auth/MFA/RBAC/CSRF와 운영 ingress는 아직 미구현.
+개발 app DB role은 Compose 개발 전용 superuser이므로 운영 최소권한 구성으로 오인하지 않는다. DEV12 역할분리 필요.
+Drizzle-kit transitive esbuild moderate는0.25.12 override 후 audit/CLI 재검증. 자세한 경계는 [개발 계약](docs/DEVELOPMENT.md).

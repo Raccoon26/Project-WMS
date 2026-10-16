@@ -67,3 +67,8 @@ AI adapter 기본 disabled, 읽기 전용 분석 제안만; domain/worker 운영
 최대5회(총횟수), Retry-After가 더 길면 앞당기지 않고 다음 스케줄에 반영. provider별 승인된 정책 override.
 서명·권한·payload 오류는 retryable=false. 토큰 refresh는 한 번만, 실패 후 운영자 재인증.
 외부 쓰기의 결과불명은 이 읽기 재시도 정책을 적용하지 않는다.
+
+## DEV01 구현 현황
+예정 구조를 실제 workspace로 구현. 추가 `packages/runtime`은 config/log/shutdown 공유이며 domain과 분리.
+구체 API/Worker/PWA·migration·소스/빌드 exports는 [개발 계약](docs/DEVELOPMENT.md).
+현재 읽기전용 health/version만 실행, 업무 command/인증/원장/Outbox는 미구현.

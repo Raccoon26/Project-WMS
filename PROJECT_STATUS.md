@@ -1,27 +1,30 @@
 # Project-WMS 상태
 
-기준일: 2026-10-16. **DEV-00 설계·GitHub bootstrap 반영 완료 / DEV-01 시작 가능.**
-여기서 DEV-00 '완료'는 설계 문서와 소스 관리 기반의 병합을 의미합니다. 실제 웹/API/DB 재고 원장/물류 연동/이메일/Telegram/Pi/백업 및 운영 검증은 **아직 미구현**이며 해당 DEV에서 검증해야 합니다.
+2026-10-16. DEV00 설계 및 AUTO-01 정책은 main 적용 완료. DEV01 앱은 PR4에서 재검증·자동병합 진행 중.
 
-## 실제 GitHub 반영 상태 (GitHub REST API 확인)
-- [PR #1](https://github.com/Raccoon26/Project-WMS/pull/1) **Merged**. Bootstrap + DEV-00 설계가 `main`에 반영됨. 병합 커밋 `694ef9a1ae2dfb05c10c5683b0a63913d5deaf72`.
-- [PR #2](https://github.com/Raccoon26/Project-WMS/pull/2) **자동 Merged**. 보호 규칙 미사용 GitHub Actions workflow-run 병합 실증(문서 변경에 한함). 병합 커밋 `6086ddfb8281a5a9adff2d2b6f3aca7f3a05c3b5`.
-- [WMS PR CI #38845791520](https://github.com/Raccoon26/Project-WMS/actions/runs/38845791520): SUCCESS; [WMS PR Policy #38845791325](https://github.com/Raccoon26/Project-WMS/actions/runs/38845791325): SUCCESS; [Guarded Auto Merge #38845810037](https://github.com/Raccoon26/Project-WMS/actions/runs/38845810037): SUCCESS.
-- 보호 상세 조회에 `403`이 발생하더라도 새로운 보호 규칙 **없는** 별도 GitHub Actions 자동 병합에는 영향을 주지 않습니다. 레거시 `scripts/enable-safe-auto-merge.sh`는 여전히 보호 설정이 없으면 중단됩니다.
-- 모든 변경 유형은 필수 독립 자동 검증 성공 시 승인 없이 병합. 위험 경로별 수동 승인/라벨/댓글 요구 없음.
-- **GitHub main 병합은 Raspberry Pi 운영 배포가 아닙니다.** Branch protection이 없는 구성은 `main` 직접 푸시를 GitHub가 차단하지 못하므로 보호 규칙 사용이 가능하면 여전히 권장합니다.
+## 확인된 GitHub 이력
 
-## DEV-00 산출물 및 남은 개발
-- [DEV-00 결과 보고](docs/dev-reports/DEV-00.md), [개발 진행표](DEV_PROGRESS.md), [요구사항](REQUIREMENTS.md), [추적 매트릭스](docs/REQUIREMENTS_TRACEABILITY.md), [안전 원칙](docs/SAFETY_GATES.md).
-- 기존 DEV-00 설계 보고서는 당시 시점의 원격 상태를 기록한 **이력 문서**입니다. 본 파일의 GitHub 현황이 최신입니다.
-- 50 SKU 이상 확장 설계, Dot 미사용(선택 AI-01), 외부 창고 이메일, FBA/RSL, 금전·재고 안정성 규칙은 설계되었습니다. 실제 운영 코드/50 SKU E2E/ARM64 성능/복원 실증은 미완료.
-- DEV-01은 최신 `main`에서 새로운 브랜치로 시작하세요. 요구사항 및 우선순위 재확인, 앱 기초 환경·DB 테스트/CI 어댑터를 구현하세요.
-- DEV-05/06은 실제 창고 양식과 메일 제공자, DEV-08/09는 플랫폼 계정/API 접근, DEV-12는 Pi 기기, DEV-13은 Drive OAuth/외부 감시가 필요할 수 있습니다. 초기 DEV-01에는 필요하지 않습니다.
-- Sol Medium DEV-00~18, Astra FINAL-AUDIT-01. 마지막 감사가 DEV별 실측·회귀·장애 테스트를 대체하지 않습니다.
+- PR1–3: DEV00 설계·GitHub 기반 병합 완료.
+- [PR5](https://github.com/Raccoon26/Project-WMS/pull/5): AUTO-01 최초 전환 병합, `9bc5abc3a92227cf27b6a929747e70a30f4423da`.
+- [PR6](https://github.com/Raccoon26/Project-WMS/pull/6): 독립 baseline 차단 실증 후 복원, Actions 자동 squash merge 완료.
+  병합 `435e69daa2582f75e970b3c8bbd718bf3b63abf8`, [controller 성공](https://github.com/Raccoon26/Project-WMS/actions/runs/38853918542).
+- [PR7](https://github.com/Raccoon26/Project-WMS/pull/7): verifier 보정 자동병합 `17d6cdadce3b7b47da116c0a2f9f5dfaf552718f`.
+- [PR4](https://github.com/Raccoon26/Project-WMS/pull/4): 기존 dev/dev-01-foundation을 재사용. 최신 main으로 정상 merge했고 force push/main 직접 push 없음.
+  구현·로컬 재검증 완료, 최신 HEAD의 원격 Quality/독립검증/자동 Ready·병합 결과는 후속 기록한다.
 
-## AUTO-01 정책 전환 — main 적용 완료, live 검증 중
-전환 [PR5](https://github.com/Raccoon26/Project-WMS/pull/5) 병합 커밋 `9bc5abc3a92227cf27b6a929747e70a30f4423da`.
-DEV01 앱 구현은 [PR4](https://github.com/Raccoon26/Project-WMS/pull/4)에 보존, 아직 main에 없음.
-[PR6](https://github.com/Raccoon26/Project-WMS/pull/6)에서 candidate CI가 성공해도 baseline 삭제를 독립 검증기가
-차단한 실제 Actions 결과 확인. 기준선 복원 후 자동 squash merge 경로를 검증 중.
-[정책](docs/GITHUB_WORKFLOW.md) · [실행 대장](docs/dev-reports/GITHUB-AUTOMATION-01.md).
+## 실행 기반 및 안전성
+
+pnpm TypeScript workspace, 일본어 React/Vite/Tailwind15화면/PWA, Fastify 읽기전용 상태·버전,
+실제 PostgreSQL17.11·Drizzle migration/hash/lock, 별도 readonly Worker/config/log/shutdown.
+Unit34/실제DB integration4/fault14/browser8 로컬 재통과, 실제 업무쓰기0. 정책/Python 검사는 AUTO-01 보고 참조.
+수동 승인 label/comment/review 및 위험 경로별 Draft 강제 없음. 모든 유형에 main-owned 독립 자동 검증을 요구한다.
+부족한 업무 suite는 필수 테스트 누락으로 차단한다. 보호 없는 자기 수정 CI는 완전 보안을 보장하지 않는다.
+
+## 후속 단계
+
+DEV02 인증/RBAC/MFA/CSRF; DEV03 제품·SKU·창고; DEV04 원장·예약·물류/금전 불변식.
+메일/Telegram/시장 API/자동보충/분석/Pi배포/운영백업은 담당DEV에서 구현한다.
+60 synthetic SKU fixture 유지. 실제50SKU 업무E2E·물류 F01–30 미실행. Dot/유료AI0, 선택AI01.
+Pi5 실물 없음: ARM64 manifest 사전검증만, 실장비 검증은 DEV12 이후. main merge는 운영 배포가 아니다.
+
+[개발 안내](README.md) · [정책](docs/GITHUB_WORKFLOW.md) · [DEV01](docs/dev-reports/DEV-01.md) · [AUTO-01](docs/dev-reports/GITHUB-AUTOMATION-01.md).

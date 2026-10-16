@@ -1,0 +1,19 @@
+name: wms-test
+services:
+  db-test:
+    image: postgres:17.11-bookworm@sha256:3645570cccdfa447589da9f57dd740faa29b30938e861289a5574b6ca6b03826
+    environment:
+      POSTGRES_USER: wms_test
+      POSTGRES_DB: wms_test
+      POSTGRES_PASSWORD: wms_test_only
+    ports: ["127.0.0.1:5433:5432"]
+    volumes: ["testdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wms_test -d wms_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    restart: "no"
+    stop_grace_period: 15s
+volumes:
+  testdata:
