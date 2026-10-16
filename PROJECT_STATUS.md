@@ -8,6 +8,8 @@
 - 기존 브랜치 `dev/dev-00-github-bootstrap`, PR [#1](https://github.com/Raccoon26/Project-WMS/pull/1) Open/Draft 유지; 중복PR 없음.
 - Public, auto-merge=false 관측. main protection 조회403(연동권한), 설정 여부 불명 → 자동병합 불가.
 - bootstrap CI/정책 변경은 수동검토. owner review/보호설정/병합 미완료.
+- 설계 commit `0ac3244`의 Quality CI [성공](https://github.com/Raccoon26/Project-WMS/actions/runs/38844330317).
+  trusted Policy는 main 미설치로 NOT RUN, app 관련 step도 미구현으로 SKIPPED.
 - 현재 PR SHA의 remote CI 결과와 commit 식별자는 DEV00 report 및 GitHub check가 권위.
   자기 SHA를 문서에 포함하면 SHA가 바뀌므로 파일 내 마지막 커밋 hash는 GitHub 이력/최종보고에서 확인한다.
 

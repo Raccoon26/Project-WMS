@@ -10,7 +10,7 @@
 GitHub current-SHA/check-app/보호/rename·pagination 안전도구 및 테스트, public 파일/known-secret-pattern 검사.
 
 ## 실제 실행 증거
-검증 집계는 최종 실행 후 아래에 기록한다. 운영 WMS 테스트는 NOT RUN이며 현재 코드가 없다.
+로컬 검증 집계 및 관측된 원격 결과는 아래와 같다. 운영 WMS 테스트는 NOT RUN이며 현재 코드가 없다.
 원격최신 main=b021a81624cf2221e257eb772a550e648896cf4d;
 기존 PR head=78d77cebc576ae355a6ebf7badfb543fa74ac845, Open/Draft/미병합/기존 Quality SUCCESS 확인.
 GitHub API repo Public/allow_auto_merge=false. main protection GET403(Resource not accessible by integration).
@@ -53,3 +53,15 @@ Python3.12.14/Node24.19.0 확인. actionlint1.7.12 Linux amd64 공식 릴리스�
   실제 검사 로직은 완화하지 않고 테스트 fixture를 보완, 이후 전체37건 통과.
 - 최초 출시직전 Astra 감사 요구와 DEV18 뒤 최종감사 표의 순서 혼동은 ADR013에 기록;
   DEV14 출시후보와 실제운영을 분리하고 실제 첫운영 전 감사, DEV18 완성 후 확장범위 감사 갱신.
+
+## GitHub 반영 및 원격 증거
+- 설계/도구 commit `0ac3244ad40318e5ce946be14c9fd28d6dc04235` push 완료, 기존 PR1 재사용.
+- [Actions 38844330317](https://github.com/Raccoon26/Project-WMS/actions/runs/38844330317):
+  해당 SHA **WMS Quality Gate SUCCESS**, 원격 로그도37 tests/OK 확인.
+- Python/정책·shell통합/docs/secret/actionlint 실행 성공. 앱이 없어 pnpm/Node설치·app build/test step은 **SKIPPED**;
+  실제 TypeScript/lint/build/unit/integration/재고기능 테스트를 통과했다고 하지 않는다.
+- WMS Policy Gate는 trusted main에 아직 파일이 없는 bootstrap이므로 **NOT RUN / check 없음**.
+  로컬 policy negative/positive 단위·통합검사와 원격 trusted policy 실행을 구분.
+- 마지막 이 증거기록 커밋의 현재SHA CI는 GitHub/PR 본문/최종보고에서 별도 확인한다.
+- PR1 **Open / Draft / mergedAt=null** 관측; auto-merge 요청/실제병합/운영배포 없음.
+- 관리자 수동 검토·bootstrap 병합·유효보호설정·그 뒤 current-head Policy 실증 필요. DEV00 최종완료 gate는 미충족.
