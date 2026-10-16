@@ -175,3 +175,12 @@ local event PR번호0·합성 source SHA이므로 GitHub 원격 증거나 실제
 이 보강의 현재 원격 상태/정확한 HEAD·merge SHA는
 [마무리 PR 검색](https://github.com/Raccoon26/Project-WMS/pulls?q=is%3Apr+head%3Adev%2Fdev-02-security-finalization)의 실제 결과가 기준이다.
 코드가 공개된 사실을 운영 배포로 처리하지 않는다.
+
+최종 보강의 로컬 독립 실행도 현재 main(ef3566c)의 검증기로 성공했다:
+candidate Python70 + main Python70 / Unit45 / 실제PG25 / Failure37 / Desktop·Mobile Browser42,
+실패·Skip0. 기존 인증 snapshot 8개를 byte-for-byte 유지하고 추가4개 파일을 검증했다.
+이전과 마찬가지로 local PR0 proof는 원격 병합 증거로 사용하지 않는다.
+공통 SystemActor는 contracts에 두어 Worker가 API 앱을 상대 import하지 않도록 typecheck/boundary로 검증했다.
+문서의 실제 dev:api/dev:worker/dev:web를 새 프로세스로 기동해 API ready200/Worker ready200/Web200/
+미인증 users401/CSP를 확인한 뒤 자신의 프로세스만 정상 종료했다. 실제 암호화 키가 웹 번들에 없는 검사도 통과했다.
+클라우드 install_script/start_skill은 DEV02 설정 보존·서비스 기동·검증 안내로 저장했으며 설정 게시 자체는 별도 제품 동작이다.
