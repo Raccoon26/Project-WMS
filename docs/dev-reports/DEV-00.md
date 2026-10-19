@@ -126,3 +126,8 @@ rollback, 반복 실행, 데이터 보존 검사는 유지한다. 인증 기능 
 모두 성공, 실패0·Skip0. lint/typecheck/boundary/build/docs/secret 검사 성공.
 기존 Python negative fixture의 manifest 누락과 새 Playwright fixture의 미사용 타입 인자를
 발견·수정 후 관련 검사를 재실행했다. 원격 CI/병합 결과는 GitHub에서 확인하며 미래 결과로 기록하지 않는다.
+
+
+## 2026-10-19 — 설계 변경 기록: Ubuntu 독립 주문 운영 / 선택적 Dots (문서 전용)
+
+DEV-00의 2026-10-16 초기 완료·검증 이력을 소급 수정하거나 재시행하지 않는다. 최신 사용자 장기 요구에 따라 R26–R31 및 [AI 운영 아키텍처](../AI_OPERATIONS_ARCHITECTURE.md)와 새 OPS-01-1/2/3 의존관계를 추가했다. Ubuntu Server(x86-64 노트북 우선)는 Windows/Dots 완전 종료 시에도 승인된 Amazon/Rakuten 주문·예약/불변원장·채널동기화/출고·배송/취소·반품·감사·복구를 독립 실행해야 한다. AI-01은 이용/권한 확인 후 선택적 제한 권한이며 DB/원장 직접 수정·자기승인 금지. Raspberry Pi/ARM64 이식성은 보존. 문서·로컬 설계 일관성 검토만 수행했으며 실제 Marketplace live/Ubuntu 장비/Dots 통합·운영검증은 NOT RUN. 기존 DEV04 검증 423개를 대체하지 않고 DEV05 구현 브랜치는 변경하지 않았다. 이 변경은 DEV-00 **새 설계 amendment**이지 DEV-05~18 구현 완료 증명이 아니다. 변경 파일/추적·미검증 항목은 [별도 감사 보고서](AI-OPERATIONS-ROADMAP-01.md)에 기재했다. AUTO-01 CI와 실제 병합 확인은 PR 결과를 따른다.

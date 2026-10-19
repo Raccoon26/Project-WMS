@@ -60,3 +60,7 @@ Cloudflare Tunnel+Access는 선택 후보이며 [공식 docs](https://developers
 | 향후 AI | Dot 상위구독/AI API | 현재 비용0을 목표로 연결 disabled, AI01만 명시 opt-in |
 
 비용표는 가격 견적이 아니다. 확정 숫자/무료 이용량을 추측하지 않는다. 운영 활성 전 계약·실사용량·요금 변경 감시.
+
+
+## Amazon/Rakuten 다채널 주문 계약 추가 (OPS-01 선행)
+DEV08은 실제 승인된 Amazon SP-API 역할·리전·Orders/FBA/Feeds 범위를, DEV09는 Rakuten RMS/RSL/BOSS 계약·지원 기능을 조사한다. 주문/품목·수량·취소/배송/환불 상태 읽기와 채널 게시·배송정보 쓰기는 별개 권한이며 상호 대체 불가. Provider-specific unique event ID, cursor/observed_at, raw hash, ordered-state 적용, 429/backoff, Credential expiry, polling gap, 중복/취소 선행을 안전하게 설계. API 미권한·미지원 기능은 MOCK 또는 별도 승인 CSV staging/수동대조로 보류하며 완전 무인 운영이라 표시하지 않는다. OPS-01은 공통 Order/RBAC/Reservation/Outbox·Provider Capability 포트를 구현하고, 외부 주문·배송·취소·환불 Write는 실제 계약/권한·승인 및 lost ACK 회복 검증 후만 허용. AI client도 동일 API만 사용. [AI 운영 아키텍처](docs/AI_OPERATIONS_ARCHITECTURE.md).

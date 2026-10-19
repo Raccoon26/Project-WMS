@@ -200,3 +200,16 @@ R01의 Catalog/다중창고/Scope는 실제 구현했으며 결과는 DEV03 repo
 ## DEV04 현재 작업
 
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+
+## 2026-10-19 — R26–R31 신규 장기 요구사항 추적 (설계만, NOT RUN)
+| ID | 증거 문서 | 담당 | 필수 수용 테스트 | 현재 |
+|---|---|---|---|---|
+| R26 | [AI 운영 아키텍처](AI_OPERATIONS_ARCHITECTURE.md) | DEV08/09/OPS-01/12–14 | O01/O10/O11/O15 Ubuntu/WIndows/Dots OFF | 설계, NOT RUN |
+| R27 | [AI 운영 아키텍처](AI_OPERATIONS_ARCHITECTURE.md) | DEV08/09/OPS-01 | O02/O03/O07/O08/O09/O16 | 설계, NOT RUN |
+| R28 | [AI 운영 아키텍처](AI_OPERATIONS_ARCHITECTURE.md) | DEV06/07/OPS-01/10/13 | O04/O05/O06/O10/O12/O13 | 설계, NOT RUN |
+| R29 | [AI 운영 아키텍처](AI_OPERATIONS_ARCHITECTURE.md) | DEV11/13/14/18/AI-01 | 통합 대시보드/Exception Queue/안전 재시도/감사·접근성/권한 | 설계, NOT RUN |
+| R30 | [AI 운영 아키텍처](AI_OPERATIONS_ARCHITECTURE.md) | DEV18/AI-01 | O13/O14/O15 실제 지원·사용자 허가/AI 직접 원장0 | 설계, NOT RUN |
+| R31 | [배포 설계](../DEPLOYMENT.md) | DEV12–14 | O01/O11/O15 x86-64 실제 호스트·ARM64 이전 계약 | 설계, NOT RUN |
+
+이 행들은 기존 R01–R25/U00–U29/F01–F30 증거를 삭제·대체하지 않으며 AI 연결·Provider live·Ubuntu 배포를 완료로 표시하지 않는다.

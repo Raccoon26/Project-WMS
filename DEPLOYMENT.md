@@ -1,6 +1,6 @@
 # 배포 설계 (DEV12 구현)
 
-목표: Pi5 8GB/SSD/유선 LAN/냉각/Raspberry Pi OS64 ARM64. 장비 보유·실측 미확인.
+우선 목표(2026-10-19 변경): 사용하지 않는/중고 노트북의 **Ubuntu Server x86-64**, SSD·유선 LAN, Docker Engine/Compose, PostgreSQL. 향후 Raspberry Pi 5 ARM64 이식성 보존. 실제 노트북·Pi 실장비 운영·실측 모두 미확인.
 Node24/PostgreSQL17 base image의 linux/arm64 manifest와 native deps를 DEV01/12에 검사;
 개발 x86 테스트가 Pi 호환 검증을 대신하지 않는다. Compose v2, 단일 host modular monolith.
 
@@ -45,3 +45,7 @@ Pi5 실물은 **없음**(사용자 확인). 실측/온도/전원/24h 운영은 D
 앱은 host Node 프로세스로 실행하며 localhost로 DB 연결; production full-container/tunnel 배포는 아직 구현 안함.
 공식 Node24.19.0-bookworm-slim 및 Postgres17.11 OCI index에 linux/arm64/v8 manifest를 확인.
 [ARM64 사전검증](docs/ARM64.md), [실행·종료·volume 주의](README.md), [개발 계약](docs/DEVELOPMENT.md).
+
+
+## Ubuntu x86-64 노트북 우선·Windows/Dots 독립성 (R26–R31)
+최종 운영 제품은 Ubuntu Server의 API/DB/Worker/Scheduler/Marketplace adapter·Outbox/Inbox/백업을 직접 자동 부팅/재시작·헬스체크한다. Windows 데스크톱과 Dots는 전원을 꺼도 주문수집/예약·원장/재고 게시/출고·취소·반품/감사가 멈추지 않아야 한다. Windows의 로컬 파일/DB 공유 마운트·작업 스케줄러·브라우저 세션을 업무 필수 의존으로 만들지 않는다. 외부 API/실운영 인증·송신은 허가 후만 활성화한다. x86-64에서 동작하는 기능을 향후 Linux ARM64로 이식할 수 있도록 다중 아키텍처 의존성, OCI images, locale/폰트, 볼륨/경로, pg_dump/restore를 검증하고 Pi 실증은 실제 장비 확보 후만 성공 표시한다. 첫 출시 전에 전원 차단·복구 및 Windows/Dots 완전 종료 E2E를 실제 Ubuntu 장비에서 확인해야 한다. 자세한 운영 경계 [AI 운영 아키텍처](docs/AI_OPERATIONS_ARCHITECTURE.md).

@@ -56,3 +56,7 @@ Warehouse grant를 실제 FK와 SQL 범위 필터에 연결했다. 공유 Catalo
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
 
 DEV04 synthetic inventory opt-in은 기본false, 이미 production을 차단하는 loopback 개발 API에만 적용한다. 테스트 schema는 엄격한 wms_test UUID namespace+test DB URL 이중 guard를 사용한다. 외부·수동 증거는 validated로 승격하지 않으며 실제 Provider 신뢰/위험 조정 승인 전 held. 제한된 NOLOGIN DB 역할의 원장 SELECT/UPDATE·DELETE 거부는 테스트에서 검증하되, 운영 migration/app/backup 역할 구성과 superuser 공격 저항은 DEV12 책임이다.
+
+
+## Dots/Windows AI 운영자 보안 경계 (계획 R26–R31)
+WMS Server/DB/Worker는 Ubuntu 내부에서 독립 실행. Windows·Dots는 유효한 Session/위임 Identity·MFA·RBAC/양쪽 창고 Scope·CSRF/Origin·version/CAS·Idempotency-Key·Audit를 거치는 Operator Client이다. AI에 DB credentials, raw ledger mutation, SSH/system shell, production OAuth keys, broad Admin, 지급/환불·정책변경의 자기 승인 권한을 제공하지 않는다. AI action을 delegated actor, parent/user approval/version/hash/nonce, correlation, before/after/outcome/uncertain으로 감사하고 PII를 마스킹한다. 미승인 refund/대량변경/출고/설정·unknown retry는 사람이 확인할 때까지 held. Cloud/local browser 권한은 공식 지원·사용자 허가 후 AI-01에서 별도 실증하며 Windows 오프라인이어도 core operation은 지속되어야 한다. [설계](docs/AI_OPERATIONS_ARCHITECTURE.md).
