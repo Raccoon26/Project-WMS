@@ -45,6 +45,7 @@ pnpm lint
 pnpm typecheck
 pnpm test:unit
 pnpm test:integration
+pnpm test:invariants
 pnpm test:failures
 pnpm build
 pnpm test:e2e
@@ -54,6 +55,10 @@ python3 scripts/validate_docs.py
 ```
 
 설정한 test container ID를 실제검증한 뒤 Failure suite가 격리 DB만 stop/start했다. 개발 API/Worker/Web도 직접 실행하여 readiness200/200/HTML200, 무인증 users401/CSP 적용을 확인하고 시작한 프로세스만 정상 종료했다. 모든 DB 테스트는 실제 PostgreSQL17이며 독립 schema를 정리하고 기존 볼륨을 reset하지 않았다. Python에서 출력되는 모사 MERGED 문자열은 GitHub 실제 병합 증거가 아니다.
+
+CI 경로의 마지막 대조에서 DEV04부터 요구되는 `test:invariants` script 누락을 발견하여 등록했다. 이 명령은 실제 PostgreSQL inventory Integration 30개를 별도 실행하며 실패/0개/Skip을 거부한다. 전체423개와 중복되는 재실행이므로 고유 테스트 수에 다시 합산하지 않는다. 기존 CI 조건과 검증 강도를 변경하지 않았다.
+
+개발 watch 프로세스의 idle RSS snapshot은 API220,422,144 / Worker201,441,280 / Web105,746,432 bytes였다. 실제 loopback HTTP readiness20회 p50 1.66ms/p95 2.52ms이며 API200/Worker200/Web200, 익명 users/inventory401, 정적 CSP를 확인했다. 개발 watcher overhead를 포함하며 운영 프로세스/Pi 메모리·성능으로 해석하지 않는다.
 
 ## 100 → 95 → 93 수용 결과
 
@@ -167,6 +172,8 @@ U00–U29/R01–R25의 기존 설계·현재 구현·후속 책임은 추적표�
 Rollback은 새 revert/forward PR+동일 독립검증이다. 원장 기록 수정/기존 migration history 변경/DB reset/볼륨삭제/자동 운영배포는 하지 않는다.
 
 ## GitHub·다음 단계
+
+2026-10-19 JST 재개 점검: 기존 `8b5d568` 구현과 3개 미커밋 보완 파일을 보존했다. 원격 main은 시작 SHA와 같고 열린 PR은 없었다. 저장된 Unit115/Integration77/Failure70/E2E80/Policy81 보고서를 확인했다. `/tmp`에 있던 중단 전 로컬 독립 검증 로그는 복원되지 않았으므로 그 실행을 통과 증거로 사용하지 않는다. 새 `test:invariants` 명령, lint/typecheck, frozen install, migration, 정책·문서·Secret·Workflow/Shell 검사를 재실행하며, 최종 HEAD의 전체 검증은 실제 Quality와 main-owned Independent Actions에서 다시 확인한다.
 
 Commit/Push/일반 PR/현재 SHA CI/main-owned Independent/Guarded/실제 Squash Merge를 확인해야 DEV04 전체 완료이다. 작성 시점의 로컬 성공을 원격 성공으로 대체하지 않는다. 이후 GitHub 결과를 실제 링크/SHA로 보강한다.
 DEV05는 실제 Outbound/Line/미출고/Version과 Warehouse/SKU UUID를 사용하여 교체 가능한 Sample Excel/PDF 템플릿을 구현할 수 있다. 문서 생성/메일 성공으로 재고를 차감하지 않는다. 실제 양식·발송·위험 승인·Provider 신뢰·운영배포는 다음 담당단계에서 검증한다.
