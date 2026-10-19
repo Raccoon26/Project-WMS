@@ -27,10 +27,10 @@
 | 메일/외부 연동/승인/금전/복구 | timeout/unknown/중복/서명/정확 계산/복원 등 담당 DEV suite |
 | CI/병합/설정/infra | Python 정책 회귀·권한/필수명령/독립 baseline 호환성·actionlint·shell·secret |
 
-분류는 수동 승인 여부가 아니라 강화검사 선택에만 사용한다. DEV02에서 migration과 auth의 실제 suite를 구현했다.
-재고/email/approval/money/recovery/integration 등은 아직 해당 업무 suite가 없어 **필수 테스트 누락으로 차단**한다.
+분류는 수동 승인 여부가 아니라 강화검사 선택에만 사용한다. DEV02 migration/auth, DEV03 catalog, DEV04 내부 inventory의 실제 suite와 test-only 기준선을 구현·독립 검증했다.
+email/approval/money/recovery/integration 등 미구현 업무 suite는 **필수 테스트 누락으로 차단**한다.
 담당 DEV에서 실제 case와 main-owned 계약을 함께 설치하고 이전 검증기로 호환성을 통과해야 한다.
-예상 case 이름/모사 성공은 실제 업무 검증을 대신하지 않는다. 60 synthetic SKU fixture 유지, 물류 F01–30은 미실행.
+예상 case 이름/모사 성공은 실제 업무 검증을 대신하지 않는다. 60/120/1000 synthetic SKU와 내부 원장·물류 검증은 DEV04 실제 보고를 따른다. F01–30 중 실제 외부 서비스/Pi/운영복원 항목은 후속 DEV이며 미실행 상태를 유지한다.
 
 ## 독립 검증과 신뢰 경계
 
