@@ -73,3 +73,7 @@ self approval은 위험 작업 금지. 단독 운영자는 별도 re-auth+대기
 ## DEV04 현재 작업
 
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+
+## Ubuntu 독립 다채널 주문 운영 (신규 설계, OPS-01 구현 전)
+Windows 브라우저/Dots를 끈 상태에서도 Ubuntu Scheduler/Worker가 지원된 Amazon/Rakuten 주문 수집→원본 이벤트 중복·역순/최신성 검증→실제 Inventory Reservation→원장/Outbox→출고·배송 상태 대조→채널 재고게시→예외 감시를 수행한다. 공급처 권한/결과 불명 시 held, 재시도와 재전송은 해당 Provider capability 및 실제 원격 확인 조건에서만. 출고 전 취소/출고 후 반품·부분환불·취소 확인 전 예약 유지 및 금전 승인 분리. AI는 분석/제안/확인·제한 API만; 자기 승인·직접 PG/원장 쓰기 금지. R26–R31의 세부 계약은 [AI 운영 아키텍처](docs/AI_OPERATIONS_ARCHITECTURE.md). 본 문단은 계획, 실제 자동 주문처리의 실행 증거 아님.

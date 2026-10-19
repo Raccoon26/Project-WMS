@@ -32,6 +32,13 @@
 | R24 | 일상 정상 업무는 정책 내 자동화; 금전·대량 출고·이상 조정·위험 설정은 승인 | 02,07,10 |
 | R25 | Sol Medium DEV00–18, Astra FINAL-AUDIT-01; DEV14 외부창고 첫 출시, DEV18 확장, AI01 선택 | 전 단계 |
 
+| R26 | Ubuntu x86-64 laptop 상시 서버: Windows PC·Dots OFF에서도 주문 수집/검증·예약/원장/채널재고 sync/출고·배송/취소·반품/재시도/감사 독립 수행. 장애·비허가 API는 안전 hold | 08,09,OPS-01,12–14 |
+| R27 | Amazon/Rakuten 주문·품목 식별자와 소스 사건 중복/역순/누락·provider 권한·최신성 검증; 다채널 재고경합/품절/초과판매 방지, 실제PG 멱등·원장 예약 | 08,09,OPS-01 |
+| R28 | 서버 durable order workflow: outbound/evidence/tracking/취소·반품·환불 분리, 위험·금전 human approval, unknown external side effect hold, restore epoch/inbox/outbox | 06,07,OPS-01,10,13–14 |
+| R29 | AI 불필요한 통합 운영 대시보드/연동 상태·지연·불일치·안전 재시도/Exception Queue/보고서/AI action audit 및 안정적 WCAG 관리 UI; WMS API 서버 RBAC 필수 | 11,13,14,18,AI-01 |
+| R30 | Dots는 선택적인 Windows 또는 Cloud 기반 AI 운영 관리자만; 지원 기능·계정·사용자 허가 검증 전 연결 금지. AI의 DB/원장/비밀 직접 접근·자기승인 금지, 읽기부터 시작 | 18,AI-01 |
+| R31 | DEV12는 Ubuntu Server 노트북(x86-64) 초기 운영 우선, Docker multi-arch/ARM64 Raspberry Pi 이식성 유지. Windows/Dots 완전 종료·AI flag OFF/구독 불필요 독립 동작 실측 및 복구 검증 | 12–14 |
+
 ## 성능·접근성 기준
 고정 SKU 배열이나 50개 제한 없음. 기본 페이지 25, 요청 페이지 최대 100은 응답 크기 제한이며 상품 한도가 아니다.
 허용 정렬 필드만 매핑, (sort_value,id) 커서; offset 기반 무제한 조회 금지. 이력 export는 스트림/백그라운드 청크.
@@ -52,3 +59,7 @@ R01의 Product/SKU/Mapping/Warehouse/Scope/Cursor 기반을 실제 구현한다.
 ## DEV04 현재 작업
 
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+
+## 2026-10-19 — AI 운영/다채널 주문 계약 추가
+R01–R25는 삭제하거나 의미를 약화하지 않는다. R26–R31의 범위·NOT VERIFIED/실제 DEV 분할은 [AI 운영 아키텍처](docs/AI_OPERATIONS_ARCHITECTURE.md)를 따른다. 문서 반영은 코드 구현·운영 가동 증거가 아니다.

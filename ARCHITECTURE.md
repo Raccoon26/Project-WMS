@@ -90,3 +90,7 @@ CatalogService는 AuthService의 실제 UoW/session/grant/CSRF/audit를 재사�
 ## DEV04 현재 작업
 
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+
+## 2026-10-19 — Ubuntu 독립 주문 처리와 선택 Dots 관리 경계
+Ubuntu Server(초기 노트북 linux/amd64)는 Web/API/Worker/Scheduler/DB/Marketplace adapter·재고 원장·거래·감사를 소유한다. Windows 브라우저와 Dots(가능할 때 선택적 Cloud/연결 PC)는 오직 인증된 **Operator Client**이며 판매 Core Loop의 유일한 실행 주체가 아니다. Windows 또는 Dots가 꺼져도 승인된 주문 수집→검증→원자 예약/원장→출고·배송→채널 재고 sync→취소·반품 보류/복구·감사는 계속된다. 외부 API가 불허·불명일 때 fail-closed를 허용한다. AI의 직접 DB/원장/SSH/비밀 접근 및 자기 승인 금지. 상세 모듈·상태·검증은 [AI 운영 아키텍처](docs/AI_OPERATIONS_ARCHITECTURE.md).

@@ -124,3 +124,28 @@ API inject 측정의 RSS는 Vitest와 API가 공유한 프로세스이며 독립
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
 
 DEV04 실제 기준선은 [423개 검증 및 F/L 추적](docs/dev-reports/DEV-04.md), [원장 계약](docs/INVENTORY_LEDGER.md)을 따른다. 별도100만 Entry 실험은 실제 실행했으나 필수 CI 테스트 수에 포함하지 않는다. 운영/Pi/Provider 시험은 담당DEV에 남는다.
+
+
+## R26–R31 주문 운영·Windows/Dots 독립성 — 신규 필수 설계 테스트 (OPS-01/DEV12–14/AI-01, **NOT RUN**)
+기존 F01–F30과 DEV04 테스트를 대체하지 않는다. 외부 API Live·Ubuntu 실장비·Dots 실연결은 담당 DEV가 별도 증거를 제공해야 한다.
+
+| ID | 상황 | 기대 결과/검증 | 담당 |
+|---|---|---|---|
+| O01 | Windows 종료+Dots 전원/접근 차단 | Ubuntu Worker 주문 ingestion·검증·예약·Outbox·동기화·감사 계속; 실장비 E2E | OPS-01,12,14 |
+| O02 | Amazon/Rakuten 동일 SKU 마지막1개 경쟁 | 실PG 성공예약≤1, 음수0, 중복출고0 | OPS-01 |
+| O03 | 주문 ID/event 중복·역순·응답 유실 | 단일 order/line/ledger 명령, 버전 후퇴0 | 08,09,OPS-01 |
+| O04 | 주문 취소가 수령/배송 전후 역순 | 검증된 상태전이, 출고 중 예약 자동해제0 | OPS-01 |
+| O05 | 부분취소·반품·손상·격리 | 실증거·원장 반전/새거래, 가용 자동 부풀림0 | OPS-01 |
+| O06 | 환불 재시도/ACK lost | 실제 이중환불0 또는 unknown hold, 관리자 승인 | OPS-01 |
+| O07 | Provider 권한 없음/만료·401/403 | 가짜 성공0, 작업 hold·알림/CSV 대안 | 08,09,OPS-01 |
+| O08 | 429/timeout/부분응답/네트워크 단절 | backoff·fencing·unknown 외부 쓰기 재전송0 | 08,09,OPS-01 |
+| O09 | 채널 stock sync 실패/오래된 수량 | stale 표시, oversell 위험 차단/보수적 정책·대조 | OPS-01 |
+| O10 | DB commit 전후/Worker crash | 불변 원장·예약/Outbox 원자성, 재기동 후 중복0 | OPS-01,12 |
+| O11 | Ubuntu 부팅·Windows 부재 | systemd/Compose 독립시작, 프로세스/업무 liveness | 12 |
+| O12 | 백업 복원 후 구 outbox replay | restore epoch 격리 및 원격 대조 전 송신0 | 13 |
+| O13 | 관리자 승인 없는 위험 취소/환불 | 거부/보류, AI 자기승인0 | 07,OPS-01,AI-01 |
+| O14 | AI 또는 브라우저가 raw SQL/임의 admin 호출 | DB 직접 접근0, 서버 RBAC·audit 위반 차단 | 18,AI-01 |
+| O15 | Dots 클라우드/Windows 연결 제한·오프라인 | AI 기능만 비활성, WMS 본업무·화면/경보 계속 | 12,14,AI-01 |
+| O16 | 50+ SKU, 2채널 주문·예약·출고 전과정 | 실제PG·DB 동시성/누락 이벤트·UI·운영 모니터링 | OPS-01,14 |
+
+각 큰 작업은 DEV-XX-1/2로 분할 가능. 누락·실패/skip을 성공으로 쓰지 않는다. AI 실제 접근은 기능을 확인한 뒤 실장비 E2E로 기록한다.

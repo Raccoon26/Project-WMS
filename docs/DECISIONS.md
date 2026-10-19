@@ -63,3 +63,7 @@ CAS+actor별 command_results+append-only revision/audit, mapping 종료/대체, 
 ## DEV-04 / ADR-Inventory — PostgreSQL Commit 안전장치와 증거 분리
 
 원장 INSERT Trigger로만 수량 Projection을 갱신하고 Deferred Constraint로 SKU별 균형·잔액·예약·출고·수령 합계를 Commit 검증한다. 기존 Auth/Catalog 잠금과 충돌하지 않게 Session/User→Aggregate→metadata share→정렬 Account→예약→Audit 순서를 사용하며 전체재고 전역74002 mutex는 추가하지 않는다. 위험 조정과 미검증 Manual/External Evidence는 DEV07/08/09 Port가 없으므로held. 합성Posting은 isolated Test DB 또는 명시적인 loopback 개발 flag만 허용하며 운영활성화와 분리한다. DB timestamp는 JS Date로 복사하지 않는다. [구현 계약](INVENTORY_LEDGER.md).
+
+
+## ADR-OPS-2026-10-19 — 운영 서버 및 선택적 AI 권한 경계
+결정: 초기 운영 호스트는 Raspberry Pi 전용이 아닌 **Ubuntu Server 중고 노트북 x86-64**. Docker/DB Backup/Restore/검증을 통해 나중에 Pi ARM64로 이전할 수 있게 유지. Windows는 웹 관리 단말; Dots는 지원·사용자 허가를 확인한 후 선택적 AI 운영자이며 핵심 비즈니스 명령 엔진이나 DB 직접 쓰기 도구가 아니다. Ubuntu 독립 주문/원장/채널재고/출고/취소·반품/worker는 DEV08/09 + OPS-01에서 구현. 검증되지 않은 Provider API, 환불, 원격 부작용은 승인/hold. R18의 'AI 없이 운영' 유지, AI-01에 실제 연결을 연기. 근거 및 테스트 [AI 운영 아키텍처](AI_OPERATIONS_ARCHITECTURE.md). 개발 문서의 자동 Merge 승인 제거는 비즈니스 인간 승인 제거가 아니다.

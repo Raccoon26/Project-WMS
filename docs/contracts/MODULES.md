@@ -73,3 +73,13 @@ CatalogService list/get/change/history는 Permission·resolved warehouse scope·
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
 
 DEV04 실제 Port는 `InventoryService.command`의 Auth/Scope UoW와 `postInventoryTransaction`의 내부 Posting이다. Catalog/원장 UUID를 공유하고 원장의 account 권한을 stock 상태와 함께 다시 평가한다. `InventoryEvidenceVerificationPort`는 미래 Provider의 독립 proof 계약이며 현재 구현/운영 연결을 주장하지 않는다. Worker는 service actor 계약을 알고 있으나 원장 쓰기·Outbox 외부 소비자를 실행하지 않는다. Outbound/Inbound/Transfer의 조회/쓰기·Cursor·수량/증거 규칙은 INVENTORY_LEDGER가 현재 계약이다.
+
+
+## Multi-channel Order / Optional AI ports (planned, not implemented)
+- `OrderIngestionPort.fetchSince(cursor,capabilities)` → normalized, source-scoped immutable OrderEvents, observed_at/cursor/hash; Inbox uniqueness, signature/identity/schema validation and quarantine; no Provider-specific raw SQL.
+- `OrderCommandPort.apply(event, expectedVersion, idempotencyKey)` → OrderAggregate transition + shared Inventory Reservation/UoW + audit/outbox; no direct balance update. Cancellations, returns, partial quantities and refunds are independent validated commands.
+- `ChannelStockPort.readAndPublish(capability, skuMapping, targetVersion, actionKey)` → provider evidence/unknown hold. No blind retry on unknown external writes; freshness/oversell and price/currency constraints.
+- `Shipment/Return/RefundPort`: factual provider evidence distinct from sent email/warehouse ACK. Risk and money actions require human authorization and exact accounting; unverified endpoints disabled.
+- `OperationsQueryPort`: scoped read-only dashboard/exception/status/reports (timestamps/trust), works with AI disabled; `OperationsCommandPort`: allowlisted safe server actions with MFA/RBAC/CAS/idempotency/audit, risk approvals never self-issued.
+- `OptionalAIOperatorAdapter`: disabled by default, cannot hold DB/SSH/secrets/ledger credentials. Cloud/Windows Dots capabilities require documented user enablement and actual AI-01 verification.
+- Ubuntu Worker/DB/Scheduler owns core business state and retries. Windows and Dots are nonessential clients. [Full contract](../AI_OPERATIONS_ARCHITECTURE.md).

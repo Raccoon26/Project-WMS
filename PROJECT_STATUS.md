@@ -53,3 +53,7 @@ DEV02 실제 기반 병합: [PR10](https://github.com/Raccoon26/Project-WMS/pull
 ## DEV04 현재 작업
 
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬/원격 검증을 완료했고 PR13으로 자동 병합했다. 실제 Evidence의 HEAD/Base/Run ID를 대조하고 구현 HEAD와 병합 tree가 같음을 확인했다. 승인 Review0/label0이며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+
+## 2026-10-19 — Dots/Ubuntu 독립 운영 아키텍처 문서 반영 (설계 전용)
+DEV04의 병합·테스트 실적을 보존하며, 별도 DEV05 작업 브랜치의 코드·상태는 변경하지 않았다. [AI 운영 아키텍처](docs/AI_OPERATIONS_ARCHITECTURE.md), R26–R31, OPS-01 로드맵을 추가해 Ubuntu 서버의 주문/원장/출고·채널 sync가 Windows·Dots OFF에서도 독립 실행해야 함을 명시한다. 기존 문서의 AI disabled/opt-in 원칙 유지. 초기 배포 목표는 Ubuntu 중고 노트북 x86-64, 이후 ARM64 Raspberry Pi 이전 가능성 유지. **이번 반영은 문서화/계획이며 Orders, Dots, 외부API, 실장비 배포 코드를 구현하거나 검증한 것이 아님.** 해당 내용의 PR/CI/병합은 실제 GitHub 결과로만 확정한다.
