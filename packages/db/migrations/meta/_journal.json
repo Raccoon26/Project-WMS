@@ -85,6 +85,20 @@
       "when": 1792187915102,
       "tag": "0011_inventory_ledger_seek",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792383233458,
+      "tag": "0012_strong_dragon_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792384190835,
+      "tag": "0013_document_snapshot_types",
+      "breakpoints": true
     }
   ]
 }

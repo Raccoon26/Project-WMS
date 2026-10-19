@@ -1,0 +1,100 @@
+{
+  "scope": "DEV-05-1 local foundation only; not remote CI/merge authorization",
+  "base": "63c6ec602b640937ee915778b332727ffaeb1729",
+  "branch": "dev/dev-05-document-templates",
+  "suites": {
+    "unit": {
+      "passed": 145,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "integration": {
+      "passed": 106,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "fault": {
+      "passed": 70,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "browser": {
+      "passed": 82,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "scope": "80 existing real WMS browser tests + 2 native datetime input tests; no document rendering/UI tests"
+    },
+    "policy": {
+      "passed": 81,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "uniquePassed": 484,
+  "duplicateInvariantRerun": {
+    "passed": 30,
+    "failed": 0,
+    "skipped": 0
+  },
+  "initialFailures": {
+    "jsonTypeReproduction": {
+      "failed": 4,
+      "afterForward0013Passed": 4
+    },
+    "browserBeforeInputNormalization": {
+      "passed": 79,
+      "failed": 1,
+      "cause": "Chromium canonical datetime-local vs Playwright fill string comparison"
+    }
+  },
+  "migrationsPreserved": "0000-0011 bytes and journal prefix; applied0012 unchanged; forward0013 hardening",
+  "unchangedVerificationRegistries": 5,
+  "dependencyAdditions": 0,
+  "sourceSha256": {
+    "apps/api/src/documents/service.ts": "bd3963ed156492fbfc977f8ff3e601ac8dda55b0a37d8aa26e42e10a05b130ac",
+    "apps/api/src/documents/snapshot.ts": "410b2df22a74837e7a23f1bf623f65ede21874898e2a59df79605b4cffa6263f",
+    "apps/api/src/documents/templates.ts": "0c3626539241b6016bb9de83d2d010685b87fbd9ab0a1533bc9cd0da173f0bf5",
+    "docs/automation-completion.json": "846bba0ed9af08be48414efcc7c4a1822eeb6c977c0cefa31f07d92deea5cc1f",
+    "packages/contracts/src/documents.ts": "37b09cfb04c078e7c9f7350da467ea57ed1f050eadb57b9da7847ab5aba85c84",
+    "packages/contracts/src/index.ts": "353645985476033f95397c64e5d42d69b900954bbcc9c363ba315b1403e51c8d",
+    "packages/db/migrations/0012_strong_dragon_man.sql": "254770ee06989de779c2c95e0a4fd569082452edc6fd62f3dcb7398cd6390552",
+    "packages/db/migrations/0013_document_snapshot_types.sql": "fa81b7183d925e234d4aa4282484bb0f5be29cb286b4b076a421144a6c3cc717",
+    "packages/db/migrations/meta/0012_snapshot.json": "195d2d6f241bc7fcb3105c0d779c8a78b921092f8f68570e798f10fd32e81b45",
+    "packages/db/migrations/meta/_journal.json": "9cc526783382d1a1e4d4948b203a6fa08a3ffe8314760ffb43d6f17a71d99e69",
+    "packages/db/src/document-schema.ts": "f64e2d78b2ae5ea9aee0f1533663517ef16d0be9b5f065670ae432f81660a455",
+    "packages/db/src/index.ts": "b86165fbb45a6b43665888e184afce27ad819b205c3333d03e2185465301dd12",
+    "packages/db/src/schema.ts": "cd7258c842fc6f7ad737560e4671e92cec05321f92d089facbd041f98a642e6c",
+    "packages/domain/src/documents.ts": "81d4d13ec8d6d8accae5f7dfba16ac72d6af5feff36219f25729b677e39a52cc",
+    "packages/domain/src/index.ts": "d3252181d5af85bcdccace9c5e18e40a783c32824608a1d87bac3358b3fa0f44",
+    "tests/document-helper.ts": "bac7fb0cdface911fe06c5a849f59c6a8f04a8232f559d011065a83b0dc666ae",
+    "tests/e2e/datetime-input.spec.ts": "b45ff8f3e40059e055570a9a3a3d5711bdd838384ef97a501d4514a6992aeb78",
+    "tests/e2e/datetime-input.ts": "85afadf32324bb54f9448fd790602e2b67ebd8b0dccd58a7217c8d7d9cf4985c",
+    "tests/e2e/inventory.spec.ts": "a999154c85d70748c175267753e1b488806fdeeb27c0a1c957ad926fe422294d",
+    "tests/integration/document-types.test.ts": "5ccaa7136fd9912b48949c3e3f0166b43839b7ac8ecf6e93f779829e4552c4bc",
+    "tests/integration/document-upgrade.test.ts": "8b8f4a7c8912b8d79031be9d18a6959b30a9514474909d8808058e0bc67d578a",
+    "tests/integration/documents.test.ts": "9d6eb0885d9aff57f33dfb870c59fc2d88678e758d6262f5b96d74a9804ed0dd",
+    "tests/unit/datetime-input.test.ts": "2c51f7530286e066a3e7ac6d4cbf12e942b8aea3464b90967747ed01b52cd9dc",
+    "tests/unit/document-snapshot-budget.test.ts": "ba222b4bdff10b89730df0077e9c6367a5f49e383ee1aeece26f4ed6f130d16c",
+    "tests/unit/documents.test.ts": "444cefee457cbd59c864e1e44f8ffeeeee616156b6a968b90cfd46ede3851ecb"
+  },
+  "actualXlsxPdfGenerated": false,
+  "actualArtifactStoreImplemented": false,
+  "documentBrowserUiImplemented": false,
+  "remoteCi": "NOT RUN: user requested no PR in DEV-05-1",
+  "prCreated": false,
+  "merged": false,
+  "productionDeployed": false,
+  "completionManifest": {
+    "dev": "DEV-05",
+    "implementation": false,
+    "selfReview": false,
+    "regression": false,
+    "security": false,
+    "requirementsAudit": false,
+    "documentation": false
+  }
+}

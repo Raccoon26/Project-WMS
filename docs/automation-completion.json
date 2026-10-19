@@ -1,9 +1,9 @@
 {
-  "dev": "DEV-04",
-  "implementation": true,
-  "selfReview": true,
-  "regression": true,
-  "security": true,
-  "requirementsAudit": true,
-  "documentation": true
+  "dev": "DEV-05",
+  "implementation": false,
+  "selfReview": false,
+  "regression": false,
+  "security": false,
+  "requirementsAudit": false,
+  "documentation": false
 }

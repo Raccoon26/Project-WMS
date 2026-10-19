@@ -1,3 +1,4 @@
+import { datetimeLocalInput } from "./datetime-input";
 import { test, expect } from "@playwright/test";
 import type { Page, BrowserContext } from "@playwright/test";
 import { randomUUID } from "node:crypto";
@@ -279,7 +280,7 @@ test("inventory browser: quality reclassification and reconciliation do not over
     .fill("90");
   await form(page)
     .getByLabel("観測基準時刻", { exact: true })
-    .fill(new Date().toISOString().slice(0, -1));
+    .fill(datetimeLocalInput(new Date()));
   await evidence(page);
   const r = await save(page, "reconciliations");
   expect(r.state).toBe("held");

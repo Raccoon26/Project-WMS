@@ -181,3 +181,5 @@ export interface InventoryInternalEvent {
   createdAt: string;
   status: "pending" | "held" | "consumed";
 }
+
+export * from "./documents.js";

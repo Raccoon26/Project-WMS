@@ -63,3 +63,7 @@ CAS+actor별 command_results+append-only revision/audit, mapping 종료/대체, 
 ## DEV-04 / ADR-Inventory — PostgreSQL Commit 안전장치와 증거 분리
 
 원장 INSERT Trigger로만 수량 Projection을 갱신하고 Deferred Constraint로 SKU별 균형·잔액·예약·출고·수령 합계를 Commit 검증한다. 기존 Auth/Catalog 잠금과 충돌하지 않게 Session/User→Aggregate→metadata share→정렬 Account→예약→Audit 순서를 사용하며 전체재고 전역74002 mutex는 추가하지 않는다. 위험 조정과 미검증 Manual/External Evidence는 DEV07/08/09 Port가 없으므로held. 합성Posting은 isolated Test DB 또는 명시적인 loopback 개발 flag만 허용하며 운영활성화와 분리한다. DB timestamp는 JS Date로 복사하지 않는다. [구현 계약](INVENTORY_LEDGER.md).
+
+## ADR — DEV05-1 문서 경계와 비원자적 저장
+
+최신 단계 지시에 따라 실제 rendering/store/UI를 앞당기지 않는다. 기존 업무 UUID와 공유 Auth tx 아래 불변 canonical Snapshot+native PG SHA-256·버전·source FK를 추가한다. 문서 상태는 Artifact 집계이며 재고 상태와 분리한다. Snapshot 완료와 파일 ready를 분리하고 파일 publish 이후 검증 전에는 ready로 승격하지 않는 복구 계약을 선택했다. 모든 문서는 Sample이며 운영 template/발송은 별도 후속 검증을 요구한다. 적용한 Migration 수정 대신 JSON 타입 보강을 신규 Forward0013으로 분리한다. [계약](DOCUMENTS.md).

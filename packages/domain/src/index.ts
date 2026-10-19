@@ -19,3 +19,5 @@ export interface Drainable {
 
 export * from "./catalog.js";
 export * from "./inventory.js";
+
+export * from "./documents.js";

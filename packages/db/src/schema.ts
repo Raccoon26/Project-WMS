@@ -11,3 +11,5 @@ export * from "./auth-schema.js";
 export * from "./catalog-schema.js";
 
 export * from "./inventory-schema.js";
+
+export * from "./document-schema.js";

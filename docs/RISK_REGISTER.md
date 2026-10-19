@@ -39,3 +39,11 @@ K04의 로컬 매핑 고유성/신뢰·버전/이력, K18의 창고 FK/scope 누
 ## DEV04 현재 작업
 
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+## DEV05-1 문서 위험
+
+- DB와 파일 publish는 비원자적: pending/staged/ready/missing/corrupt·revision CAS·불변 hash·Event/Audit·격리 복구 계약. 실제 filesystem/kill/disk-full/restore는 DEV05 다음 단계에서 검증 전 미완료다.
+- JSON bigint 숫자/문자열 및 SQL CHECK의 NULL 우회: Forward0013에서 명시 타입/IS TRUE 강제, 실제 PG 음성 테스트로 검증한다.
+- Snapshot/문서를 실제 출고나 발송 승인으로 오인: sample=true/dispatchable=false, 원장·예약·Shipment·Outbox 무변경 대조. 실제 승인/메일은 DEV06/07. [계약](DOCUMENTS.md).
+
+- 기존 Browser datetime-local fill의 소수부 정규화 실패를 fixture 입력 보정으로 수정했다. 기존 재고 assertion과 main-owned registry는 보존했다. 새 helper/동일 assertion의 독립 기준선 호환성은 전체 DEV05 PR 단계에서 실제 확인해야 하며 현재 원격 CI 미실행이다.

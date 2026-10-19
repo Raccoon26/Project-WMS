@@ -1,6 +1,6 @@
 # 업무·자동화 운영 규칙
 
-모든 흐름은 DEV04 이후 구현할 설계다. 실제 이메일/출고/구매는 현재 실행하지 않는다.
+아래 전체 운영 흐름은 설계다. DEV04 내부 원장·물류 및 DEV05-1 Snapshot 기반은 실제 구현했고, 외부 이메일/실제 창고 출고/구매는 실행하지 않는다.
 
 ## 외부 창고 → FBA/RSL
 1. 상품 매핑, source good/예약, destination의 신뢰된 판매가능량과 최신 sync를 조회.
@@ -73,3 +73,7 @@ self approval은 위험 작업 금지. 단독 운영자는 별도 re-auth+대기
 ## DEV04 현재 작업
 
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+## DEV-05-1 현재 절차
+
+문서 application port는 현재 MFA/CSRF/양쪽 Warehouse 권한을 확인하고 기존 Outbound를 잠가 Snapshot+문서 메타데이터+감사+멱등 결과만 기록한다. Artifact는 pending/hash NULL이며 파일이 있다고 주장하지 않는다. 실제 renderer/store/preview/download는 다음 단계다. 기존 재고·예약·Shipment/Receipt/Outbox는 동일하게 유지한다. [잠금·복구·DEV06 참조 계약](docs/DOCUMENTS.md), [진행 기록](docs/dev-reports/DEV-05.md).

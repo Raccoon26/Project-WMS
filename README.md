@@ -162,3 +162,7 @@ Remove-Item Env:WMS_SYNTHETIC_INVENTORY
 7. Ctrl+C로 정상 종료한다. 실습 flag를 해제하고 기존 DB/인증 Secret을 보존한다.
 
 자동 검증은 기존 `pnpm test:unit`, `pnpm test:integration`, `pnpm test:failures`, `pnpm build`, `pnpm test:e2e`. Failure suite는 격리 테스트DB의 검증된 `WMS_TEST_CONTAINER`가 필요하며 다른 DB suite/브라우저와 동시 실행하지 않는다. [재고 계약](docs/INVENTORY_LEDGER.md), [DEV04 증거](docs/dev-reports/DEV-04.md).
+
+## DEV05-1 문서 기반
+
+문서 DB/내부 Snapshot application port만 추가한 단계다. 실제 XLSX/PDF 생성·미리보기·다운로드 명령/웹 화면은 아직 없다. 기존 개발 명령을 유지하고 Migration은 초기화 없이 forward 적용한다. 모든 문서는 Sample/발송 불가이며 기록으로 재고를 바꾸지 않는다. [문서 아키텍처·복구 계약](docs/DOCUMENTS.md) · [실제 진행/검증](docs/dev-reports/DEV-05.md).

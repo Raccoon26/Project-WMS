@@ -53,3 +53,7 @@ DEV02 실제 기반 병합: [PR10](https://github.com/Raccoon26/Project-WMS/pull
 ## DEV04 현재 작업
 
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬/원격 검증을 완료했고 PR13으로 자동 병합했다. 실제 Evidence의 HEAD/Base/Run ID를 대조하고 구현 HEAD와 병합 tree가 같음을 확인했다. 승인 Review0/label0이며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+## DEV05-1 진행 중 — main 미반영
+
+기준 main `63c6ec602b640937ee915778b332727ffaeb1729`에서 `dev/dev-05-document-templates`를 생성했다. 기존 작업 트리는 깨끗했고 DEV05 branch/열린 PR은 없었다. DEV05-1 기반 구현·로컬484 검증을 완료했으며 전체 DEV05는 미완료다. 최신 단계 지시에 따라 Commit/Push만 수행하고 PR/CI/자동 병합은 시작하지 않는다. [단계별 실제 검증/후속 작업](docs/dev-reports/DEV-05.md).

@@ -2,14 +2,14 @@
 
 그룹ID는 [요구](../REQUIREMENTS.md), 사용자 지시 §0–29는 U00–U29로 보존.
 각 DEV report는 R-ID+테스트ID+실제 실행SHA/결과 링크를 추가; 문서 반영과 기능 검증을 구분.
-DEV01–03 기반은 실제 구현·검증·병합했다. DEV04 내부 원장/물류는 현재 실제 검증 중이며 외부 물류 운영은 NOT RUN. DEV00 도구 실행 증거는 [보고](dev-reports/DEV-00.md).
+DEV01–03 기반은 실제 구현·검증·병합했다. DEV04 내부 원장/물류는 PR13/14로 실제 검증·자동 병합했고 외부 물류 운영은 NOT RUN. DEV00 도구 실행 증거는 [보고](dev-reports/DEV-00.md).
 
 | ID | 요구 그룹 | 구현 기준 문서 | 담당 | 검증 계약 | 상태 |
 |---|---|---|---|---|---|
 | R01 | 제품·SKU | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-03,14 | 50+ 등록/검색/상태/매핑/페이지, fixture≠실제 기능 | DEV03 실제 Catalog 검증; 원장·운영 DEV04/14 |
 | R02 | 원장/예약 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04 | F07/08/12/21/28, 불변식 | DEV04 내부 엔진 실제PG·Browser 검증; 운영/후속업무 별도 |
 | R03 | 입출고/이동 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04,15–17 | F18–20, partial/reservation/소유합 | DEV04 내부 엔진 실제PG·Browser 검증; 운영/후속업무 별도 |
-| R04 | 문서양식 | [OPERATIONS.md](../OPERATIONS.md) | DEV-05 | sample watermark/hash/금지필드 | 설계 완료 / 기능 NOT RUN |
+| R04 | 문서양식 | [OPERATIONS.md](../OPERATIONS.md) | DEV-05 | sample watermark/hash/금지필드 | DEV05-1 Snapshot/DB/Port 부분 구현; renderer/file/UI NOT RUN |
 | R05 | 이메일창고 | [OPERATIONS.md](../OPERATIONS.md) | DEV-06 | F02–04/10/20/30 | 설계 완료 / 기능 NOT RUN |
 | R06 | Amazon | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-08 | F13/15/16/17/19 | 설계 완료 / 기능 NOT RUN |
 | R07 | Rakuten | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-09 | F14–17/19 CSV | 설계 완료 / 기능 NOT RUN |
@@ -25,7 +25,7 @@ DEV01–03 기반은 실제 구현·검증·병합했다. DEV04 내부 원장/�
 | R17 | 자체창고 | [docs/contracts/MODULES.md](../docs/contracts/MODULES.md) | DEV-15–17 | 공존/바코드/피킹/택배 | 설계 완료 / 기능 NOT RUN |
 | R18 | AI 선택 | [docs/PROJECT_SCOPE.md](../docs/PROJECT_SCOPE.md) | DEV-18,AI-01 | disabled AI E2E | 설계 완료 / 기능 NOT RUN |
 | R19 | GitHub | [docs/GITHUB_WORKFLOW.md](../docs/GITHUB_WORKFLOW.md) | DEV-00–18 | 정책/helper unit+integration, current SHA CI/보호 | AUTO-01 PR5/6/7 및 DEV01 PR4 자동 Ready·병합 실증 완료 |
-| R20 | 개별DEV검증 | [TEST_PLAN.md](../TEST_PLAN.md) | DEV-00–18 | 30장애/회귀/보안/이전요구감사 | DEV01 실행증거 report 참조; 물류테스트 NOT RUN |
+| R20 | 개별DEV검증 | [TEST_PLAN.md](../TEST_PLAN.md) | DEV-00–18 | 30장애/회귀/보안/이전요구감사 | DEV01–04 실제 회귀 및 DEV05-1 로컬484 검증; 외부 서비스·실장비 미실행은 각 보고 구분 |
 | R21 | public 보호 | [SECURITY.md](../SECURITY.md) | DEV-전단계 | path/pattern scanner+수동PII검토 | 기반 경계/로그/secret 검사; 운영보안 후속 |
 | R22 | 단순·저비용 | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-전단계 | 비용 분류/단일DB/no paidAI | 설계 완료 / 기능 NOT RUN |
 | R23 | 출처/신뢰 | [OPERATIONS.md](../OPERATIONS.md) | DEV-04,08–10 | freshness/snapshot/CSV evidence | 설계 완료 / 기능 NOT RUN |
@@ -200,3 +200,7 @@ R01의 Catalog/다중창고/Scope는 실제 구현했으며 결과는 DEV03 repo
 ## DEV04 현재 작업
 
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+## DEV05-1 요구 감사
+
+R04는 Port/버전/불변 Snapshot/native SHA-256/Artifact Metadata까지 부분 구현하며 실제 XLSX/PDF/미리보기/다운로드/파일 복원/수식·PDF 콘텐츠 검사는 다음 단계다. R02/R03 재고 무변경, R13 권한/CSRF/MFA/Audit UoW, R19 PR 미시작·Manifest 미완료, R20 실제PG 회귀, R21 공개 저장소 비밀 보호, R22 단일PG/의존 추가0, R23 출처·부분량 고정 계약을 확인한다. R01–R25/U00–U29 기준선은 보존하고 후속 업무/외부 연동/Pi/백업/Dot를 완료로 승격하지 않는다. [단계 증거](dev-reports/DEV-05.md).

@@ -124,3 +124,7 @@ API inject 측정의 RSS는 Vitest와 API가 공유한 프로세스이며 독립
 불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
 
 DEV04 실제 기준선은 [423개 검증 및 F/L 추적](docs/dev-reports/DEV-04.md), [원장 계약](docs/INVENTORY_LEDGER.md)을 따른다. 별도100만 Entry 실험은 실제 실행했으나 필수 CI 테스트 수에 포함하지 않는다. 운영/Pi/Provider 시험은 담당DEV에 남는다.
+
+## DEV-05-1 문서 기반(부분 구현)
+
+기존 Outbound/SKU/Warehouse/Reservation/Shipment FK를 재사용하는 불변 Snapshot·버전 템플릿·Artifact/Event 메타데이터와 권한/Audit UoW를 구현한다. 렌더러·파일 저장·HTTP/미리보기/다운로드·신규 문서 UI는 아직 미구현이다. 재고/예약/출고 수량을 변경하지 않으며 Sample 문서는 발송 불가다. [현재 구현·복구·안전 계약](docs/DOCUMENTS.md) · [단계별 실제 검증](docs/dev-reports/DEV-05.md). DEV05 전체 완료/운영 배포/실제 파일 생성으로 표시하지 않는다.
