@@ -11,7 +11,7 @@
 | DEV-01 | 웹/API/DB 기반 | 00 기준선 | pnpm workspace, React/Vite/Tailwind/PWA i18n, Fastify, Drizzle migrations, Compose, worker shell | typecheck/lint/build, real PG migration/API smoke, worker 종료·再起動, ARM64 manifest | MERGED / VERIFIED (PR4, 168a43e) |
 | DEV-02 | 인증·권한·보안 | 01 | 세션/RBAC/MFA/CSRF/입력·감사 기반 | 권한별 401/403, 세션 만료/탈취·CSRF/XSS·공통 권한차단, 실제PG/Browser 회귀 | 기반 MERGED / VERIFIED (PR10, ef3566c); 최종 보강 DEV02 보고 |
 | DEV-03 | 상품·SKU·창고 | 02 | Product/SKU/Mapping/4창고유형/위치/실제FK scope/CAS/멱등/이력 | 60/120/1000 actualPG, 검색·커서·경합·권한·감사/Browser/기존 Auth 회귀 | MERGED / VERIFIED (PR12, cbf4e291);314 passed/0 fail/skip |
-| DEV-04 | 원장·예약·입출고·이동 | 03 | 불변 복식원장/잔액·예약·증거·부분 처리·대조 | real PG concurrency/crash/replay/rollback/불변식+대량 이력 | IMPLEMENTED / LOCAL VERIFIED 423; 원격은 DEV04 실제 PR 결과 |
+| DEV-04 | 원장·예약·입출고·이동 | 03 | 불변 복식원장/잔액·예약·증거·부분 처리·대조 | real PG concurrency/crash/replay/rollback/불변식+대량 이력 | MERGED / VERIFIED (PR13, 9089e261);423 passed/0 fail/skip/flaky |
 | DEV-05 | 출고 문서 | 04 | Excel/PDF renderer/template version/hash/sample 모드 | 필드 검증/수식주입/템플릿 누락/부분수량/샘플 발송금지 | PLANNED |
 | DEV-06 | 외부 창고 메일 | 05 | outbox/inbox/회신 검증/unknown 보류 | lost ACK/서버kill/중복/형식변경; 실제 발송 sandbox 증거 | PLANNED |
 | DEV-07 | Telegram 알림·승인 | 02,06 | 위험정책/만료·nonce·내용hash 승인/요약 | 콜백중복/위조/만료/한도/알림실패 분리/연속클릭 | PLANNED |
@@ -37,4 +37,4 @@ DEV00 설계·GitHub 기반은 PR1–3으로 main 반영. DEV01은 구현/검증
 
 ## DEV04 현재 작업
 
-불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬/원격 검증을 완료하고 PR13에서 자동 Squash Merge했다. 구현 병합 SHA는 9089e261이며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

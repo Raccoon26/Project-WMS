@@ -1,8 +1,20 @@
 # DEV-04 — 불변 복식 원장·예약·물류 엔진 검증 보고
 
-보고서 작성은 병합 전이다. 구현·로컬 검증과 GitHub 병합을 구분한다. 원격 HEAD/Quality/Independent/Guarded/실제 merge 결과는 이 보고서와 연결하는 DEV04 PR의 메타데이터로 확정하며, 확인 전 성공을 추정하지 않는다. 운영 배포는 수행하지 않는다.
+초기 보고서 작성은 병합 전이었다(아래 문단은 당시 이력). 구현·로컬 검증과 GitHub 병합을 구분한다. 원격 HEAD/Quality/Independent/Guarded/실제 merge 결과는 이 보고서와 연결하는 DEV04 PR의 메타데이터로 확정하며, 확인 전 성공을 추정하지 않는다. 운영 배포는 수행하지 않는다.
 
 시작 main `cbf4e291df5bc952aaa7e3a211889220953b57a3`, DEV03 [PR12](https://github.com/Raccoon26/Project-WMS/pull/12) merged/열린PR0/기존변경0을 실제 조회했다. `dev/dev-04-inventory-ledger` 신규 branch를 사용하고 다른 작업/main/볼륨을 덮어쓰지 않았다.
+
+## 최종 GitHub 검증·병합 확인 — 2026-10-19 JST
+
+- 구현 Branch `dev/dev-04-inventory-ledger`, [PR13](https://github.com/Raccoon26/Project-WMS/pull/13): MERGED/일반 PR, 변경64파일. 기존 작업을 보존하고 신규 구현 및 CI 명령 연결 두 commit을 사용했다.
+- 검증 HEAD `8b7011a65731e43dbbc99ec5ce3a9146e3d03ef8`, 검증 Base `cbf4e291df5bc952aaa7e3a211889220953b57a3`.
+- [Policy SUCCESS](https://github.com/Raccoon26/Project-WMS/actions/runs/39191144072), [Quality SUCCESS](https://github.com/Raccoon26/Project-WMS/actions/runs/39191144111), [Independent SUCCESS](https://github.com/Raccoon26/Project-WMS/actions/runs/39191503272), [Guarded SUCCESS](https://github.com/Raccoon26/Project-WMS/actions/runs/39191975863).
+- 실제 Squash Merge `9089e261e649922a09b2147cb1b5a1f0e22b3647`, merged_by `github-actions[bot]`, 승인 Review0/label0. 구현 HEAD와 원격 병합 tree가 byte-for-byte 같음을 git diff로 확인했다. 수동 병합/직접 main Push/force Push/운영 배포 없음.
+- Quality Artifact: Unit115/PG Integration77/Security·Failure70/Desktop·Mobile E2E80/Policy81 = 고유423 passed, failed/skipped/todo/flaky0. 별도 `test:invariants`는 실제 PG30개 재실행 성공으로 고유 수에 중복 합산하지 않는다.
+- Independent Artifact: 같은 HEAD/Base/PR13 및 sourceRunId39191144111/independentRunId39191503272를 실제 대조했다. Unit115/Integration77/Failure70/E2E80, 실패/Skip0. 로그의 Python81개 두 번 실행도 확인했다. Auth/Catalog/Inventory/Migration 필수 case 계약 모두 충족한다.
+- 원격 50 SKU/2 MFA actor 동시 예약240.09ms, 실패0. 로컬 수치와 환경이 다르므로 비교 성능 보장으로 해석하지 않는다.
+- [검증 증거 보관본](../evidence/DEV-04-ci.json)은 실제 다운로드한 데이터의 비민감 요약이다. 승인 입력이나 대체 검사기로 사용하지 않는다. 원본 Actions Artifact 보존기간은7일이다.
+- 구현 병합 이후의 상태 문서 보완은 별도 DEV04 사실 기록 PR로 관리하며, 해당 문서 자체의 최종 main SHA는 실제 GitHub 병합 결과를 따른다. DEV05 기능을 시작하지 않았다.
 
 ## 구현과 Migration
 
@@ -175,5 +187,5 @@ Rollback은 새 revert/forward PR+동일 독립검증이다. 원장 기록 수�
 
 2026-10-19 JST 재개 점검: 기존 `8b5d568` 구현과 3개 미커밋 보완 파일을 보존했다. 원격 main은 시작 SHA와 같고 열린 PR은 없었다. 저장된 Unit115/Integration77/Failure70/E2E80/Policy81 보고서를 확인했다. `/tmp`에 있던 중단 전 로컬 독립 검증 로그는 복원되지 않았으므로 그 실행을 통과 증거로 사용하지 않는다. 새 `test:invariants` 명령, lint/typecheck, frozen install, migration, 정책·문서·Secret·Workflow/Shell 검사를 재실행하며, 최종 HEAD의 전체 검증은 실제 Quality와 main-owned Independent Actions에서 다시 확인한다.
 
-Commit/Push/일반 PR/현재 SHA CI/main-owned Independent/Guarded/실제 Squash Merge를 확인해야 DEV04 전체 완료이다. 작성 시점의 로컬 성공을 원격 성공으로 대체하지 않는다. 이후 GitHub 결과를 실제 링크/SHA로 보강한다.
+Commit/Push/일반 PR/현재 SHA Quality/main-owned Independent/Guarded/실제 Squash Merge를 모두 확인했다. DEV04 내부 구현·검증·main 반영 완료이며 실제 외부 물류 운영 출시는 아니다. 초기 병합 전 기록과 최종 원격 증거를 위에서 구분했다.
 DEV05는 실제 Outbound/Line/미출고/Version과 Warehouse/SKU UUID를 사용하여 교체 가능한 Sample Excel/PDF 템플릿을 구현할 수 있다. 문서 생성/메일 성공으로 재고를 차감하지 않는다. 실제 양식·발송·위험 승인·Provider 신뢰·운영배포는 다음 담당단계에서 검증한다.
