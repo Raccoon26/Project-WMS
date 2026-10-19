@@ -1,0 +1,88 @@
+{
+  "scope": "DEV-05-2 local manifests/quantity snapshots only; not remote CI/merge authorization",
+  "base": "63c6ec602b640937ee915778b332727ffaeb1729",
+  "parentCommit": "fe8bf337d01310172c219ba36a32518b9505862c",
+  "branch": "dev/dev-05-document-templates",
+  "suites": {
+    "unit": {
+      "passed": 177,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "startTime": 1792386205015
+    },
+    "integration": {
+      "passed": 122,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "startTime": 1792386201690
+    },
+    "fault": {
+      "passed": 70,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0,
+      "startTime": 1792386344755
+    },
+    "browser": {
+      "passed": 82,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "startTime": "2026-10-19T05:07:20.802Z",
+      "scope": "existing real WMS desktop/mobile regression + native datetime input tests; no document UI/renderer tests"
+    },
+    "policy": {
+      "passed": 81,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "uniquePassed": 532,
+  "newUnitCases": 32,
+  "newRealPostgresCases": 16,
+  "partialQuantityProof": {
+    "requested": "100",
+    "cancelled": "0",
+    "unshipped": "5",
+    "reservedRemaining": "5",
+    "alreadyShipped": "95",
+    "received": "93",
+    "transit": "2",
+    "thisInstructionQuantity": "5",
+    "selectedHistoricalManifestQuantity": "95"
+  },
+  "priorMigrationsPreserved": "0000-0013 SQL bytes and journal entries unchanged; new forward0014",
+  "verificationRegistriesChanged": false,
+  "dependencyAdditions": 0,
+  "schemaDrift": "No schema changes",
+  "sourceSha256": {
+    "apps/api/src/documents/service.ts": "7efdba45d0a811b26b154267ae3731527c41ec0b254b848f7704c8a0d6b22cdd",
+    "apps/api/src/documents/snapshot.ts": "b3d3aade02c0573904727f5d3040c74c3460ee25e232468259828b0325a600cd",
+    "apps/api/src/documents/templates.ts": "e23f81bd1bba253ad42f661edca1610e0554b0172848ad04b73feed8bb4c2a4d",
+    "packages/contracts/src/documents.ts": "ac5f74c8c5386aa9ad04e9dd2f9641cf905d12423f51025c4245b7970306bfc5",
+    "packages/domain/src/documents.ts": "599f9c4e0e39432310746648fe79bba9980ccfdd6e7af66aeee54e3dd049641d",
+    "packages/db/migrations/0014_document_manifests.sql": "871ce8059e6ff1865143ec17dc792a9dd949f8d253268a2f489767d4f4c0b28c",
+    "packages/db/migrations/meta/_journal.json": "83c971540e1766f0852ef61a432c27e130b7efe94dabbe48d55be9899962780e",
+    "tests/unit/document-manifest.test.ts": "902962e208531ecf9c081e8485e8560fa383da43ecd8de6308b0c9c0c6d3d5f1",
+    "tests/integration/document-manifests.test.ts": "742aa66b63c3cba3fddb24db95e4398fbe7f5e99ec2fc1452f07334db1f5f15e",
+    "docs/automation-completion.json": "846bba0ed9af08be48414efcc7c4a1822eeb6c977c0cefa31f07d92deea5cc1f"
+  },
+  "actualXlsxPdfGenerated": false,
+  "actualArtifactStoreImplemented": false,
+  "documentBrowserUiImplemented": false,
+  "remoteCi": "NOT RUN: user requested no PR in DEV-05-2",
+  "prCreated": false,
+  "merged": false,
+  "productionDeployed": false,
+  "completionManifest": {
+    "dev": "DEV-05",
+    "implementation": false,
+    "selfReview": false,
+    "regression": false,
+    "security": false,
+    "requirementsAudit": false,
+    "documentation": false
+  }
+}

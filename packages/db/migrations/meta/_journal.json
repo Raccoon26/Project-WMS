@@ -99,6 +99,13 @@
       "when": 1792384190835,
       "tag": "0013_document_snapshot_types",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792390000000,
+      "tag": "0014_document_manifests",
+      "breakpoints": true
     }
   ]
 }

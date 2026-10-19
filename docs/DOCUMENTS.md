@@ -1,6 +1,6 @@
 # DEV-05 문서 모듈 계약
 
-현재 단계는 **DEV-05-1 기반 구현**이다. 실제 XLSX/PDF renderer, ArtifactStore, HTTP endpoint/preview/download/문서 UI는 다음 단계다. metadata의 ready 전이 테스트는 실제 파일 생성·복원 증거가 아니다. 모든 Snapshot은 sample=true/dispatchable=false이며 이메일/외부 API/운영 배포는 없다.
+현재 단계는 **DEV-05-1/2 기반·Manifest·부분 수량 구현**이다. 아래 기반 계약의 2 Artifact는 legacy 문서 기준이며, 신규 Manifest 문서의 형식별 1 Artifact/이번 수량 규칙은 마지막 DEV05-2 절을 따른다. 실제 XLSX/PDF renderer, ArtifactStore, HTTP endpoint/preview/download/문서 UI는 DEV05-3이다. metadata의 ready 전이 테스트는 실제 파일 생성·복원 증거가 아니다. 모든 Snapshot은 sample=true/dispatchable=false이며 이메일/외부 API/운영 배포는 없다.
 
 ## 책임과 Port
 
@@ -59,3 +59,34 @@ Artifact 상태는 pending→staged→ready, pending/staged→failed, ready→mi
 전달 참조는 documentId/outboundId+version/templateId+version/contentVersion/snapshotSha256/sample을 고정한다. 실제 DEV06 resolver는 현재 Session 또는 system actor 권한·Warehouse/SKU/매핑의 활성·현재 메타데이터와 Snapshot 일치·Outbound version/state·승인 hash/만료/정책·sample=false·artifact ready·최신 파일 hash를 **발송 직전** 재검사해야 한다. 사용자가 sample=false/dispatchable=true를 보내도 허가하지 않는다. stage1에는 이 검증을 통과하는 운영 발송 경로가 없다.
 
 문서 생성·다운로드·이메일 성공은 출고/입고 증거가 아니며, 재고 posting을 호출하지 않는다. provider 결과 불명은 unknown/held로 보류하고 자동 재발송하지 않는 DEV06 규칙을 유지한다. 실제 render/store/API/browser/전송/복원 완료를 stage1 완료로 표시하지 않는다.
+
+## DEV05-2 — 고정 Manifest와 이번 문서 수량
+
+`sampleTemplateManifests`는 instruction/manifest × xlsx/pdf 네 개의 선언형 Sample 계획이다. 등록은 기존 관리자 재인증/CSRF/감사/멱등 경로를 거친다. 기본 언어 ja, 허용 언어 ja/ko/en, A4 portrait/landscape, 여백12/16/20mm, noto-cjk 10/11/12pt, slate/navy만 허용한다. 이는 렌더 계획 검증이며 실제 font 설치·XLSX/PDF 생성 증거가 아니다.
+
+Manifest schemaVersion=1과 문서 Template ID/version/SHA를 고정한다. Field Mapping은 `documentFieldSources`의 13개 필수 필드를 모두 정확히 한 번 포함한다. source는 서버 allowlist 경로와 일치해야 한다. 임의 경로/식/JS/Shell/URL/HTML/CSS/추가 속성은 허용하지 않는다. 제목/안내는 ja/ko/en 제한 길이의 평문이고 실행 markup/URL/Shell 표현도 거부한다. 원래 `columns`는 stage1 호환 정보이며 **새 renderer는 Manifest fields 순서를 사용하고 이번 문서 수량을 반드시 별도 표시**해야 한다. 기존 legacy 정의는 역사 조회/회귀 호환용이다. 해당 Snapshot에는 이번 수량이 없으므로 향후 renderer가 임의의 requested/shipped를 출고 지시 수량으로 대체하면 안 된다.
+
+| 필드 | 의미/출처 |
+|---|---|
+| requested | OutboundLine.requested_qty |
+| cancelled | 확인된 cancelled_qty; cancellation_requested를 취소 확정으로 추정하지 않음 |
+| reservedRemaining | Σ Reservation(quantity−consumed−released) |
+| alreadyShipped | 실제 OutboundLine.shipped_qty |
+| unshipped | requested−cancelled−shipped |
+| received | Σ 실제 ShipmentLine.received_qty |
+| transit | Σ 실제 shipped_qty−received_qty |
+| thisDocumentQuantity | 아래 목적별 선택, 전체 누계와 별도 |
+
+신규 Manifest Snapshot은 기존 schemaVersion=1에 `documentQuantities` 확장을 추가한다. 각 실제 OutboundLine의 lineId/quantity(십진 문자열), purpose, 선택한 shipmentLineIds를 함께 hash에 포함한다. 기존 Snapshot/Line/Source shape·canonical/hash는 변경하지 않는다.
+
+- instruction: 기본 이번 수량=min(unshipped,reservedRemaining). 부분 선택은 `{lines:[{lineId,quantity}]}`만 받는다. 생략한 실제 line은0이고 모든 실제 line의 사실 수량을 함께 보존한다. 중복/외부 line/음수/Number/비정규 문자열/상한 초과/전체0을 거부한다. 양수는 reserved/partially_shipped와 활성 SKU/Product/양쪽 창고에서만 허용한다. draft/held/cancelled/cancellation_requested는 양수 지시를 만들지 못한다. 문서 생성은 예약 소비나 출고가 아니다.
+- manifest: `{shipmentLineIds:[실제 동일 Outbound의 ShipmentLine ID]}`로 확인된 출고를 선택한다. 생략하면 현재 확인된 전체 ShipmentLine을 선택한다. 이번 수량은 line별 선택된 shipped_qty 합이며 미래 출고 지시가 아니다. 임의 수량 덮어쓰기/외부·중복 ShipmentLine/전체0을 거부한다. 모든 역사 Source는 선택 여부와 관계없이 Snapshot에 보존한다.
+- 100 요청→95 출고→93 수령: 요청100/취소0/미출고5/예약잔량5/이미출고95/Transit2/수령93. 신규 instruction 이번 수량5; 선택된95의 manifest 이번 수량95는 확인된 출고 명세다. 95를 다시 출고하라는 뜻이 아니다. 부분 instruction 수량7은 예약100 중7만 문서화하고 실제 예약100은 그대로다.
+
+클라이언트는 상품명/SKU/창고/상태/출고 누계/수령 누계를 보낼 수 없다. 허용 입력은 기존 source/template/locale/version과 선택(line ID+십진 수량 또는 ShipmentLine ID)뿐이며 나머지는 실제 DB에서 읽는다. 내부 port의 잘못된 선택은409, 추가 header metadata는400이다. HTTP schema/리소스 한도는 DEV05-3 adapter에서 같은 규칙을 명시해야 한다.
+
+신규 Forward0014는 Manifest shape/고정 mapping/kind와 이번 수량을 실제 원자료에 독립 대조하는 trigger를 추가한다. 위조 Builder가 canonical/hash를 다시 계산해도 초과/잘못된 타입/0/중복/외부 line/purpose 변경을 DB에서 거부한다. 기존0000–0013은 수정하지 않는다. 기존 문서는 pending Artifact2개, 신규 형식 고정 문서는 해당 format의 pending Artifact1개를 commit에서 요구하며 둘을 구분한다. 모든 Artifact hash는 여전히 NULL이다.
+
+Outbound CAS/현재 권한/행 잠금/actor-key 멱등/내용 버전 증분은 유지한다. 읽기는 기존 내용·선택을 보존하면서 현재 원자료를 비교한다. 활성 상태·수량·버전이 달라지거나 현재 지시 eligibility를 잃으면 stale=true이며 역사 Snapshot은 계속 조회 가능하다. 새 source/template 버전은 새 content version을 만든다. 모든 template version은 사용 여부와 관계없이 UPDATE/DELETE 불가다. 사용된 버전을 새 정의로 고쳐 쓰지 않는다.
+
+DEV05-2에는 실제 XLSX/PDF renderer/store/문서 HTTP/UI가 아직 없다. Sample=true/dispatchable=false이며 실제 양식 승인·발송/재고 posting/외부 호출을 추가하지 않는다. DEV05-3이 실제 파일·preview/download/UI·파일 복구 및 문서 보안 검증을 이어간다.

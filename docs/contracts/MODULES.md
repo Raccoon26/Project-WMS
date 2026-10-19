@@ -77,3 +77,7 @@ DEV04 실제 Port는 `InventoryService.command`의 Auth/Scope UoW와 `postInvent
 ## DEV05-1 Documents
 
 DocumentService(registerTemplate/recordSnapshot/read)는 기존 Auth/권한/양끝 Warehouse/CSRF/Audit tx를 재사용한다. PostgresSnapshotBuilder는 caller의 실제 Outbound lock 아래 원자료를 읽는다. 공유 contracts의 TemplateRenderer/SnapshotBuilder/ArtifactStore/DocumentReference는 [문서 계약](../DOCUMENTS.md)을 따른다. Renderer/Store는 interface만 있으며 아직 실행 adapter가 없다. DocumentService는 문서 소유 테이블/command_results/Audit만 쓰며 inventory/예약/Outbox를 변경하지 않는다. Sample reference는 DEV06 발송 capability가 아니다.
+
+## DEV05-2 추가 계약
+
+형식·kind별 Sample Manifest4종과 13개 허용 필드 mapping, 지시서의 잔여 예약 선택과 명세서의 확인된 ShipmentLine 선택을 추가했다. Snapshot의 기존 line/source는 보존하고 `documentQuantities`에 이번 수량을 고정한다. Forward0014가 실제 DB 수량·형식별 Artifact 완전성을 검증한다. 100→95→93에서 새 지시5·미출고5·Transit2·수령93이며 문서 생성은 재고/예약/Shipment/Receipt를 바꾸지 않는다. legacy 문서2 Artifact와 신규 형식 고정 문서1 Artifact를 구분한다. [세부 규칙·검증 범위](../DOCUMENTS.md). 실제 renderer/file/HTTP/UI는 DEV05-3, 전체 DEV05는 미완료다.

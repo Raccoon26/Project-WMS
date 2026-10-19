@@ -57,3 +57,7 @@ DEV02 실제 기반 병합: [PR10](https://github.com/Raccoon26/Project-WMS/pull
 ## DEV05-1 진행 중 — main 미반영
 
 기준 main `63c6ec602b640937ee915778b332727ffaeb1729`에서 `dev/dev-05-document-templates`를 생성했다. 기존 작업 트리는 깨끗했고 DEV05 branch/열린 PR은 없었다. DEV05-1 기반 구현·로컬484 검증을 완료했으며 전체 DEV05는 미완료다. 최신 단계 지시에 따라 Commit/Push만 수행하고 PR/CI/자동 병합은 시작하지 않는다. [단계별 실제 검증/후속 작업](docs/dev-reports/DEV-05.md).
+
+## DEV05-2 — 동일 branch의 템플릿·부분 수량 구현
+
+stage1 commit `fe8bf337d01310172c219ba36a32518b9505862c`와 clean tree를 확인하고 같은 branch에서 이어간다. 일본어 기본 Sample Manifest4종/고정 필드 mapping/실제 Outbound Snapshot의 이번 수량·Shipment 선택·Forward0014를 추가한다. 100→95→93은 신규 instruction5/Transit2/수령93으로 분리한다. 최종 로컬 Unit177/PG Integration122/Failure70/Browser82/Policy81, 총532 passed 및0 fail/skip/flaky를 확인했다. 기존 Snapshot/0000–0013/AUTO01을 보존한다. 전체 DEV05 미완료/실제 파일·HTTP·UI 미구현이며 최신 지시대로 Commit·Push만 한다. [실제 최종 테스트와 남은 작업](docs/dev-reports/DEV-05.md).

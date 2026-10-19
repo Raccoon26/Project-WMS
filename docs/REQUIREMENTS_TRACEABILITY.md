@@ -9,7 +9,7 @@ DEV01–03 기반은 실제 구현·검증·병합했다. DEV04 내부 원장/�
 | R01 | 제품·SKU | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-03,14 | 50+ 등록/검색/상태/매핑/페이지, fixture≠실제 기능 | DEV03 실제 Catalog 검증; 원장·운영 DEV04/14 |
 | R02 | 원장/예약 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04 | F07/08/12/21/28, 불변식 | DEV04 내부 엔진 실제PG·Browser 검증; 운영/후속업무 별도 |
 | R03 | 입출고/이동 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04,15–17 | F18–20, partial/reservation/소유합 | DEV04 내부 엔진 실제PG·Browser 검증; 운영/후속업무 별도 |
-| R04 | 문서양식 | [OPERATIONS.md](../OPERATIONS.md) | DEV-05 | sample watermark/hash/금지필드 | DEV05-1 Snapshot/DB/Port 부분 구현; renderer/file/UI NOT RUN |
+| R04 | 문서양식 | [OPERATIONS.md](../OPERATIONS.md) | DEV-05 | sample watermark/hash/금지필드 | DEV05-1/2 Snapshot/DB/Manifest/부분 수량 부분 구현; renderer/file/UI NOT RUN |
 | R05 | 이메일창고 | [OPERATIONS.md](../OPERATIONS.md) | DEV-06 | F02–04/10/20/30 | 설계 완료 / 기능 NOT RUN |
 | R06 | Amazon | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-08 | F13/15/16/17/19 | 설계 완료 / 기능 NOT RUN |
 | R07 | Rakuten | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-09 | F14–17/19 CSV | 설계 완료 / 기능 NOT RUN |
@@ -204,3 +204,13 @@ R01의 Catalog/다중창고/Scope는 실제 구현했으며 결과는 DEV03 repo
 ## DEV05-1 요구 감사
 
 R04는 Port/버전/불변 Snapshot/native SHA-256/Artifact Metadata까지 부분 구현하며 실제 XLSX/PDF/미리보기/다운로드/파일 복원/수식·PDF 콘텐츠 검사는 다음 단계다. R02/R03 재고 무변경, R13 권한/CSRF/MFA/Audit UoW, R19 PR 미시작·Manifest 미완료, R20 실제PG 회귀, R21 공개 저장소 비밀 보호, R22 단일PG/의존 추가0, R23 출처·부분량 고정 계약을 확인한다. R01–R25/U00–U29 기준선은 보존하고 후속 업무/외부 연동/Pi/백업/Dot를 완료로 승격하지 않는다. [단계 증거](dev-reports/DEV-05.md).
+
+## DEV05-2 요구 감사
+
+| 단계 요구 | 실제 구현/검증 지점 |
+|---|---|
+| 1–4 선언형 Manifest/필드·언어·스타일/4종/버전·hash·불변 | domain documents/template plans, registerTemplate, PG immutable guards; document-manifest Unit/PG |
+| 5–7 실제 Source/부분량/현재 CAS·hash | PostgresSnapshotBuilder/documentQuantityPlan/document_quantity_insert; 실제100→95→93·여러 Shipment/SKU·0/초과/충돌 |
+| 8–9 이전 내용 보존/새 버전/모든 문서 Sample | immutable Snapshot·content version·template version·sample/dispatchable; document-manifests PG |
+
+R02/R03 원장·잔액·예약·출고·입고·Outbox 무변경, R13 실제 Auth/Scope/CSRF/감사 트랜잭션 회귀를 유지한다. R04는 아직 부분 구현이며 실제 파일/문서 UI/미리보기/다운로드/파일 복구/Excel·PDF 콘텐츠 검사는 DEV05-3에 이관한다. R19 최신 사용자 지시대로 PR/자동 병합 미시작, R20 실패와 실제 성공을 보고서에 분리한다. 최소50 SKU(하드 상한 없음)/단일PG/Dot 없음/외부 발송 없음/운영 배포 별도 원칙은 유지한다. 이전 R01–R25/U00–U29의 후속 DEV 항목을 완료로 바꾸지 않는다. [결과](dev-reports/DEV-05.md).

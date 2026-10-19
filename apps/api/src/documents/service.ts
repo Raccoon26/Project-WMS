@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import type { PoolClient } from "pg";
 import { canonicalPayload, validTemplateDefinition } from "@wms/domain";
 import type {
+  DocumentQuantitySelection,
   DocumentKind,
   DocumentLocale,
   SampleTemplateDefinition,
@@ -30,6 +31,7 @@ export interface RecordDocumentInput {
   templateId: string;
   templateVersion: number;
   locale: DocumentLocale;
+  selection?: DocumentQuantitySelection;
 }
 /** Internal application port, not an unauthenticated HTTP/CLI entrypoint.
  * Stage1 records snapshots + pending metadata only; does not render/publish/send.
@@ -134,7 +136,9 @@ export class DocumentService {
       !Number.isSafeInteger(input.version) ||
       input.version < 1 ||
       input.version > 2147483647 ||
-      !validTemplateDefinition(input.definition)
+      !validTemplateDefinition(input.definition) ||
+      (input.definition.manifest !== undefined &&
+        input.definition.manifest.kind !== input.kind)
     )
       throw new CatalogError(400, "INVALID_INPUT");
     return this.run(ctx, true, async (c, s) => {
@@ -201,6 +205,17 @@ export class DocumentService {
     input: RecordDocumentInput,
   ): Promise<DocumentReference> {
     if (
+      Object.keys(input).some(
+        (k) =>
+          ![
+            "outboundId",
+            "outboundVersion",
+            "templateId",
+            "templateVersion",
+            "locale",
+            "selection",
+          ].includes(k),
+      ) ||
       !uuid(input.outboundId) ||
       !uuid(input.templateId) ||
       !version(input.outboundVersion) ||
@@ -244,6 +259,8 @@ export class DocumentService {
         sha256: t.sha256,
         sample: true,
       };
+      if (input.selection !== undefined && !template.definition.manifest)
+        throw new CatalogError(400, "INVALID_INPUT");
       const id = randomUUID(),
         snapshot = await this.builder.build(c, {
           documentId: id,
@@ -252,6 +269,7 @@ export class DocumentService {
           outboundVersion: input.outboundVersion,
           template,
           locale: input.locale,
+          selection: input.selection,
         }),
         canonical = canonicalPayload(snapshot),
         sha = documentHash(snapshot);
@@ -305,7 +323,9 @@ export class DocumentService {
             JSON.stringify(source),
           ],
         );
-      for (const format of ["xlsx", "pdf"]) {
+      for (const format of template.definition.manifest
+        ? [template.definition.manifest.format]
+        : ["xlsx", "pdf"]) {
         const a = randomUUID();
         await c.query(
           "INSERT INTO document_artifacts(id,document_id,format,storage_key) VALUES($1,$2,$3,$4)",
@@ -373,27 +393,46 @@ export class DocumentService {
         if (!t) throw new AuthError("SERVICE_UNAVAILABLE", 503);
         stale = !t.active;
         if (!stale) {
-          const current = await this.builder.build(c, {
-            documentId: d.id,
-            actorId: d.created_by,
-            outboundId: d.outbound_id,
-            outboundVersion: o.version,
-            locale: d.locale,
-            template: {
-              templateId: t.template_id,
-              version: t.version,
-              kind: t.kind,
-              definition: t.definition,
-              sha256: t.sha256,
-              sample: true,
-            },
-          });
+          const current = await this.builder
+            .build(c, {
+              documentId: d.id,
+              actorId: d.created_by,
+              outboundId: d.outbound_id,
+              outboundVersion: o.version,
+              locale: d.locale,
+              selection: d.snapshot.documentQuantities
+                ? d.snapshot.documentQuantities.purpose === "instruction"
+                  ? { lines: d.snapshot.documentQuantities.lines }
+                  : {
+                      shipmentLineIds:
+                        d.snapshot.documentQuantities.shipmentLineIds,
+                    }
+                : undefined,
+              template: {
+                templateId: t.template_id,
+                version: t.version,
+                kind: t.kind,
+                definition: t.definition,
+                sha256: t.sha256,
+                sample: true,
+              },
+            })
+            .catch((error: unknown) => {
+              // Historical snapshots remain readable when current eligibility is lost.
+              if (error instanceof CatalogError && error.status === 409)
+                return null;
+              throw error;
+            });
           const source = (snapshot: OutboundDocumentSnapshot) => ({
             outbound: snapshot.outbound,
             lines: snapshot.lines,
             sources: snapshot.sources,
+            ...(snapshot.documentQuantities
+              ? { documentQuantities: snapshot.documentQuantities }
+              : {}),
           });
           stale =
+            current === null ||
             documentHash(source(current)) !== documentHash(source(d.snapshot));
           if (!stale)
             stale =
@@ -417,7 +456,7 @@ export class DocumentService {
         ? "quarantined"
         : artifacts.some((a) => a.state === "failed")
           ? "failed"
-          : artifacts.length === 2 &&
+          : artifacts.length === (d.snapshot.documentQuantities ? 1 : 2) &&
               artifacts.every((a) => a.state === "ready")
             ? "ready"
             : artifacts.some((a) => ["staged", "ready"].includes(a.state))

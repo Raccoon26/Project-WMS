@@ -128,3 +128,7 @@ DEV04 실제 기준선은 [423개 검증 및 F/L 추적](docs/dev-reports/DEV-04
 ## DEV-05-1 문서 기반(부분 구현)
 
 기존 Outbound/SKU/Warehouse/Reservation/Shipment FK를 재사용하는 불변 Snapshot·버전 템플릿·Artifact/Event 메타데이터와 권한/Audit UoW를 구현한다. 렌더러·파일 저장·HTTP/미리보기/다운로드·신규 문서 UI는 아직 미구현이다. 재고/예약/출고 수량을 변경하지 않으며 Sample 문서는 발송 불가다. [현재 구현·복구·안전 계약](docs/DOCUMENTS.md) · [단계별 실제 검증](docs/dev-reports/DEV-05.md). DEV05 전체 완료/운영 배포/실제 파일 생성으로 표시하지 않는다.
+
+## DEV05-2 추가 계약
+
+형식·kind별 Sample Manifest4종과 13개 허용 필드 mapping, 지시서의 잔여 예약 선택과 명세서의 확인된 ShipmentLine 선택을 추가했다. Snapshot의 기존 line/source는 보존하고 `documentQuantities`에 이번 수량을 고정한다. Forward0014가 실제 DB 수량·형식별 Artifact 완전성을 검증한다. 100→95→93에서 새 지시5·미출고5·Transit2·수령93이며 문서 생성은 재고/예약/Shipment/Receipt를 바꾸지 않는다. legacy 문서2 Artifact와 신규 형식 고정 문서1 Artifact를 구분한다. [세부 규칙·검증 범위](docs/DOCUMENTS.md). 실제 renderer/file/HTTP/UI는 DEV05-3, 전체 DEV05는 미완료다.

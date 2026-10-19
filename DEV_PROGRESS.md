@@ -12,7 +12,7 @@
 | DEV-02 | 인증·권한·보안 | 01 | 세션/RBAC/MFA/CSRF/입력·감사 기반 | 권한별 401/403, 세션 만료/탈취·CSRF/XSS·공통 권한차단, 실제PG/Browser 회귀 | 기반 MERGED / VERIFIED (PR10, ef3566c); 최종 보강 DEV02 보고 |
 | DEV-03 | 상품·SKU·창고 | 02 | Product/SKU/Mapping/4창고유형/위치/실제FK scope/CAS/멱등/이력 | 60/120/1000 actualPG, 검색·커서·경합·권한·감사/Browser/기존 Auth 회귀 | MERGED / VERIFIED (PR12, cbf4e291);314 passed/0 fail/skip |
 | DEV-04 | 원장·예약·입출고·이동 | 03 | 불변 복식원장/잔액·예약·증거·부분 처리·대조 | real PG concurrency/crash/replay/rollback/불변식+대량 이력 | MERGED / VERIFIED (PR13, 9089e261);423 passed/0 fail/skip/flaky |
-| DEV-05 | 출고 문서 | 04 | Excel/PDF renderer/template version/hash/sample 모드 | 필드 검증/수식주입/템플릿 누락/부분수량/샘플 발송금지 | IN PROGRESS: DEV05-1 로컬484 검증; 렌더/파일/UI 미구현, PR/병합 미시작 |
+| DEV-05 | 출고 문서 | 04 | Excel/PDF renderer/template version/hash/sample 모드 | 필드 검증/수식주입/템플릿 누락/부분수량/샘플 발송금지 | IN PROGRESS: DEV05-1/2 Manifest·부분 수량 Snapshot 구현; 로컬532 passed/0 fail·skip; 렌더/파일/UI 미구현, PR/병합 미시작 |
 | DEV-06 | 외부 창고 메일 | 05 | outbox/inbox/회신 검증/unknown 보류 | lost ACK/서버kill/중복/형식변경; 실제 발송 sandbox 증거 | PLANNED |
 | DEV-07 | Telegram 알림·승인 | 02,06 | 위험정책/만료·nonce·내용hash 승인/요약 | 콜백중복/위조/만료/한도/알림실패 분리/연속클릭 | PLANNED |
 | DEV-08 | Amazon SP-API/FBA | 04,07 | 권한 조사/adapter/mock/재고·판매·입고대조 | 401/429/역순/중복/미매핑/부분수령; live 권한 없으면 명시 제한 | PLANNED |
@@ -41,4 +41,4 @@ DEV00 설계·GitHub 기반은 PR1–3으로 main 반영. DEV01은 구현/검증
 
 ## DEV05 단계별 진행
 
-DEV05-1은 `dev/dev-05-document-templates`에서 내부 Port/DB/Snapshot/권한·Audit/복구 계약을 구현한다. 최신 사용자 지시에 따라 Commit·Push까지만 수행하고 PR/자동 병합을 시작하지 않는다. Completion Manifest는 전체 false다. DEV05-2가 같은 branch에서 renderer/store/실제 XLSX·PDF/preview/download/UI를 이어간다. [실제 결과/후속 목록](docs/dev-reports/DEV-05.md).
+DEV05-1은 `dev/dev-05-document-templates`에서 내부 Port/DB/Snapshot/권한·Audit/복구 계약을 구현한다. 최신 사용자 지시에 따라 Commit·Push까지만 수행하고 PR/자동 병합을 시작하지 않는다. Completion Manifest는 전체 false다. DEV05-2는 같은 branch에서 선언형 Manifest/필드 매핑/이번 문서 수량을 구현한다. 실제 renderer/store/XLSX·PDF/preview/download/UI는 DEV05-3에서 이어간다. [실제 결과/후속 목록](docs/dev-reports/DEV-05.md).

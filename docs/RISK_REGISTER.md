@@ -47,3 +47,9 @@ K04의 로컬 매핑 고유성/신뢰·버전/이력, K18의 창고 FK/scope 누
 - Snapshot/문서를 실제 출고나 발송 승인으로 오인: sample=true/dispatchable=false, 원장·예약·Shipment·Outbox 무변경 대조. 실제 승인/메일은 DEV06/07. [계약](DOCUMENTS.md).
 
 - 기존 Browser datetime-local fill의 소수부 정규화 실패를 fixture 입력 보정으로 수정했다. 기존 재고 assertion과 main-owned registry는 보존했다. 새 helper/동일 assertion의 독립 기준선 호환성은 전체 DEV05 PR 단계에서 실제 확인해야 하며 현재 원격 CI 미실행이다.
+
+## DEV05-2 추가 위험 대응
+
+- 이미 출고한95를 잔여5 지시서로 재출고: purpose/이번 수량을 별도 hash에 고정, instruction≤min(미출고,예약잔량), manifest는 확인된 ShipmentLine 명세만 허용. 서버/PG 이중 대조와 실제100→95→93 검증.
+- 임의 template 코드/원격 자산/미검증 CSS: 정확한 schema/13개 source mapping/스타일 allowlist/필수 ja·ko·en 및 Sample만 허용. 실제 renderer 콘텐츠 주입·폰트 검증은 DEV05-3 전까지 미완료.
+- legacy 문서의 누계를 미래 renderer가 이번 수량으로 오인: 기존 bytes/hash 보존, Manifest 없는 문서는 과거 조회용. 새 renderer가 임의 누계에서 출고 수량을 추론하는 경로를 허용하지 않는다.

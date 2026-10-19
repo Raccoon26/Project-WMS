@@ -4,6 +4,7 @@ export type DocumentLocale = "ja" | "ko" | "en";
 export type DocumentKind = "instruction" | "manifest";
 export interface SampleTemplateDefinition {
   renderer: "sample-grid-v1";
+  manifest?: DeclarativeTemplateManifest;
   title: Record<DocumentLocale, string>;
   footer: Record<DocumentLocale, string>;
   watermark: "SAMPLE / サンプル / 샘플";
@@ -17,6 +18,31 @@ export interface SampleTemplateDefinition {
     | "reserved"
     | "transit"
   )[];
+}
+/** Versioned, non-executable render plan. Paths come from a closed server whitelist. */
+export interface DeclarativeTemplateManifest {
+  schemaVersion: 1;
+  format: DocumentFormat;
+  kind: DocumentKind;
+  defaultLocale: "ja";
+  locales: readonly DocumentLocale[];
+  layout: {
+    paper: "A4";
+    orientation: "portrait" | "landscape";
+    marginMm: 12 | 16 | 20;
+  };
+  style: { font: "noto-cjk"; sizePt: 10 | 11 | 12; accent: "slate" | "navy" };
+  fields: readonly { field: string; source: string }[];
+}
+export interface DocumentQuantitySelection {
+  /** Instruction: only remaining reserved units. Manifest: confirmed selected shipment lines. */
+  lines?: readonly { lineId: string; quantity: string }[];
+  shipmentLineIds?: readonly string[];
+}
+export interface DocumentQuantities {
+  purpose: DocumentKind;
+  shipmentLineIds: readonly string[];
+  lines: readonly { lineId: string; quantity: string }[];
 }
 export interface DocumentTemplateVersion {
   templateId: string;
@@ -50,6 +76,7 @@ export interface DocumentSnapshotSource {
 }
 export interface OutboundDocumentSnapshot {
   schemaVersion: 1;
+  documentQuantities?: DocumentQuantities;
   documentId: string;
   capturedAt: string;
   actorId: string;
@@ -78,6 +105,7 @@ export interface SnapshotBuilder<TTransaction> {
       outboundVersion: string;
       template: DocumentTemplateVersion;
       locale: DocumentLocale;
+      selection?: DocumentQuantitySelection | undefined;
     },
   ): Promise<OutboundDocumentSnapshot>;
 }

@@ -1,3 +1,4 @@
+import { documentFieldSources } from "@wms/domain";
 import type { SampleTemplateDefinition, DocumentKind } from "@wms/contracts";
 /** Data-only defaults. Explicit authorized registration required; no startup side effect. */
 export const sampleTemplates: Record<DocumentKind, SampleTemplateDefinition> = {
@@ -50,3 +51,38 @@ export const sampleTemplates: Record<DocumentKind, SampleTemplateDefinition> = {
     ],
   },
 };
+
+/** Four pinned sample plans; not official warehouse forms or delivery capabilities. */
+export const sampleTemplateManifests = (
+  ["instruction", "manifest"] as const
+).flatMap((kind) =>
+  (["xlsx", "pdf"] as const).map((format) => ({
+    code: `sample-${kind}-${format}`,
+    kind,
+    version: 1,
+    definition: {
+      ...sampleTemplates[kind],
+      manifest: {
+        schemaVersion: 1 as const,
+        kind,
+        format,
+        defaultLocale: "ja" as const,
+        locales: ["ja", "ko", "en"] as const,
+        layout: {
+          paper: "A4" as const,
+          orientation: "landscape" as const,
+          marginMm: 16 as const,
+        },
+        style: {
+          font: "noto-cjk" as const,
+          sizePt: 10 as const,
+          accent: "slate" as const,
+        },
+        fields: Object.entries(documentFieldSources).map(([field, source]) => ({
+          field,
+          source,
+        })),
+      },
+    },
+  })),
+);

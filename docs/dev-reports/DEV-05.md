@@ -67,3 +67,54 @@ R01–R25/U00–U29 기준선과 DEV00–04/AUTO01 보고·현재 코드를 확�
 ### Commit·Push 인계
 
 구현·수정·검증·문서 변경을 이 단계 branch에 commit/push한다. 실제 최종 commit SHA 및 원격 branch SHA 일치는 종료 보고와 Git 이력으로 확인한다. PR 생성 helper는 호출하지 않으며 main은 DEV04의 기준 SHA를 유지해야 한다. 전체 DEV05 완료·main 반영·실제 파일 생성·운영 배포를 선언하지 않는다.
+
+## DEV-05-2 — 템플릿 Manifest·Snapshot·부분 출고
+
+2026-10-19 JST. stage1 commit `fe8bf337d01310172c219ba36a32518b9505862c`의 clean tree/같은 원격 branch를 확인했다. 실제 main은 계속 `63c6ec602b640937ee915778b332727ffaeb1729`, 열린 PR0, 이 DEV branch Actions0이었다. 이미 완료한 stage1/DEV00–04 구현을 보존하며 같은 branch를 사용한다. 최신 분할 지시를 우선해 본 단계는 **Commit·Push까지만 수행**한다. 위 stage1의 '다음 단계 renderer' 안내는 당시 계획 이력이며, 현재 renderer/store/UI 담당은 DEV05-3이다.
+
+### 구현과 안전 경계
+
+- instruction/manifest × xlsx/pdf, 일본어 기본 Sample Manifest4종. ja/ko/en 제목/안내·고정 watermark·명시적 schema version/형식/kind·A4/여백/방향/글꼴·크기·색상 allowlist.
+- 13개 필수 필드와 정확한 source mapping. 누락/중복/unknown 필드·임의 JS/Shell/HTML/remote URL·style 코드를 거부한다. 실제 업체 공식 양식/승인/발송 권한은 없다.
+- 기존 template version/hash·append-only DB 규칙을 재사용한다. 새 버전은 신규 row이며 사용된 버전뿐 아니라 모든 버전 UPDATE/DELETE를 차단한다.
+- 기존 실제 Outbound/SKU/Product/양쪽 Warehouse/Reservation/ShipmentLine을 읽어 사실 수량을 고정한다. 클라이언트 header의 SKU/이름/수량/창고 덮어쓰기를 거부한다. 부분 선택은 실제 line ID+canonical decimal string 또는 실제 ShipmentLine ID만 받고 실제 수량 상한을 확인한다.
+- `documentQuantities`에 목적·선택 ShipmentLine·이번 수량을 별도로 저장/hash한다. instruction=min(미출고,미해소 예약)이 기본값이며 부분 선택 가능. manifest는 선택한 확인된 출고의 명세이며 출고 지시가 아니다. BigInt/string만 사용한다.
+- 100→95→93 실DB 사례: 요청100/취소0/미출고5/예약잔량5/이미출고95/Transit2/수령93; 새 instruction 수량5, 과거95를 선택한 manifest 수량95. 생성 전후 원장·잔액·예약·Shipment·Receipt·Outbox는 실제 전체 digest가 같다.
+- Outbound CAS/현재 Auth·Scope·MFA·CSRF/Origin/명령 멱등/동일 tx Audit를 유지한다. 이전 Snapshot은 그대로 보존하고 새 source/template에 새 content version을 부여한다. 비활성 source 또는 현재 eligibility 상실은 역사 조회에서 stale이며 신규 지시를 차단한다.
+- 신규 Forward `0014_document_manifests.sql`만 추가한다. 기존0000–0013 SQL과 journal의 첫14항목은 byte/값 비교로 보존을 확인했다. 실제 source와 이번 수량/선택/Manifest 형식의 DB 독립 검증을 추가한다. 기존 문서의 pending Artifact2개, 신규 형식 고정 문서의 pending Artifact1개를 모두 검증한다. 실제 파일 hash/size는 여전히 NULL이다.
+
+### Self Review·오류 수정
+
+- 신규 SQL의 JSON 연산자 우선순위 오류를 실제 PostgreSQL Migration 실패에서 발견하고, 영구 적용 전 괄호로 수정했다. 기존 Migration은 수정하지 않았으며 실패한 Migration은 rollback됐다.
+- 초기에 새 테스트의 fixture cleanup 이름/기존 Outbound line 집합 편집 제한/중복 opening 제약을 잘못 사용했다. 기존 업무 제약을 완화하지 않고 올바른 cleanup과 새 실제 SKU/Outbound 생성 절차로 테스트를 고쳤다.
+- 중간 전체 PG 실행은121 passed/1 failed였다. 비활성 SKU를 DB는 차단했으나 application port의409 계약도 확인해야 함을 보강했다. 현재 instruction eligibility 검사와 역사 read의 stale 처리 후 신규16개 및 전체 PG122개를 재실행해 통과했다.
+- 위조 Builder가 진짜 SHA를 계산하더라도 초과/Number/전체0/중복/외부 line/purpose 변경은 DB23514로 rollback한다. 템플릿/문서 변경만으로 재고 작업을 호출하는 코드는 추가하지 않았다.
+- 새 Manifest의 이번 수량이 legacy columns에 묻히지 않도록 향후 renderer는 Manifest fields를 사용하도록 계약을 명시했다. Manifest 없는 과거 Snapshot에 출고량을 추론해서 채워 넣지 않는다.
+
+### 실제 검증 및 감사
+
+최종 Runner 수와 후속 제한은 아래 검증 종료 기록을 따른다. 코드 생성/문서 작성/정적 검사를 실제 파일 생성이나 문서 UI 테스트로 간주하지 않는다. 기존 R01–R25/U00–U29, DEV00–04/AUTO01의 핵심 경계를 재검토했다. R04는 템플릿 계획·Snapshot까지 부분 구현이며, R02/R03 원장·예약·수량은 무변경 비교/기존 불변식 회귀로 보호한다. R13은 기존 서버 권한·MFA·Scope·CSRF·감사 tx를 재사용한다. R19는 이번 단계 PR 금지에 따라 Commit·Push만 하며 AUTO01 코드/5개 registry/완료 Manifest를 변경하지 않는다. 최소50 SKU는 상한이 아니며 기존50 동시/60·120·1000 실제 PG 검증을 유지한다. 새 유료 의존성/Dot/외부 발송/운영 배포는0이다.
+
+### DEV05-3 인계·미구현
+
+같은 branch의 신규 Manifest/선택/Snapshot·native PG 제약을 재사용한다. 실제 XLSX/PDF renderer, 폰트·수식 주입/PDF 위험 콘텐츠 검사, ArtifactStore(실제 hash/byte·crash·symlink·disk-full·복원), 권한 선언 HTTP/preview/download/history, 문서 일본어/ko/en/mobile UI와 그 Browser E2E는 **미구현/NOT RUN**이다. 현재4종은 선언형 템플릿 계획이며 XLSX/PDF bytes가 아니다. 기존 UI 회귀82개와 문서 UI 테스트를 혼동하지 않는다.
+
+전체 DEV05의 Completion Manifest는 여섯 항목 모두 false를 유지한다. 현재 단계에서는 PR/Quality CI/Independent/Guarded/자동 병합/운영 배포를 시작하지 않는다. stage1 datetime 입력 보정의 독립 기준선 호환성은 전체 DEV05 PR 전에 별도로 검증해야 하며 기존 검증을 끄거나 Assertion을 삭제하지 않는다. 운영 파일 보존/암호화·7년/실제 Pi·Windows/macOS/ARM64 파일 검증은 해당 후속 단계의 NOT RUN으로 유지한다.
+
+### DEV05-2 검증 종료 기록
+
+최종 고유 **532 passed / failed·skipped·todo·flaky0**:
+
+| 실행 명령 | 실제 결과 |
+|---|---:|
+| pnpm test:unit | 177 passed |
+| pnpm test:integration | 실제 PostgreSQL17, 122 passed |
+| pnpm test:failures | Security/Failure70 passed |
+| pnpm test:e2e | Desktop/Mobile82 passed, flaky0 |
+| PYTHONPATH=scripts python3 scripts/run_policy_tests.py | Policy81 passed |
+
+신규32 Unit+16 실제 PG, 총48개를 추가했다. 별도 targeted16 재실행은 전체122에 포함되므로 중복 합산하지 않는다. 기존 DEV01–04/Auth/Catalog/Inventory 회귀·50 SKU 동시 갱신 및60/120/1000 SKU 실제 PG를 포함한다. 문서-specific 보안 음성은 PG16 안에 포함하며 Failure70에 중복 집계하지 않는다. Browser82는 기존 실제 WMS80+native datetime2이며 신규 문서 UI/렌더 검증은 아니다.
+
+Lint/Typecheck/모듈 경계/Production Build 통과. 테스트·개발 DB의0014 Migration 각각 적용·반복 실행 통과, Drizzle 생성 재검사 No schema changes. startup doctor는 실제 API readiness200/Worker readiness200/Web200/익명 users401/CSP를 확인하고 해당 프로세스를 종료했다. 의존 추가/lockfile 변경0, audit 알려진 취약점 없음. 문서 링크·Secret/금지 파일·actionlint·Shell 구문·diff whitespace 검사도 통과했다. 과거 Migration14개와 journal prefix 및5개 독립 registry 불변을 실제 비교했다.
+
+[최종 Runner 수·원자료 수량 증거·소스 SHA-256](../evidence/DEV-05-2-tests.json). ignored test-results에는 실제 Runner JSON이 있다. PR/Quality CI/Independent/Guarded/병합은 **NOT RUN(사용자 지시상 PR 금지)**이며 GitHub Actions 성공으로 추정하지 않는다. 전체 DEV05 미완료·Completion Manifest false, stage2 Commit/Push SHA는 최종 응답과 실제 Git 이력으로 확인한다. main 반영·운영 배포는 없다.

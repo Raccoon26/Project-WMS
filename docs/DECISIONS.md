@@ -67,3 +67,7 @@ CAS+actor별 command_results+append-only revision/audit, mapping 종료/대체, 
 ## ADR — DEV05-1 문서 경계와 비원자적 저장
 
 최신 단계 지시에 따라 실제 rendering/store/UI를 앞당기지 않는다. 기존 업무 UUID와 공유 Auth tx 아래 불변 canonical Snapshot+native PG SHA-256·버전·source FK를 추가한다. 문서 상태는 Artifact 집계이며 재고 상태와 분리한다. Snapshot 완료와 파일 ready를 분리하고 파일 publish 이후 검증 전에는 ready로 승격하지 않는 복구 계약을 선택했다. 모든 문서는 Sample이며 운영 template/발송은 별도 후속 검증을 요구한다. 적용한 Migration 수정 대신 JSON 타입 보강을 신규 Forward0013으로 분리한다. [계약](DOCUMENTS.md).
+
+## ADR — DEV05-2 Manifest·목적별 수량·기존 Snapshot 호환
+
+최신 단계 지시는 DEV05-2를 템플릿 계획·부분 수량까지, 실 renderer/store/UI를 DEV05-3으로 분리한다. 13개 고정 필드 경로와 제한된 스타일만 갖는 선언형 Manifest를 선택했다. 기존 immutable schemaVersion=1 Snapshot은 그대로 보존하고 신규 문서에 documentQuantities를 추가한다. instruction은 잔여 예약 한도, manifest는 확인된 ShipmentLine 선택으로 목적을 구분한다. 요청/출고 누계를 이번 출고량으로 재사용하지 않는다. 신규 Forward0014로 기존 2 Artifact와 형식 고정 1 Artifact를 모두 검증한다. 전체 DEV05 Completion Manifest/PR은 미완료 유지. [계약](DOCUMENTS.md).

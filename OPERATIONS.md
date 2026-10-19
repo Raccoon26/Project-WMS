@@ -77,3 +77,7 @@ self approval은 위험 작업 금지. 단독 운영자는 별도 re-auth+대기
 ## DEV-05-1 현재 절차
 
 문서 application port는 현재 MFA/CSRF/양쪽 Warehouse 권한을 확인하고 기존 Outbound를 잠가 Snapshot+문서 메타데이터+감사+멱등 결과만 기록한다. Artifact는 pending/hash NULL이며 파일이 있다고 주장하지 않는다. 실제 renderer/store/preview/download는 다음 단계다. 기존 재고·예약·Shipment/Receipt/Outbox는 동일하게 유지한다. [잠금·복구·DEV06 참조 계약](docs/DOCUMENTS.md), [진행 기록](docs/dev-reports/DEV-05.md).
+
+## DEV05-2 추가 계약
+
+형식·kind별 Sample Manifest4종과 13개 허용 필드 mapping, 지시서의 잔여 예약 선택과 명세서의 확인된 ShipmentLine 선택을 추가했다. Snapshot의 기존 line/source는 보존하고 `documentQuantities`에 이번 수량을 고정한다. Forward0014가 실제 DB 수량·형식별 Artifact 완전성을 검증한다. 100→95→93에서 새 지시5·미출고5·Transit2·수령93이며 문서 생성은 재고/예약/Shipment/Receipt를 바꾸지 않는다. legacy 문서2 Artifact와 신규 형식 고정 문서1 Artifact를 구분한다. [세부 규칙·검증 범위](docs/DOCUMENTS.md). 실제 renderer/file/HTTP/UI는 DEV05-3, 전체 DEV05는 미완료다.

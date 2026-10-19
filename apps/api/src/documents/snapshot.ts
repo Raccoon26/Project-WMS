@@ -5,6 +5,7 @@ import type {
   DocumentSnapshotLine,
   DocumentSnapshotSource,
 } from "@wms/contracts";
+import { documentQuantityPlan } from "@wms/domain";
 import { CatalogError } from "../catalog/service.js";
 /** Caller owns Session/User -> Outbound -> Warehouse/SKU locks and authorization. */
 export class PostgresSnapshotBuilder implements SnapshotBuilder<PoolClient> {
@@ -51,7 +52,32 @@ export class PostgresSnapshotBuilder implements SnapshotBuilder<PoolClient> {
         `SELECT to_char(clock_timestamp() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS time`,
       )
     ).rows[0].time as string;
+    let documentQuantities;
+    if (input.template.definition.manifest) {
+      if (
+        input.template.kind === "instruction" &&
+        (
+          await c.query(
+            "SELECT 1 FROM outbound_lines l JOIN skus s ON s.id=l.sku_id JOIN products p ON p.id=s.product_id WHERE l.outbound_id=$1 AND (s.status<>'active' OR p.status<>'active') UNION ALL SELECT 1 FROM warehouses WHERE id=ANY($2::uuid[]) AND status<>'active' LIMIT 1",
+            [o.id, [o.source_warehouse_id, o.destination_warehouse_id]],
+          )
+        ).rowCount !== 0
+      )
+        throw new CatalogError(409, "CONFLICT");
+      try {
+        documentQuantities = documentQuantityPlan(
+          input.template.kind,
+          o.state,
+          lines,
+          sources,
+          input.selection,
+        );
+      } catch {
+        throw new CatalogError(409, "CONFLICT");
+      }
+    }
     return {
+      ...(documentQuantities ? { documentQuantities } : {}),
       schemaVersion: 1,
       documentId: input.documentId,
       actorId: input.actorId,

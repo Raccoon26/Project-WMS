@@ -56,3 +56,5 @@ R01의 Product/SKU/Mapping/Warehouse/Scope/Cursor 기반을 실제 구현한다.
 ## DEV-05-1 문서 기반(부분 구현)
 
 기존 Outbound/SKU/Warehouse/Reservation/Shipment FK를 재사용하는 불변 Snapshot·버전 템플릿·Artifact/Event 메타데이터와 권한/Audit UoW를 구현한다. 렌더러·파일 저장·HTTP/미리보기/다운로드·신규 문서 UI는 아직 미구현이다. 재고/예약/출고 수량을 변경하지 않으며 Sample 문서는 발송 불가다. [현재 구현·복구·안전 계약](docs/DOCUMENTS.md) · [단계별 실제 검증](docs/dev-reports/DEV-05.md). DEV05 전체 완료/운영 배포/실제 파일 생성으로 표시하지 않는다.
+
+DEV05-2는 R04의 선언형 Manifest4종·필수 필드 mapping·목적별 이번 문서 수량과 실제 PG 검증까지 확장한다. 원자료 누계와 지시 수량을 분리하고 이전 Snapshot/Template Version을 보존한다. 전체 R04와 DEV05는 여전히 부분 구현이며 실제 renderer/store/UI는 DEV05-3이다. [최신 단계 계약](docs/DOCUMENTS.md) · [실제 검증](docs/dev-reports/DEV-05.md).
