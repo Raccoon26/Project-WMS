@@ -161,3 +161,7 @@ good/reserved/expected_available는 원장용 입력 자산으로 보존하고 D
 DEV04는 이 SKU/warehouse UUID를 FK로 사용하고 `catalogEligible` 필요조건, 실제 권한·상태·mapping 증거와 원장/예약을
 동일 UoW에서 재확인한다. 출고/입고/재고량/Provider verification/Pi 운영/Windows 실장비는 본 단계 완료와 별개다.
 실제 결과/미실행은 [DEV03 보고](dev-reports/DEV-03.md)를 따른다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

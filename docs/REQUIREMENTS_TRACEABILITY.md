@@ -2,13 +2,13 @@
 
 그룹ID는 [요구](../REQUIREMENTS.md), 사용자 지시 §0–29는 U00–U29로 보존.
 각 DEV report는 R-ID+테스트ID+실제 실행SHA/결과 링크를 추가; 문서 반영과 기능 검증을 구분.
-DEV01 실행 기반 및 DEV02 인증 기반은 실제 구현·검증하며 물류 업무 기능은 여전히 NOT RUN. DEV00 도구 실행 증거는 [보고](dev-reports/DEV-00.md).
+DEV01–03 기반은 실제 구현·검증·병합했다. DEV04 내부 원장/물류는 현재 실제 검증 중이며 외부 물류 운영은 NOT RUN. DEV00 도구 실행 증거는 [보고](dev-reports/DEV-00.md).
 
 | ID | 요구 그룹 | 구현 기준 문서 | 담당 | 검증 계약 | 상태 |
 |---|---|---|---|---|---|
 | R01 | 제품·SKU | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-03,14 | 50+ 등록/검색/상태/매핑/페이지, fixture≠실제 기능 | DEV03 실제 Catalog 검증; 원장·운영 DEV04/14 |
-| R02 | 원장/예약 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04 | F07/08/12/21/28, 불변식 | 설계 완료 / 기능 NOT RUN |
-| R03 | 입출고/이동 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04,15–17 | F18–20, partial/reservation/소유합 | 설계 완료 / 기능 NOT RUN |
+| R02 | 원장/예약 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04 | F07/08/12/21/28, 불변식 | DEV04 내부 엔진 실제PG·Browser 검증; 운영/후속업무 별도 |
+| R03 | 입출고/이동 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-04,15–17 | F18–20, partial/reservation/소유합 | DEV04 내부 엔진 실제PG·Browser 검증; 운영/후속업무 별도 |
 | R04 | 문서양식 | [OPERATIONS.md](../OPERATIONS.md) | DEV-05 | sample watermark/hash/금지필드 | 설계 완료 / 기능 NOT RUN |
 | R05 | 이메일창고 | [OPERATIONS.md](../OPERATIONS.md) | DEV-06 | F02–04/10/20/30 | 설계 완료 / 기능 NOT RUN |
 | R06 | Amazon | [INTEGRATIONS.md](../INTEGRATIONS.md) | DEV-08 | F13/15/16/17/19 | 설계 완료 / 기능 NOT RUN |
@@ -16,7 +16,7 @@ DEV01 실행 기반 및 DEV02 인증 기반은 실제 구현·검증하며 물�
 | R08 | 보충/재발주 | [OPERATIONS.md](../OPERATIONS.md) | DEV-10 | 중복incoming/MOQ/lead/cash | 설계 완료 / 기능 NOT RUN |
 | R09 | 금액/분석 | [DATA_MODEL.md](../DATA_MODEL.md) | DEV-10,11 | Decimal/환불/통화·수수료 | 설계 완료 / 기능 NOT RUN |
 | R10 | Telegram | [SECURITY.md](../SECURITY.md) | DEV-07 | F05/06/24 | 설계 완료 / 기능 NOT RUN |
-| R11 | 자동화/worker | [ARCHITECTURE.md](../ARCHITECTURE.md) | DEV-01,04,06,13 | F02–08/22/23/27 | Worker 기반 구현; scheduler/outbox 후속 |
+| R11 | 자동화/worker | [ARCHITECTURE.md](../ARCHITECTURE.md) | DEV-01,04,06,13 | F02–08/22/23/27 | Worker 기반 유지; DEV04 내부 Outbox 저장, 외부 consumer/scheduler 후속 |
 | R12 | 웹/모바일/PWA/i18n | [ARCHITECTURE.md](../ARCHITECTURE.md) | DEV-01–14 | 15화면/오프라인/중복/접근성 | 웹/PWA/i18n 기반 구현; 실제업무 후속 |
 | R13 | 보안 | [SECURITY.md](../SECURITY.md) | DEV-02 | 인증/역할/CSRF/XSS/MFA/세션 | DEV02 실제PG·Browser 검증; 운영 HTTPS 후속 |
 | R14 | Pi 운영 | [DEPLOYMENT.md](../DEPLOYMENT.md) | DEV-12 | F09–12/22 ARM64/실장비 | 설계 완료 / 기능 NOT RUN |
@@ -196,3 +196,7 @@ MFA lifecycle·세션회수 정상 경로는 새 파일로 추가, 이전 인증
 | D03-32 | DEV04 stable FK 준비/운영금지 | [구현 계약](CATALOG.md) / [실제 결과·미실행](dev-reports/DEV-03.md) |
 
 R01의 Catalog/다중창고/Scope는 실제 구현했으며 결과는 DEV03 report를 따른다. 물류/수량/운영 출시 부분은 R02–11/R14–17/R23의 담당 단계에 남긴다. DEV02의 S13은 실제창고 API로 확장하지만 F24 출고 승인 업무는 DEV07 NOT RUN이다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

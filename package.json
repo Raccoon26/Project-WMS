@@ -34,7 +34,8 @@
     "auth:bootstrap": "tsx --conditions=source --env-file-if-exists=.env scripts/auth-bootstrap.ts",
     "auth:setup": "tsx scripts/auth-key.ts",
     "test:security": "node scripts/run-tests.mjs fault",
-    "auth:recover": "tsx --conditions=source --env-file-if-exists=.env scripts/auth-bootstrap.ts --recover"
+    "auth:recover": "tsx --conditions=source --env-file-if-exists=.env scripts/auth-bootstrap.ts --recover",
+    "test:invariants": "node scripts/run-tests.mjs invariants"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

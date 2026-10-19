@@ -1,6 +1,6 @@
 # 데이터 모델 / DEV04 구현 계약
 
-이 문서는 구현할 PostgreSQL 17 모델이다. migration 실행/실제 DB 검증은 DEV01/04 이후.
+이 문서는 PostgreSQL17의 전체 계약과 단계별 실제 구현을 구분한다. DEV01–03 schema는 기존0000–0004이며 DEV04는 forward0005–0011와 DB Commit 제약을 추가한다.
 공통 PK `id uuid`, timestamp `timestamptz NOT NULL DEFAULT now()` UTC; 모든 FK 기본 RESTRICT,
 업무 row hard-delete 금지. 사용자 비활성/가명화는 법적 보존 규칙에 맞춰 별도 처리.
 수량 `bigint`(개수 정수, 음수 제약은 계정별), money `numeric(20,0)` 최소 화폐단위,
@@ -28,7 +28,7 @@ location과 warehouse 복합 FK 및 transit shipment FK를 강제한다. boundar
 
 | 테이블 | 주요 컬럼/제약 |
 |---|---|
-| inventory_transactions | id PK, movement_type, reason NOT NULL, reference_type/id, actor_id FK 또는 system_actor, source_system, source_event_id, idempotency_key UNIQUE, payload_hash, reverses_id FK nullable, related_transaction_id FK nullable, occurred_at, recorded_at; UNIQUE(source_system,source_event_id) 해당 시 |
+| inventory_transactions | id PK, movement_type, reason NOT NULL, reference_type/id, actor_id FK 또는 system_actor, source_system, source_event_id, idempotency_key (actor/key command_results namespace), payload_hash, reverses_id FK nullable, related_transaction_id FK nullable, occurred_at, recorded_at; UNIQUE(source_system,source_event_id) 해당 시 |
 | inventory_entries | id(Movement ID) PK, transaction_id FK, sku_id FK, account_id FK, quantity bigint !=0, line_no int; UNIQUE(transaction_id,line_no); account SKU와 복합 FK 일치 |
 | inventory_balances | account_id PK/FK, quantity bigint, reserved bigint>=0, version bigint; good 계정 quantity>=reserved>=0, damaged/quarantine/transit quantity>=0, boundary는 음수 허용/reserved=0 |
 | reservations | id PK, outbound_line_id FK, account_id FK(good), quantity>0, consumed>=0, released>=0, CHECK(consumed+released<=quantity), expires_at, version; UNIQUE(outbound_line_id,account_id); 미해소량이 reserved와 일치 |
@@ -141,3 +141,7 @@ MFA verified이면 user NOT NULL CHECK. 토큰 원문 미저장, MFA Secret은 A
 
 실제 Catalog schema는 products/skus/warehouses/locations/integration_accounts/sku_mappings/command_results/catalog_revisions와 warehouse_id FK를 추가한다. 0000/0001은 보존했다. PK/FK/partial unique/CAS/DB cycle trigger/이력·상태 계약은 CATALOG의 현재 구현이 기준이다.
 [Catalog 상세 계약](docs/CATALOG.md). 실제 결과는 [DEV03 보고](docs/dev-reports/DEV-03.md)에서 확인한다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

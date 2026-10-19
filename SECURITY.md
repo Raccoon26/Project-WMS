@@ -19,7 +19,7 @@ CI는 sandbox/mock만 사용. 공개 Git 이력에 노출되면 즉시 폐기·�
 - rate limit: 로그인/IP·사용자·명령별, proxy trust는 tunnel 지정 경로만, brute-force 차단/외부 알림.
 - 로그: correlation ID, 비밀/이메일 본문/고객 주소 최소화, 감사 append-only, 운영자 원장 UPDATE 권한 금지.
 - DB: 외부 포트 미공개, migration/app/backup 역할 분리, 최소권한·volume 암호화 검토, TLS 경계.
-- 공급망: lock frozen, action SHA pin, 자동 업데이트 PR 수동 위험 검토, 취약점/라이선스 검사 DEV01부터,
+- 공급망: lock frozen, action SHA pin, 의존성 갱신 PR도 main-owned 독립 자동 검증, 취약점/라이선스 검사 DEV01부터,
   critical/high exploitable 취약점 출시 차단; 예외는 근거/기한/소유자 승인.
 
 보존 목표: 원장·금전 감사7년(일본 세무/법적 요건 확인), 일반로그30일, 실패 첨부/PII는 최소기간·접근 제한.
@@ -50,3 +50,9 @@ Argon2id/TOTP 암호화·replay/복구코드 일회 사용/세션·epoch/CSRF/�
 
 Warehouse grant를 실제 FK와 SQL 범위 필터에 연결했다. 공유 Catalog read와 Global 정의 변경을 분리하며 scope만으로 users/roles/상품 전역 쓰기를 허용하지 않는다. mapping/account/역할 중요 변경은 기존 최근 MFA, 일반 metadata 수정은 session/CSRF/Permission을 매 transaction 재평가한다. no-store/static-only PWA/로그 allowlist/운영 차단을 유지한다.
 [Catalog 상세 계약](docs/CATALOG.md). 실제 결과는 [DEV03 보고](docs/dev-reports/DEV-03.md)에서 확인한다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.
+
+DEV04 synthetic inventory opt-in은 기본false, 이미 production을 차단하는 loopback 개발 API에만 적용한다. 테스트 schema는 엄격한 wms_test UUID namespace+test DB URL 이중 guard를 사용한다. 외부·수동 증거는 validated로 승격하지 않으며 실제 Provider 신뢰/위험 조정 승인 전 held. 제한된 NOLOGIN DB 역할의 원장 SELECT/UPDATE·DELETE 거부는 테스트에서 검증하되, 운영 migration/app/backup 역할 구성과 superuser 공격 저항은 DEV12 책임이다.

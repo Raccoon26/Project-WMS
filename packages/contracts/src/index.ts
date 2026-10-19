@@ -125,3 +125,59 @@ export interface WarehouseDto extends CatalogRecord {
   type: "external_email" | "internal" | "fba" | "rsl";
   adapter_config_ref: string | null;
 }
+
+// DEV04 wire quantities are canonical decimal strings; never JSON bigint/Number.
+export type InventoryEvidenceTrust =
+  | "synthetic_test"
+  | "local_manual"
+  | "external_unverified"
+  | "validated"
+  | "rejected"
+  | "quarantined";
+export interface InventoryBalanceDto {
+  id: string;
+  sku_id: string;
+  warehouse_id: string | null;
+  location_id: string | null;
+  shipment_id: string | null;
+  kind: import("@wms/domain").InventoryKind;
+  quantity: string;
+  reserved: string;
+  available: string;
+  version: string;
+  updated_at: string;
+}
+export interface InventoryEvidenceReference {
+  id: string;
+  source: string;
+  sourceEventId: string;
+  skuId: string;
+  quantity: string;
+  warehouseId: string;
+  shipmentId: string | null;
+  occurredAt: string;
+  receivedAt: string;
+  actorId: string;
+  payloadHash: string;
+  trust: InventoryEvidenceTrust;
+}
+/** Future provider adapters supply independently checked proof, never a client verified=true flag. */
+export interface InventoryEvidenceVerificationPort {
+  verify(
+    reference: Readonly<InventoryEvidenceReference>,
+  ): Promise<{
+    decision: "held" | "rejected" | "validated";
+    proofReference: string | null;
+  }>;
+}
+export interface InventoryInternalEvent {
+  id: string;
+  aggregateId: string;
+  aggregateVersion: string;
+  topic: string;
+  payloadHash: string;
+  correlationId: string;
+  causationId: string;
+  createdAt: string;
+  status: "pending" | "held" | "consumed";
+}

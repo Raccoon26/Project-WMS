@@ -310,7 +310,7 @@ export async function catalogRequest(
   }
   return response.json();
 }
-function ReferencePicker({
+export function ReferencePicker({
   path,
   onSelect,
   label,

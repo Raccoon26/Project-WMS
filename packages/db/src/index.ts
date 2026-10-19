@@ -134,3 +134,5 @@ export function createDatabase(
 export type Database = ReturnType<typeof createDatabase>;
 export * from "./auth-schema.js";
 export * from "./catalog-schema.js";
+
+export * from "./inventory-schema.js";

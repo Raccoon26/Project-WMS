@@ -161,3 +161,7 @@ Global 역할과 Warehouse 역할은 서로 다른 grant이며 scope만으로 �
 
 일반적인 해결책으로 `down -v`, DB reset/drop, migration history 강제 수정은 사용하지 않는다.
 앱 Ctrl+C 정상 종료 후 `pnpm db:down`은 volume을 보존한다. POSIX PTY 통합 테스트는 WSL2/Linux에서 실행한다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](../docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](../docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

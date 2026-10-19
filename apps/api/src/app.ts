@@ -1,3 +1,4 @@
+import { registerInventory } from "./inventory/routes.js";
 import { registerCatalog } from "./catalog/routes.js";
 import { CatalogError } from "./catalog/service.js";
 import { registerAuth } from "./auth/routes.js";
@@ -128,5 +129,6 @@ export function buildApi(db: DatabaseProbe, log: Logger, auth?: AuthOptions) {
   }));
   registerAuth(app, auth);
   registerCatalog(app, auth);
+  registerInventory(app, auth);
   return app;
 }

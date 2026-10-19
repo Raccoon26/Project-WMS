@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync, mkdirSync, existsSync, unlinkSync } from "node:fs";
 const suite = process.argv[2];
-if (!["unit", "integration", "fault"].includes(suite))
+if (!["unit", "integration", "fault", "invariants"].includes(suite))
   throw new Error("Unknown suite");
 mkdirSync("test-results", { recursive: true });
 const output = `test-results/${suite}.json`;
@@ -12,7 +12,7 @@ const result = spawnSync(
     "exec",
     "vitest",
     "run",
-    `tests/${suite}`,
+    suite === "invariants" ? "tests/integration/inventory" : `tests/${suite}`,
     "--reporter=default",
     "--reporter=json",
     `--outputFile.json=${output}`,

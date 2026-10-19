@@ -94,3 +94,7 @@ DEV02의 verification-auth.json은 새 인증 suite/합성 fixture만 보관한�
 
 DEV03은 기존 main-owned 인증/DEV01 snapshot을 byte-for-byte 보존한다. catalog profile은 실제 unique sku/warehouse scope/mapping integrity/optimistic concurrency/transaction rollback/cursor pagination runner case를 요구한다. Catalog와 재고 profile은 별개이며 원장 경로의 검증을 약화시키지 않는다. 새 Catalog 테스트/합성 import는 verification-catalog.json의 test-only registry에 보존한다. 새 catalog_preflight는 기존 snapshot 삭제·약화/앱 overlay/경로 탈출/과대 크기를 거부하며 이전 main의 모든 인증 검증을 유지한다. workflow 권한/3단계 구조/병합 조건은 변경하지 않는다.
 [Catalog 상세 계약](CATALOG.md). 실제 결과는 [DEV03 보고](dev-reports/DEV-03.md)에서 확인한다.
+
+## DEV04 불변 안전 기준선 확장
+
+기존 Foundation/Auth/Catalog/Python runner와 workflow chain은 그대로 유지한다. `verification-inventory.json`은 tests/ 및 엄격한 test-only inventory-fixture.ts만 포함하며 main-owned verifier가 기존 assertion 삭제/약화·앱 코드 overlay·경로 탈출·누락파일을 차단한다. Inventory Profile의 다섯 제목은 실제 PG 원장·예약·경합·Rollback·증거 Assertion을 실행한 Runner 증거와 대응한다. Optional 대량이력 프로파일은 실제 실행 결과를 별도로 보고하고 필수 CI suite 실행 수에 포함하지 않는다. 수동 승인/label/comment/Draft 강제나 자동 운영 배포를 추가하지 않는다.

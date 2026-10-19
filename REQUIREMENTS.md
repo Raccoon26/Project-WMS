@@ -48,3 +48,7 @@ DEV00은 설계/안전 개발 도구이며 실제 상품·재고 엔진·봇·�
 
 R01의 Product/SKU/Mapping/Warehouse/Scope/Cursor 기반을 실제 구현한다. 최소50은 상한이 아니며60/120/1000은 실제 PG 검증 대상이다. R02–R10 재고·외부 실행·금전 기능은 담당 DEV에 남는다.
 [Catalog 상세 계약](docs/CATALOG.md). 실제 결과는 [DEV03 보고](docs/dev-reports/DEV-03.md)에서 확인한다.
+
+## DEV04 현재 작업
+
+불변 복식 재고 원장·예약·증거·부분 입출고·이동·정정·대조를 기존 Catalog/Auth UUID에 연결한다. 내부 구현·로컬 검증을 완료했다. GitHub 병합은 연결된 실제 PR 결과로 별도 판정하며 운영 배포가 아니다. [구현 계약](docs/INVENTORY_LEDGER.md) · [실제 검증/미실행 범위](docs/dev-reports/DEV-04.md). 미검증 수동/외부 증거와 위험 조정은 보류한다.

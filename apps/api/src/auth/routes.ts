@@ -1,3 +1,4 @@
+import { inventoryRouteKeys } from "../inventory/route-contract.js";
 import { catalogRouteKeys } from "../catalog/route-contract.js";
 import { ConfigError } from "@wms/runtime";
 import type { Permission } from "./policy.js";
@@ -6,6 +7,7 @@ declare module "fastify" {
     wmsPermission?: Permission;
     wmsRecentReauth?: boolean;
     wmsCatalog?: boolean;
+    wmsInventory?: boolean;
   }
 }
 import type { FastifyInstance, FastifyRequest } from "fastify";
@@ -17,6 +19,7 @@ export interface AuthOptions {
   pool: Pool;
   key: string;
   origin: string;
+  syntheticInventory?: boolean;
 }
 export function authOptions(
   pool: Pool,
@@ -42,7 +45,12 @@ export function authOptions(
     throw new ConfigError(
       "AUTH_ORIGIN (exact loopback browser origin required)",
     );
-  return { pool, key: env.AUTH_ENCRYPTION_KEY!, origin: u.origin };
+  return {
+    pool,
+    key: env.AUTH_ENCRYPTION_KEY!,
+    origin: u.origin,
+    syntheticInventory: env.WMS_SYNTHETIC_INVENTORY === "true",
+  };
 }
 export function authContext(req: FastifyRequest): Context {
   const raw = req.headers.cookie
@@ -110,8 +118,10 @@ export function registerAuth(
       return; // Every existing auth handler performs its own transactional policy.
     }
     if (
-      req.routeOptions.config.wmsCatalog &&
-      catalogRouteKeys.has(method + " " + matched)
+      (req.routeOptions.config.wmsCatalog &&
+        catalogRouteKeys.has(method + " " + matched)) ||
+      (req.routeOptions.config.wmsInventory &&
+        inventoryRouteKeys.has(method + " " + matched))
     ) {
       if (!service) throw new AuthError("SERVICE_UNAVAILABLE", 503);
       await service.tx((c) => service.readSession(c, ctx(req)));
